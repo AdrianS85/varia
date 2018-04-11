@@ -5,6 +5,16 @@ print:
 #for analyzing all the files in given folder; make fastqcMake; put all needed scripts into "Programs" folder; questions: czy napewno dobre kodowanie?,
 #Struktura folderów: Programs, Genomes, #foldery_z_rawseqfiles#
 
+PrepareMake: 
+#PREPARE FOLDERS
+	export CORES=32 #This is global variable
+	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Div Bismark_Extracted 
+	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary
+	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
+	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
+	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
+#PREPARE FOLDERS
+
 GetGenomesMake:
 #GET GENOMES
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.38_GRCh38.p12/GCF_000001405.38_GRCh38.p12_genomic.fna.gz
@@ -16,33 +26,34 @@ GetGenomesMake:
 	rename 's/\.fna$/.fa/' * #Change names so that they are compatible with Bismark
 #GET GENOMES
 
-PrepareMake: 
-#PREPARE FOLDERS
-	export CORES=32 #This is global variable
-	mkdir Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut
-	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed
-	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
-	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
-	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
-#PREPARE FOLDERS
-FastqcMake:
-#FASTQC
-	fastqc --threads $(CORES) --outdir ./Fastqc_Raw *fastq*
-	# Aggregate the results https://gist.github.com/danielecook/8e9afb2d2df7752efd8a#file-fastqc_aggregate-sh
-#FASTQC
+BismarkGenomeMake:
+#MAKE CONVERTED GENOMES
+	cp -R ../Programs/*ismark-* ../Genomes
+	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Rat_6
+	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Mouse_38_6
+	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Human_38_12
+	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Ecoli
+#MAKE CONVERTED GENOMES
 
 TrimMake:
+#FASTQC FROM RAW DATA
+	fastqc --threads $(CORES) --outdir ./Fastqc_Raw *fastq*
+	# Aggregate the results https://gist.github.com/danielecook/8e9afb2d2df7752efd8a#file-fastqc_aggregate-sh
+#FASTQC FROM RAW DATA
 #TRIM_GALORE
-	ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads
+	ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads files
 	parallel --bar --colsep '\t' trim_galore --paired  --retain_unpaired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {1} {2}  :::: read_pairs #Using paired, columned list we pair the names
 	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports; rm read_pairs
 #TRIM_GALORE
 #DIVERSITY CUTTING
 	cd Trim_Galore
-	ls *R1*val* | sort >> r1; ls *R3*val* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads
+	ls *R1*val* | sort >> r1; ls *R3*val* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
 	parallel --bar --colsep '\t' python trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2} 2>error :::: read_pairs
-	mv *trimmed* ../Diversity_Cut; rm read_pairs; cd ../Diversity_Cut
-	fastqc --threads 4 --outdir ./Fastqc_Trimmed *trimmed*; cd ..;
+	mv *trimmed* ../Diversity_Cut; 
+	rm read_pairs; cd ../Diversity_Cut
+	fastqc --threads 4 --outdir ./Fastqc_Trimmed *trimmed*
+	cd ..
+	#mv *fastq.gz ./Raw_Data/ #Moving raw data to appropriate folder
 #DIVERSITY CUTTING
 
 FastqcScreenMake:
@@ -50,22 +61,25 @@ FastqcScreenMake:
 #needs bowtie2 and bismark; needs to configure fastq_screen.config; download contaminating genomes (downloaded from ncbi Assembly?); download contaminating adapters (see config file to see from where); for bismark option you have to set config databases to "Bisulfite_Genome" folders created by bismark_genome_preparation tool;
 	cd Diversity_Cut
 	../Programs/fastq_screen_v0.11.1/fastq_screen --aligner bowtie2 --bisulfite -outdir ../Fastq_Screen_Div_Cut/ *trimmed*
-	
+	cd ..
 #FASTQ SCREEN
 
-BismarkGenomeMake:
-#MAKE CONVERTRD GENOMES
-	cp -R ../Programs/*ismark-* ../Genomes
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Rat_6
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Mouse_38_6
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Human_38_12
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Ecoli
-
-#MAKE CONVERTED GENOMES
 
 
-
-
+BismarkMake:
+#MAKE BAM
+	#cd Diversity_Cut
+	#ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
+	#../Programs/*ismark-*/ --bowtie2  --multicore 2 --genome_folder ../Genome/Mouse*/ -1 {1} -2 {2} :::: paired_reads >> bismark_raport
+	#parallel --bar --colsep '\t' ../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../Genome/Mouse*/ -1 {1} -2 {2} 2> aa.txt :::: paired_reads
+	#mv ./*.bam ../Bismark; rm read_pairs
+#MAKE BAM
+#GENERATE BISMARK REPORTS
+	#cd ../Bismark
+	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2summary *bam
+	#mv bismark_summary_report* ./Bismark_Summary
+	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
+#GENERATE BISMARK REPORTS
 
 
 
