@@ -48,7 +48,7 @@ TrimMake:
 #DIVERSITY CUTTING
 	cd Trim_Galore
 	ls *R1*val* | sort >> r1; ls *R3*val* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
-	parallel --bar --colsep '\t' python trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2} 2>error :::: read_pairs
+	parallel --bar --colsep '\t' python trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2} >>error :::: read_pairs
 	mv *trimmed* ../Diversity_Cut; 
 	rm read_pairs; cd ../Diversity_Cut
 	fastqc --threads 4 --outdir ./Fastqc_Trimmed *trimmed*
