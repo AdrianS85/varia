@@ -84,8 +84,6 @@ BismarkMake:
 	#cd Diversity_Cut
 	ls *val_1* | sort >> r1; ls *val_2* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
 	parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../../Genomes/Mouse*/ -1 {1} -2 {2} >> bismark_raport :::: read_pairs
-	#../Programs/*ismark-*/ --bowtie2  --multicore 3 --genome_folder ../Genome/Mouse*/ -1 {1} -2 {2} :::: paired_reads >> bismark_raport
-	#parallel --bar --colsep '\t' ../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../Genome/Mouse*/ -1 {1} -2 {2} 2> aa.txt :::: paired_reads
 	#mv ./*.bam ../Bismark; rm read_pairs
 #MAKE BAM
 #STRIP OVATION-SPECIFIC
