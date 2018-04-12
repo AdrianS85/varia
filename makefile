@@ -9,7 +9,7 @@ PrepareMake:
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
 	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Div Bismark_Extracted 
-	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary
+	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary ./Bismark/Bismark_Raw
 	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
@@ -74,14 +74,23 @@ BismarkMake:
 	#parallel --bar --colsep '\t' ../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../Genome/Mouse*/ -1 {1} -2 {2} 2> aa.txt :::: paired_reads
 	#mv ./*.bam ../Bismark; rm read_pairs
 #MAKE BAM
+#STRIP OVATION-SPECIFIC
+	#cd ..
+	#ls *bam | ../Programs/strip_bismark_sam.sh
+	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
+#STRIP OVATION-SPECIFIC
+#DEDUPULICATION OVATION-SPECIFIC
+	#ls *sam_stripped | python nudup.py –f index.fq
+#DEDUPULICATION OVATION-SPECIFIC
 #GENERATE BISMARK REPORTS
 	#cd ../Bismark
 	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2summary *bam
 	#mv bismark_summary_report* ./Bismark_Summary
-	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
+	#ls *bam | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
 #GENERATE BISMARK REPORTS
-
-
+	
+	#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
+	#bismark2bedGraph --output 
 
 
 
