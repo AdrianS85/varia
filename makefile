@@ -8,7 +8,7 @@ print:
 PrepareMake: 
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
-	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Div Bismark_Extracted 
+	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Div Bismark_Extracted Bedgraph 
 	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary ./Bismark/Bismark_Raw
 	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
@@ -100,9 +100,10 @@ BismarkMake:
 	#mv bismark_summary_report* ./Bismark_Summary
 	#ls *bam | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
 #GENERATE BISMARK REPORTS
-	
 	#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
-	#bismark2bedGraph --output 
-
+#METHYLATION CALLING
+	#ls *sam >> files
+	#parallel --colsep '\t' ../../Programs/*ismark-*/bismark_methylation_extractor --output ../Bedgraph --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report :::: files
+#METHYLATION CALLING
 
 
