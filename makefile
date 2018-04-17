@@ -30,9 +30,10 @@ GetGenomesMake:
 
 BismarkGenomeMake:
 #MAKE CONVERTED GENOMES
-	cp -R ../Programs/*ismark-* ../Genomes
+	#cp -R ../Programs/*ismark-* ../Genomes
+	#
 	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Rat_6
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Mouse_38_6
+	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Mouse*
 	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Human_38_12
 	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Ecoli
 #MAKE CONVERTED GENOMES
@@ -105,5 +106,35 @@ BismarkMake:
 	#ls *sam >> files
 	#parallel --colsep '\t' ../../Programs/*ismark-*/bismark_methylation_extractor --output ../Bedgraph --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report :::: files
 #METHYLATION CALLING
+
+#RNBEADS SCRIPT
+	#FOLDER STRUCTURE
+(analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
+data.dir <- "~/RnBeads/data/Ziller2011_PLoSGen_450K"
+dataset.dir <- file.path(data.dir, "idat")
+sample.annotation <- file.path(data.dir, "sample_annotation.csv")
+analysis.dir <- "~/RnBeads/analysis" # Directory where the output should be written to
+report.dir <- file.path(analysis.dir, "reports") # Directory where the report files should be written to
+	#FOLDER STRUCTURE
+parallel.setup(num.cores)
+parallel.isEnabled()
+"hg19" %in% rnb.get.assemblies()
+	RnBeads.mm10
+rnb.options(
+	assembly = "mm10", #Is this the same genome which was used?
+	import.bed.style = "bismarkCov",
+	identifiers.column="Sample_ID",
+	qc.coverage.plots = TRUE,
+	qc.coverage.histograms = TRUE,
+	inference = TRUE)
+rnb.run.analysis(
+	data.source = c(dataset.dir, sample.annotation, "the index of the column of the sample annotation sheet that contains the names or full
+paths to the bed files")
+	dir.reports = report.dir, 
+	sample.sheet = sample.annotation,
+	data.dir=dataset.dir, 
+	data.type="bs.bed.dir"),
+	rnb.run.qc(rnb.set, report.dir)
+#RNBEADS SCRIPT
 
 
