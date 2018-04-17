@@ -85,6 +85,7 @@ BismarkMake:
 	#cd Diversity_Cut
 	ls *val_1* | sort >> r1; ls *val_2* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
 	parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../../Genomes/Mouse*/ -1 {1} -2 {2} >> bismark_raport :::: read_pairs
+	#Library is assumed to be strand-specific (directional), alignments to strands complementary to the original top or bottom strands will be ignored (i.e. not performed!)
 	#mv ./*.bam ../Bismark; rm read_pairs
 #MAKE BAM
 #STRIP OVATION-SPECIFIC
