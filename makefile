@@ -96,6 +96,9 @@ BismarkMake:
 #DEDUPULICATION OVATION-SPECIFIC
 	#ls *sam_stripped | python nudup.py –f index.fq
 #DEDUPULICATION OVATION-SPECIFIC
+#BAMQC
+	#ls *pe.bam | parallel bamqc
+#BAMQC
 #GENERATE BISMARK REPORTS
 	#cd ../Bismark
 	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2summary *bam
