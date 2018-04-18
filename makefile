@@ -93,8 +93,10 @@ BismarkMake:
 #MAKE BAM
 #STRIP OVATION-SPECIFIC
 	cd ../Bismark
-	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r1 r3 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
-	parallel samtools view -h -o {2} {1} :::: read_pairs
+	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
+	parallel samtools view -h -o {1} :::: read_pairs
+	#I AM NOT SURE HOW DOES THE REPLECMENT STRINGS WORK, NEED TO CHECK IT! 
+	parallel echo {1} "stop" {2} "end" :::: read_pairs
 	#ls *bam | parallel strip_bismark_sam.sh
 	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
 #STRIP OVATION-SPECIFIC
