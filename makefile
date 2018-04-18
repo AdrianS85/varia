@@ -13,6 +13,7 @@ PrepareMake:
 	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
+	cp ../Programs/strip_bismark_sam.sh ./Bismark
 #PREPARE FOLDERS
 
 # Programs needed: FastQC, FastQ Screen
@@ -82,16 +83,19 @@ FastqcScreenMake:
 
 BismarkMake:
 #MAKE BAM
-	#cd Diversity_Cut
+	cd Diversity_Cut
 	ls *val_1* | sort >> r1; ls *val_2* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
 	parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../../Genomes/Mouse*/ -1 {1} -2 {2} >> bismark_raport :::: read_pairs
 	#Library is assumed to be strand-specific (directional), alignments to strands complementary to the original top or bottom strands will be ignored (i.e. not performed!)
 	#?rm *G_to_A* *C_to_T*
-	#mv ./*.bam ../Bismark; rm read_pairs
+	mv ./*.bam ../Bismark; rm read_pairs
+	mv ./*bt2_PE_report.txt ../Bismark/Bismark_Report
 #MAKE BAM
 #STRIP OVATION-SPECIFIC
-	#cd ..
-	#ls *bam | ../Programs/strip_bismark_sam.sh
+	cd ../Bismark
+	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r1 r3 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
+	parallel samtools view -h -o {2} {1} :::: read_pairs
+	#ls *bam | parallel strip_bismark_sam.sh
 	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
 #STRIP OVATION-SPECIFIC
 #DEDUPULICATION OVATION-SPECIFIC
