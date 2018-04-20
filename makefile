@@ -4,7 +4,7 @@ print:
 
 #for analyzing all the files in given folder; make fastqcMake; put all needed scripts into "Programs" folder; questions: czy napewno dobre kodowanie?,
 #Struktura folderów: Programs, Genomes, #foldery_z_rawseqfiles#
-
+#!! ADD nohup TO PREVENT SHUTTING DOWN PROCESSES AFTER EXITING TERMINAL
 PrepareMake: 
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
@@ -25,7 +25,7 @@ GetGenomesMake:
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/895/GCF_000001895.5_Rnor_6.0/GCF_000001895.5_Rnor_6.0_genomic.fna.gz
 	mv *fna* ../Genomes
-	gzip -d ../Genomes/*.gz
+	nohup gzip -d ../Genomes/*.gz
 	rename 's/\.fna$/.fa/' * #Change names so that they are compatible with Bismark
 #GET GENOMES
 
