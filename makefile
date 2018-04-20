@@ -14,6 +14,8 @@ PrepareMake:
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
 	cp ../Programs/strip_bismark_sam.sh ./Bismark
+	cp ../Programs/nugentechnologies*/nudup.py ./Bismark
+	cp *_R2_* ./Bismark; gzip -d ./Bismark/*.gz; cd Bismark; rename 's/\.fastq$/.fq/' *; cd ..
 #PREPARE FOLDERS
 
 # Programs needed: FastQC, FastQ Screen
@@ -25,7 +27,7 @@ GetGenomesMake:
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/895/GCF_000001895.5_Rnor_6.0/GCF_000001895.5_Rnor_6.0_genomic.fna.gz
 	mv *fna* ../Genomes
-	nohup gzip -d ../Genomes/*.gz
+	gzip -d ../Genomes/*.gz
 	rename 's/\.fna$/.fa/' * #Change names so that they are compatible with Bismark
 #GET GENOMES
 
@@ -94,14 +96,16 @@ BismarkMake:
 #STRIP OVATION-SPECIFIC
 	cd ../Bismark
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
-	parallel --colsep '\t' samtools view -h -o {1} :::: read_pairs
-	#I AM NOT SURE HOW DOES THE REPLECMENT STRINGS WORK, NEED TO CHECK IT! 
-	parallel --colsep '\t' echo {1} "stop" {2} "end" :::: read_pairs
-	#ls *bam | parallel strip_bismark_sam.sh
-	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
+	parallel --colsep '\t' "samtools view -h -o {1} {2}"  :::: read_pairs
+	mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
+	ls *sam | parallel ./strip_bismark_sam.sh {}
+	rm *pe.sam read_pairs
 #STRIP OVATION-SPECIFIC
 #DEDUPULICATION OVATION-SPECIFIC
-	#ls *sam_stripped | python nudup.py –f index.fq
+	ls *_stripped.sam >> r1; cp r1 r2; sed 's/_stripped.sam$/_stripped_dedup.sam/' r2 >> r3; ls *_R2_* >> r4; paste r4 r3 r1 >> read_pairs; rm r1 r2 r3 r4
+	parallel --colsep '\t' "python nudup.py –f {1} -o {2} {3}" :::: read_pairs
+	#python nudup.py –f {1} -o {2} {3}
+	#parallel --colsep '\t' "echo 1:{1} 2:{2} 3:{3}" :::: read_pairs
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
 	#ls *pe.bam | parallel bamqc
