@@ -103,7 +103,7 @@ BismarkMake:
 #STRIP OVATION-SPECIFIC
 #DEDUPULICATION OVATION-SPECIFIC
 	ls *_R2_* >> r1; ls *_stripped.sam >> r3; sed 's/_stripped.sam$/_stripped_dedup.sam/' r3 >> r2; paste r1 r2 r3  >> read_pairs; rm r1 r2 r3
-	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs
+	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs #Can also use .bam
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
 	#ls *pe.bam | parallel bamqc
