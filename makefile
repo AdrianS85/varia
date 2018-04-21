@@ -102,9 +102,10 @@ BismarkMake:
 	rm *pe.sam read_pairs
 #STRIP OVATION-SPECIFIC
 #DEDUPULICATION OVATION-SPECIFIC
-	ls *_stripped.sam >> r1; cp r1 r2; sed 's/_stripped.sam$/_stripped_dedup.sam/' r2 >> r3; ls *_R2_* >> r4; paste r4 r3 r1 >> read_pairs; rm r1 r2 r3 r4
-	parallel --colsep '\t' "python nudup.py –f {1} -o {2} {3}" :::: read_pairs
-	#python nudup.py –f {1} -o {2} {3}
+	ls *_R2_* >> r1; ls *_stripped.sam >> r2; ; paste r1 r2 >> read_pairs; rm r1 r2
+	parallel --colsep '\t' "python nudup.py --paired-end -f {1} {2}" :::: read_pairs
+	#python ./nudup.py --paired-end –f B_Biopsy_50_S3_R2_001.fq B_Biopsy_50_S3_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam
+	#python ../../Programs/nugen*/nudup.py --paired-end –f B_Biopsy_50_S3_R2_001.fq B_Biopsy_50_S3_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam
 	#parallel --colsep '\t' "echo 1:{1} 2:{2} 3:{3}" :::: read_pairs
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
