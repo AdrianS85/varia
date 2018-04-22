@@ -117,7 +117,7 @@ BismarkMake:
 #METHYLATION CALLING
 	ls *_stripped_dedup.sam >> r2 && cp r2 r1_1 && sed 's/_stripped_dedup.sam$/_stripped_dedup_sort.sam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r3
 	parallel samtools sort -n -o {1} {2} :::: read_pairs
-	#parallel ../../Programs/*ismark-*/bismark_methylation_extractor --output ../Bismark_Extracted --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report ::: *sorted.dedup.bam
+	#parallel ../../Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output ../Bismark_Extracted --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report ::: *sorted.dedup.bam
 	
 	 
 #The IDs of Read 1 (NB500931:147:HC5VCBGX5:3:21604:26239:14679) and Read 2 (NB500931:147:HC5VCBGX5:2:11204:15206:10902) are not the same.                                      
