@@ -127,6 +127,10 @@ BismarkMake:
 #METHYLATION CALLING
 
 #RNBEADS SCRIPT
+	R
+	
+	
+	
 	#FOLDER STRUCTURE
 (analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
 data.dir <- "~/RnBeads/data/Ziller2011_PLoSGen_450K"
