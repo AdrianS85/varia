@@ -91,8 +91,14 @@ BismarkMake:
 	#Library is assumed to be strand-specific (directional), alignments to strands complementary to the original top or bottom strands will be ignored (i.e. not performed!)
 	#?rm *G_to_A* *C_to_T*
 	mv ./*.bam ../Bismark; rm read_pairs
-	mv ./*bt2_PE_report.txt ../Bismark/Bismark_Report
 #MAKE BAM
+#GENERATE BISMARK REPORTS
+	parallel ../../Programs/*ismark-*/bismark2summary #Needs report files and bam files!
+	#mv bismark_summary_report* ./Bismark_Summary
+	#parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
+	mv ./*bt2_PE_report.txt ../Bismark/Bismark_Report
+	#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
+#GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
 	cd ../Bismark
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
@@ -106,18 +112,14 @@ BismarkMake:
 	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs #Can also use .bam
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
-	#ls *pe.bam | parallel bamqc
+	parallel bamqc ::: *sorted.dedup*
 #BAMQC
-#GENERATE BISMARK REPORTS
-	#cd ../Bismark
-	#ls | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2summary *bam
-	#mv bismark_summary_report* ./Bismark_Summary
-	#ls *bam | parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
-#GENERATE BISMARK REPORTS
-	#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
 #METHYLATION CALLING
-	#ls *sam >> files
-	#parallel --colsep '\t' ../../Programs/*ismark-*/bismark_methylation_extractor --output ../Bedgraph --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report :::: files
+	#parallel ../../Programs/*ismark-*/bismark_methylation_extractor --output ../Bismark_Extracted --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report ::: *sorted.dedup.bam
+	#The IDs of Read 1 (NB500931:147:HC5VCBGX5:3:21604:26239:14679) and Read 2 (NB500931:147:HC5VCBGX5:2:11204:15206:10902) are not the same.                                      
+	This might be the result of sorting the paired-end SAM/BAM files by chromosomal position which is not compatible with correct methylation                                     
+	extraction. Please use an unsorted file instead or sort the file using 'samtools sort -n' (by read name). This may also occur using                                      
+	samtools merge as it does not guarantee the read order. To properly merge files please use 'samtools merge -n' or 'samtools cat'.
 #METHYLATION CALLING
 
 #RNBEADS SCRIPT
