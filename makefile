@@ -128,6 +128,7 @@ BismarkMake:
 
 #RNBEADS SCRIPT
 	R
+	#http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL
 	
 	
 	
