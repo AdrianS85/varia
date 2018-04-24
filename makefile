@@ -22,6 +22,12 @@ PrepareMake:
 
 GetGenomesMake:
 #GET GENOMES
+	#A contig sequence that is released outside of the full assembly release cycle. These 
+	#sequences are meant to add information to the assembly without disrupting the stable coordinate system. There are 
+	#two types of patches, FIX and NOVEL. FIX patches are released to correct an error 
+	#in the assembly and will be removed when the new full assembly is released. 
+	#NOVEL sequences are sequences that were not in the last full assembly release 
+	#and will be retained with the next full assembly release.
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.38_GRCh38.p12/GCF_000001405.38_GRCh38.p12_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.26_GRCm38.p6/GCF_000001635.26_GRCm38.p6_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
@@ -129,7 +135,8 @@ BismarkMake:
 #RNBEADS SCRIPT
 	R
 	#http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL
-	
+	source("https://bioconductor.org/biocLite.R")
+	biocLite("RnBeads.mm10")
 	
 	
 	#FOLDER STRUCTURE
@@ -142,8 +149,7 @@ report.dir <- file.path(analysis.dir, "reports") # Directory where the report fi
 	#FOLDER STRUCTURE
 parallel.setup(num.cores)
 parallel.isEnabled()
-"hg19" %in% rnb.get.assemblies()
-	RnBeads.mm10
+
 rnb.options(
 	assembly = "mm10", #Is this the same genome which was used?
 	import.bed.style = "bismarkCov",
