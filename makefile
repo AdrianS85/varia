@@ -46,15 +46,20 @@ BismarkGenomeMake:
 #MAKE CONVERTED GENOMES
 	#cp -R ../Programs/*ismark-* ../Genomes
 	#
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Rat_6
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Mouse*
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Human_38_12
-	../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ../Genomes/Ecoli
+	parallel ../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ::: ../Genomes/Rat_6
+	parallel ../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ::: ../Genomes/Mouse*
+	parallel ../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ::: ../Genomes/Human_38_12
+	parallel ../Programs/*ismark-*/bismark_genome_preparation --bowtie2 --verbose --yes ::: ../Genomes/Ecoli
 #MAKE CONVERTED GENOMES
 
 TrimMake:
 #FASTQC FROM RAW DATA
-	fastqc --threads $(CORES) --outdir ./Fastqc_Raw *fastq*
+	export CORES=32
+	fastqc --threads ${CORES} --outdir ./Fastqc_Raw *fastq*
+	cd ./Fastqc_Raw 
+	chmod 755 FastQC_aggregate.sh
+	./FastQC_aggregate.sh
+	cd ../
 	# Aggregate the results https://gist.github.com/danielecook/8e9afb2d2df7752efd8a#file-fastqc_aggregate-sh
 #FASTQC FROM RAW DATA
 #TRIM_GALORE
