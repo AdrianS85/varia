@@ -15,7 +15,9 @@ PrepareMake:
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
 	cp ../Programs/strip_bismark_sam.sh ./Bismark
 	cp ../Programs/nugentechnologies*/nudup.py ./Bismark
-	mv *_R2_* ./Bismark; gzip -d ./Bismark/*.gz; cd Bismark; rename 's/\.fastq$/.fq/' *; cd ..
+	mv *_R2_* ./Bismark; 
+	parallel gzip -d ./Bismark/ ::: *.gz;	#### FOR CHECKUP ####
+	cd Bismark; rename 's/\.fastq$/.fq/' *; cd ..
 #PREPARE FOLDERS
 
 # Programs needed: FastQC, FastQ Screen
