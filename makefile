@@ -70,7 +70,7 @@ TrimMake:
 
 #DOESNT WORK ON SERWER THOUGH IT WORKS ON DESKTOP
 FastqcScreenMake:
-#FASTQ SCREEN SETUP
+#FASTQ SCREEN SETUP #Also checks if we have the best reference genome?
 	cp ../../Programs/fastq_screen*/fastq_screen.conf.example ../../Programs/fastq_screen*/fastq_screen.conf
 	vim ../../Programs/fastq_screen*/fastq_screen.conf 
 	#THREADS 	$CORES
