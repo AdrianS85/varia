@@ -16,8 +16,10 @@ PrepareMake:
 	cp ../Programs/strip_bismark_sam.sh ./Bismark
 	cp ../Programs/nugentechnologies*/nudup.py ./Bismark
 	mv *_R2_* ./Bismark; 
-	parallel gzip -d ./Bismark/ ::: *.gz;	#### FOR CHECKUP ####
-	cd Bismark; rename 's/\.fastq$/.fq/' *; cd ..
+	parallel gzip -d ::: ./Bismark/*.gz;	#### FOR CHECKUP ####
+	cd Bismark; 
+		rename 's/\.fastq$/.fq/' *.fastq; 
+	cd ..
 #PREPARE FOLDERS
 
 # Programs needed: FastQC, FastQ Screen
@@ -34,9 +36,10 @@ GetGenomesMake:
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.26_GRCm38.p6/GCF_000001635.26_GRCm38.p6_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/895/GCF_000001895.5_Rnor_6.0/GCF_000001895.5_Rnor_6.0_genomic.fna.gz
-	mv *fna* ../Genomes
-	gzip -d ../Genomes/*.gz
-	rename 's/\.fna$/.fa/' * #Change names so that they are compatible with Bismark
+	parallel gzip -d ::: ./*.fna.gz ### From here to checkup
+	rename 's/\.fna$/.fa/' ./*.fna #Change names so that they are compatible with Bismark
+	mkdir ../Genomes/Human_38_12 ../Genomes/Ecoli ../Genomes/Rat_6 ../Genomes/Mouse_38_6 
+	mv *GRCh38* ../Genomes/Human_38_12; mv *GRCm38* ../Genomes/Mouse_38_6; mv *ASM584v2* ../Genomes/Ecoli mv *Rnor* ../Genomes/Rat_6;
 #GET GENOMES
 
 BismarkGenomeMake:
