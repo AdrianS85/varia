@@ -78,7 +78,7 @@ TrimMake:
 	mv *fastq.gz ./Raw_Data/ #Moving raw data to appropriate folder
 #DIVERSITY CUTTING
 
-#DOESNT WORK ON SERWER THOUGH IT WORKS ON DESKTOP
+#LATER##DOESNT WORK ON SERWER THOUGH IT WORKS ON DESKTOP 
 FastqcScreenMake:
 #FASTQ SCREEN SETUP #Also checks if we have the best reference genome?
 	cp ../../Programs/fastq_screen*/fastq_screen.conf.example ../../Programs/fastq_screen*/fastq_screen.conf
@@ -96,7 +96,7 @@ FastqcScreenMake:
 	parallel ../../Programs/fastq_screen*/fastq_screen --aligner bowtie2 --bisulfite -outdir ../Fastq_Screen_Div_Cut/ :::: reads
 	cd ..
 #FASTQ SCREEN
-#DOESNT WORK ON SERWER THOUGH IT WORKS ON DESKTOP
+#LATER##DOESNT WORK ON SERWER THOUGH IT WORKS ON DESKTOP
 
 
 BismarkMake:
@@ -105,22 +105,23 @@ BismarkMake:
 	ls *val_1* | sort >> r1; ls *val_2* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
 	parallel --colsep '\t' ../../Programs/*ismark-*/bismark --bowtie2  --genome_folder ../../Genomes/Mouse*/ -1 {1} -2 {2} :::: read_pairs
 	#Library is assumed to be strand-specific (directional), alignments to strands complementary to the original top or bottom strands will be ignored (i.e. not performed!)
-	#?rm *G_to_A* *C_to_T*
-	mv ./*.bam ../Bismark; rm read_pairs
+	mv ./*.bam ../Bismark; 
+	mv ./*bt2_PE_report.txt ../Bismark;
+	rm read_pairs
 #MAKE BAM
-#GENERATE BISMARK REPORTS
+#LATER##GENERATE BISMARK REPORTS
+	cd ../Bismark/
 	parallel ../../Programs/*ismark-*/bismark2summary #Needs report files and bam files!
 	#mv bismark_summary_report* ./Bismark_Summary
 	#parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
-	mv ./*bt2_PE_report.txt ../Bismark/Bismark_Report
-	#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
-#GENERATE BISMARK REPORTS
+		#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
+#LATER##GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
 	cd ../Bismark
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
 	parallel --colsep '\t' "samtools view -h -o {1} {2}"  :::: read_pairs
-	mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
-	ls *sam | parallel ./strip_bismark_sam.sh {}
+	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
+	parallel ./strip_bismark_sam.sh {} ::: *sam
 	rm *pe.sam read_pairs
 #STRIP OVATION-SPECIFIC
 #DEDUPULICATION OVATION-SPECIFIC
