@@ -10,7 +10,7 @@ PrepareMake:
 	export CORES=32 #This is global variable
 	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Dedup Bismark_Extracted Bedgraph 
 	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary ./Bismark/Bismark_Raw
-	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark/Bismark Bismark_Strip_and_Dedup/Bismark_Bamqc
+	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc
 	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
@@ -131,8 +131,10 @@ BismarkMake:
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
 	parallel bamqc ::: *.pe.bam
-	mv *bamqc.html ./Bismark_Raw/Bismark_Raw_Bamqc; mv *bamqc.zip ./Bismark_Raw/Bismark_Raw_Bamqc;
+	mv *bamqc.html ../Bismark_Raw/Bismark_Raw_Bamqc; mv *bamqc.zip ./Bismark_Raw/Bismark_Raw_Bamqc;
 	parallel bamqc ::: *sorted.dedup*
+	mv *bamqc.html ../Bismark_Strip_and_Dedup/Bismark_Bamqc; 
+	mv *bamqc.zip ../Bismark_Strip_and_Dedup/Bismark_Bamqc;
 #BAMQC
 #METHYLATION CALLING
 	ls *_stripped_dedup.sam >> r2 && cp r2 r1_1 && sed 's/_stripped_dedup.sam$/_stripped_dedup_sort.sam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r3
