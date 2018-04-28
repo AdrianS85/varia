@@ -137,7 +137,7 @@ BismarkMake:
 	mv *bamqc.zip ../Bismark_Strip_and_Dedup/Bismark_Bamqc;
 #BAMQC
 #METHYLATION CALLING
-	ls *_stripped_dedup.sam >> r2 && cp r2 r1_1 && sed 's/_stripped_dedup.sam$/_stripped_dedup_sort.sam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r3
+	ls *sorted.dedup.bam >> r2 && cp r2 r1_1 && sed 's/sorted.dedup.bam$/sorted.dedup.final.bam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r2
 	parallel samtools sort -n -o {1} {2} :::: read_pairs
 	#parallel ../../Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output ../Bismark_Extracted --paired-end --comprehensive --merge_non_CpG >> bismark2bedGraph_report ::: *sorted.dedup.bam
 	
