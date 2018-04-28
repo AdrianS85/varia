@@ -129,6 +129,7 @@ BismarkMake:
 	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs #Can also use .bam
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
+	parallel bamqc ::: *.pe.bam
 	parallel bamqc ::: *sorted.dedup*
 #BAMQC
 #METHYLATION CALLING
