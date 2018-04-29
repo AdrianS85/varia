@@ -9,8 +9,8 @@ PrepareMake:
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
 	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Dedup Bedgraph 
-	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Summary ./Bismark/Bismark_Raw
-	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc
+	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Raw
+	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc ./Bismark_Strip_and_Dedup/Strip_and_Dedup_Report
 	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
 	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
@@ -112,10 +112,14 @@ BismarkMake:
 #MAKE BAM
 #LATER##GENERATE BISMARK REPORTS
 	cd ../Bismark/
-	parallel ../../Programs/*ismark-*/bismark2summary #Needs report files and bam files!
+	
 	#mv bismark_summary_report* ./Bismark_Summary
-	#parallel --bar --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
-		#ls | bam2nuc --genome_folder ../../Genome/Mouse*/ --dir ../../Programs/*ismark-*/bismark2report
+	../../Programs/*ismark-*/bismark2report
+	parallel --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
+	parallel ../../Programs/*ismark-*/bam2nuc --genome_folder ../../Genomes/Mouse*/ ::: *_pe.bam
+	parallel ../../Programs/*ismark-*/bismark2summary ::: *_pe.bam
+	mv *PE_report.* ./Bismark_Report
+	mv *nucleotide_stats* ./Bismark_Report
 #LATER##GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
 	cd ../Bismark
@@ -128,6 +132,7 @@ BismarkMake:
 #DEDUPULICATION OVATION-SPECIFIC
 	ls *_R2_* >> r1; ls *_stripped.sam >> r3; sed 's/_stripped.sam$/_stripped_dedup.sam/' r3 >> r2; paste r1 r2 r3  >> read_pairs; rm r1 r2 r3
 	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs #Can also use .bam
+	mv *sam_dup_log.txt ../Bismark_Strip_and_Dedup/Strip_and_Dedup_Report
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
 	parallel bamqc ::: *.pe.bam
@@ -135,12 +140,19 @@ BismarkMake:
 	parallel bamqc ::: *sorted.dedup*
 	mv *bamqc.html ../Bismark_Strip_and_Dedup/Bismark_Bamqc; 
 	mv *bamqc.zip ../Bismark_Strip_and_Dedup/Bismark_Bamqc;
+	
 #BAMQC
 #METHYLATION CALLING
 	ls *sorted.dedup.bam >> r2 && cp r2 r1_1 && sed 's/sorted.dedup.bam$/sorted.dedup.final.bam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r2
 	parallel --colsep '\t' samtools sort -n -o {1} {2} :::: read_pairs ## Needs to sort the files cause they are desorted by nugen deduplication script
 	parallel "../../Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output ../Bedgraph --paired-end --comprehensive --merge_non_CpG" ::: *final.bam
-	mv 
+#CLEANUP
+	mv *sam.sorted.dedup* ../Bismark_Strip_and_Dedup
+	mv *sam.sorted.markdup* ../Bismark_Strip_and_Dedup
+	mv bismark_summary_report* ./Bismark_Report
+	rm ./*sam_stripped.sam
+#CLEANUP
+
 	 
 #The IDs of Read 1 (NB500931:147:HC5VCBGX5:3:21604:26239:14679) and Read 2 (NB500931:147:HC5VCBGX5:2:11204:15206:10902) are not the same.                                      
 #This might be the result of sorting the paired-end SAM/BAM files by chromosomal position which is not compatible with correct methylation                                     
