@@ -196,3 +196,80 @@ paths to the bed files")
 #RNBEADS SCRIPT
 
 
+
+
+
+
+
+
+
+
+
+
+### RNBEADS EXAMPLE
+################################################################################
+# DNA methylation analysis with RnBeads
+# Epigenomics 2016 Workshop
+# ------------------------------------------------------------------------------
+#  Vanilla analysis of the Ziller2011 450K dataset
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# created: 2016-01-22
+# author:  Fabian Mueller <rnbeads@mpi-inf.mpg.de>
+# http://rnbeads.mpi-inf.mpg.de/
+################################################################################
+
+################################################################################
+# (0) Preliminaries
+################################################################################
+# load the package
+library(RnBeads)
+
+# define the directory structure
+# setwd(".")
+dataDir <- file.path(getwd(), "data")
+resultDir <- file.path(getwd(), "results")
+
+# dataset and file locations
+datasetDir <- file.path(dataDir, "Bock2012_MolCell_RRBS")
+bedDir <- file.path(datasetDir, "dataset", "bed")
+sampleSheet <- file.path(datasetDir, "dataset", "sample_annotation.csv")
+reportDir <- file.path(resultDir, "report_Bock2012_vanilla")
+################################################################################
+# (1) Set analysis options
+################################################################################
+rnb.options(
+	identifiers.column                = "sampleID",
+	import.bed.style                  = "EPP",
+	assembly                          = "mm9",
+	filtering.low.coverage.masking    = TRUE,
+	filtering.greedycut               = FALSE,
+	filtering.missing.value.quantile  = 0.5,
+	filtering.high.coverage.outliers  = TRUE
+)
+# optionally disable some parts of the analysis to reduce runtime
+rnb.options(
+	exploratory.intersample           = FALSE,
+	exploratory.region.profiles       = character(0),
+	differential.comparison.columns   = c("differentiation_level",
+		"blood_lineage", "cmp_blood_CLP_CMP"),
+	differential.report.sites         = FALSE
+)
+################################################################################
+# (2) Run the analysis
+################################################################################
+rnb.run.analysis(
+	dir.reports=reportDir,
+	sample.sheet=sampleSheet,
+	data.dir=bedDir,
+	data.type="bs.bed.dir"
+)
+
+################################################################################
+# Link to finished analysis
+################################################################################
+# see the results at:
+# http://rnbeads.mpi-inf.mpg.de/reports/tutorial/epigenomics2016/results/report_Bock2012_vanilla/index.html
+
+
+
