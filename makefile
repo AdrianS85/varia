@@ -169,7 +169,16 @@ BismarkMake:
 	
 	#FOLDER STRUCTURE
 (analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
-data.dir <- "~/RnBeads/data/Ziller2011_PLoSGen_450K"
+
+
+source("https://bioconductor.org/biocLite.R")
+biocLite("RnBeads.mm10")
+biocLite("RnBeads")
+library(RnBeads)
+
+setwd("D:/Zycie_zawodowe/Fede_seq/rnbeads")
+
+data.dir <- paste0(getwd(), "/data.dir")
 dataset.dir <- file.path(data.dir, "idat")
 sample.annotation <- file.path(data.dir, "sample_annotation.csv")
 analysis.dir <- "~/RnBeads/analysis" # Directory where the output should be written to
