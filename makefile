@@ -33,6 +33,7 @@ GetGenomesMake:
 	#in the assembly and will be removed when the new full assembly is released. 
 	#NOVEL sequences are sequences that were not in the last full assembly release 
 	#and will be retained with the next full assembly release.
+	#http://hgdownload.soe.ucsc.edu/downloads.html
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.38_GRCh38.p12/GCF_000001405.38_GRCh38.p12_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.26_GRCm38.p6/GCF_000001635.26_GRCm38.p6_genomic.fna.gz
 	wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
