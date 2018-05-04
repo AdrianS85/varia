@@ -17,7 +17,7 @@ PrepareMake:
 	cp ../Programs/strip_bismark_sam.sh ./Bismark
 	cp ../Programs/nugentechnologies*/nudup.py ./Bismark
 	mv *_R2_* ./Bismark; 
-	parallel gzip -d ::: ./Bismark/*.gz;	#### FOR CHECKUP ####
+	parallel gzip -d ::: ./Bismark/*.gz;	#### FOR CHECKUP #### DO I NEED THIS?
 	cd Bismark; 
 		rename 's/\.fastq$/.fq/' *.fastq; 
 	cd ..
