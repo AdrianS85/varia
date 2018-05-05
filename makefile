@@ -202,7 +202,8 @@ rnb.options(
 
 
 
-
+DOWNLOADING ANNOTATIONS:
+https://genome.ucsc.edu/cgi-bin/hgTables
 
 
 
