@@ -206,8 +206,9 @@ DOWNLOADING ANNOTATIONS:
 https://genome.ucsc.edu/cgi-bin/hgTables
 
 
-
-
+methyAnalysis - doesnt have specific functions for seq?
+M3D - perhaps
+methylPipe - perhaps
 
 
 
