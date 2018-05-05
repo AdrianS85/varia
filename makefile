@@ -147,6 +147,11 @@ BismarkMake:
 	ls *sorted.dedup.bam >> r2 && cp r2 r1_1 && sed 's/sorted.dedup.bam$/sorted.dedup.final.bam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r2
 	parallel --colsep '\t' samtools sort -n -o {1} {2} :::: read_pairs ## Needs to sort the files cause they are desorted by nugen deduplication script
 	parallel "../../Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output ../Bedgraph --paired-end --comprehensive --merge_non_CpG" ::: *final.bam
+#The IDs of Read 1 (NB500931:147:HC5VCBGX5:3:21604:26239:14679) and Read 2 (NB500931:147:HC5VCBGX5:2:11204:15206:10902) are not the same.                                      
+#This might be the result of sorting the paired-end SAM/BAM files by chromosomal position which is not compatible with correct methylation                                     
+#extraction. Please use an unsorted file instead or sort the file using 'samtools sort -n' (by read name). This may also occur using                                      
+#samtools merge as it does not guarantee the read order. To properly merge files please use 'samtools merge -n' or 'samtools cat'.
+#METHYLATION CALLING
 #CLEANUP
 	mv *sam.sorted.dedup* ../Bismark_Strip_and_Dedup
 	mv *sam.sorted.markdup* ../Bismark_Strip_and_Dedup
@@ -154,28 +159,59 @@ BismarkMake:
 	rm ./*sam_stripped.sam
 #CLEANUP
 
-	 
-#The IDs of Read 1 (NB500931:147:HC5VCBGX5:3:21604:26239:14679) and Read 2 (NB500931:147:HC5VCBGX5:2:11204:15206:10902) are not the same.                                      
-#This might be the result of sorting the paired-end SAM/BAM files by chromosomal position which is not compatible with correct methylation                                     
-#extraction. Please use an unsorted file instead or sort the file using 'samtools sort -n' (by read name). This may also occur using                                      
-#samtools merge as it does not guarantee the read order. To properly merge files please use 'samtools merge -n' or 'samtools cat'.
-#METHYLATION CALLING
-
-#RNBEADS SCRIPT
-	R
-	#http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL
-	source("https://bioconductor.org/biocLite.R")
-	biocLite("RnBeads.mm10")
-	
-	
-	#FOLDER STRUCTURE
-(analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
 
 
+#RNBEADS SCRIPT (analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
+#GET THE TOOLS
 source("https://bioconductor.org/biocLite.R")
-biocLite("RnBeads.mm10")
+biocLite("RnBeads.mm9")
 biocLite("RnBeads")
+biocLite("doParallel")
+biocLite("ggbio")
 library(RnBeads)
+#GET THE TOOLS
+
+
+#SETUP WORKING ENVIROMENT
+setwd("D:/Zycie_zawodowe/Fede_seq/rnbeads")
+data_dir <- paste0(getwd(), "/data_dir")
+dataset_dir <- paste0(data_dir, "/dataset_dir")
+sample_annotation <- paste0(data_dir, "/sample_annotation2.csv")
+analysis_dir <- paste0(getwd(), "/analysis_dir")
+report_dir <- paste0(analysis_dir, "/reports")
+#SETUP WORKING ENVIROMENT
+
+
+#SETUP PARALLELISM
+parallel.setup(4)
+parallel.isEnabled()
+#SETUP PARALLELISM
+
+
+#SETUP RUN OPTIONS
+rnb.options(
+  assembly = "mm9",
+  import.bed.style = "EPP",
+  identifiers.column="sampleID",
+  qc.coverage.plots = TRUE,
+  qc.coverage.histograms = TRUE,
+  inference = TRUE)
+#SETUP RUN OPTIONS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 setwd("D:/Zycie_zawodowe/Fede_seq/rnbeads")
 
