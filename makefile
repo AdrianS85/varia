@@ -113,12 +113,10 @@ BismarkMake:
 #MAKE BAM
 #LATER##GENERATE BISMARK REPORTS
 	cd ../Bismark/
-	
 	#mv bismark_summary_report* ./Bismark_Summary
-	../../Programs/*ismark-*/bismark2report
-	parallel --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report *bam #This is final report after everything
-	parallel ../../Programs/*ismark-*/bam2nuc --genome_folder ../../Genomes/Mouse*/ ::: *_pe.bam
+	parallel ../../Programs/*ismark-*/bam2nuc --genome_folder ../../Genomes/Mouse_mm10/ ::: *_pe.bam
 	parallel ../../Programs/*ismark-*/bismark2summary ::: *_pe.bam
+	parallel --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report ::: *bam #This is final report after everything
 	mv *PE_report.* ./Bismark_Report
 	mv *nucleotide_stats* ./Bismark_Report
 #LATER##GENERATE BISMARK REPORTS
