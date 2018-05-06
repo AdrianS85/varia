@@ -121,7 +121,6 @@ BismarkMake:
 	mv *nucleotide_stats* ./Bismark_Report
 #LATER##GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
-	cd ../Bismark
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
 	parallel --colsep '\t' "samtools view -h -o {1} {2}"  :::: read_pairs
 	#mv ./*.bam ./Bismark/Bismark_Raw; rm read_pairs #We dont need raw bismark files anymore
