@@ -162,9 +162,12 @@ BismarkMake:
 #GET THE TOOLS
 source("https://bioconductor.org/biocLite.R")
 biocLite("RnBeads.mm9")
+biocLite("RnBeads.mm10")
 biocLite("RnBeads")
 biocLite("doParallel")
 biocLite("ggbio")
+biocLite("rtracklayer")
+biocLite("impute")
 library(RnBeads)
 #GET THE TOOLS
 
@@ -173,7 +176,7 @@ library(RnBeads)
 setwd("D:/Zycie_zawodowe/Fede_seq/rnbeads")
 data_dir <- paste0(getwd(), "/data_dir")
 dataset_dir <- paste0(data_dir, "/dataset_dir")
-sample_annotation <- paste0(data_dir, "/sample_annotation2.csv")
+sample_annotation <- paste0(data_dir, "/sample_annotation.csv")
 analysis_dir <- paste0(getwd(), "/analysis_dir")
 report_dir <- paste0(analysis_dir, "/reports")
 #SETUP WORKING ENVIROMENT
@@ -187,13 +190,38 @@ parallel.isEnabled()
 
 #SETUP RUN OPTIONS
 rnb.options(
-  assembly = "mm9",
-  import.bed.style = "EPP",
+  assembly = "mm10",
+  import.bed.style = "bismarkCov",
   identifiers.column="sampleID",
   qc.coverage.plots = TRUE,
   qc.coverage.histograms = TRUE,
-  inference = TRUE)
+  inference = TRUE,
+  #min.group.size = 1,
+  differential.comparison.columns = "treatment")
 #SETUP RUN OPTIONS
+
+
+Sys.getenv()
+Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.23/bin/gswin64c.exe")
+Sys.setenv(R_ZIPCMD="C:/Rtools/bin/zip.exe")
+Sys.setenv(R_UNZIPCMD="C:/Rtools/bin/unzip.exe")
+
+
+#try creating .Rprofile and adding it there
+
+#C:\Rtools\bin
+#RUN
+rnb.run.analysis(
+  dir.reports=report_dir,
+  sample.sheet=sample_annotation,
+  data.dir=dataset_dir,
+  data.type="bs.bed.dir"
+)
+
+#STEP-BY-STEP DEBUGGING
+result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
+                         data.type="bs.bed.dir", 
+                         dir.reports=report_dir)
 
 
 
