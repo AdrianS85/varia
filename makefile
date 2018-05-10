@@ -8,18 +8,18 @@ print:
 PrepareMake: 
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
-	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Dedup Bedgraph 
-	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Raw
-	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc ./Bismark_Strip_and_Dedup/Strip_and_Dedup_Report
-	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/; #cd Fastqc_Raw; FastQC_aggregate.sh; cd ..;
-	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed;
-	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/;
-	cp ../Programs/strip_bismark_sam.sh ./Bismark
-	cp ../Programs/nugentechnologies*/nudup.py ./Bismark
-	mv *_R2_* ./Bismark; 
-	parallel gzip -d ::: ./Bismark/*.gz;	#### FOR CHECKUP #### DO I NEED THIS?
-	cd Bismark; 
-		rename 's/\.fastq$/.fq/' *.fastq; 
+	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Dedup Bedgraph && 
+	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Raw && 
+	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc ./Bismark_Strip_and_Dedup/Strip_and_Dedup_Report && 
+	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/ && 
+	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed && 
+	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/ && 
+	cp ../Programs/strip_bismark_sam.sh ./Bismark && 
+	cp ../Programs/nugentechnologies*/nudup.py ./Bismark && 
+	mv *_R2_* ./Bismark && 
+	parallel gzip -d ::: ./Bismark/*.gz && 
+	cd Bismark && 
+		rename 's/\.fastq$/.fq/' *.fastq && 
 	cd ..
 #PREPARE FOLDERS
 
@@ -67,12 +67,12 @@ TrimMake:
 #TRIM_GALORE
 	ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads files
 	parallel --colsep '\t' "trim_galore --paired  --retain_unpaired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {1} {2}" :::: read_pairs #Using paired, columned list we pair the names
-	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports; rm read_pairs
+	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports && rm read_pairs
 #TRIM_GALORE
 #DIVERSITY CUTTING
 	cd Trim_Galore
 	ls *R1*val* | sort >> r1; ls *R3*val* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2
-	parallel --colsep '\t' python ./trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2} :::: read_pairs
+	parallel --colsep '\t' "python ./trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2}" :::: read_pairs
 	mv *trimmed* ../Diversity_Cut
 	rm read_pairs; cd ../Diversity_Cut
 	fastqc --threads $CORES --outdir ./Fastqc_Trimmed *trimmed* #On server I dont need the paranthesis in CORES but on my desktop I do? wtf?
