@@ -158,7 +158,7 @@ BismarkMake:
 
 
 
-#RNBEADS SCRIPT (analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir
+#RNBEADS SCRIPT (analysis.dir) -> report.dir; (data.dir) -> sample.annotation, dataset.dir; Patched genomes dont work!
 #GET THE TOOLS
 source("https://bioconductor.org/biocLite.R")
 biocLite("RnBeads.mm9")
