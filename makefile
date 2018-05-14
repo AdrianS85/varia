@@ -60,14 +60,14 @@ TrimMake:
 	fastqc --threads ${CORES} --outdir ./Fastqc_Raw *fastq*
 	cd ./Fastqc_Raw 
 	chmod 755 FastQC_aggregate.sh
-	./FastQC_aggregate.sh
+	./multiqc .
 	cd ../
-	# Aggregate the results https://gist.github.com/danielecook/8e9afb2d2df7752efd8a#file-fastqc_aggregate-sh
 #FASTQC FROM RAW DATA
 #TRIM_GALORE
 	ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads files
 	parallel --colsep '\t' "trim_galore --paired  --retain_unpaired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {1} {2}" :::: read_pairs #Using paired, columned list we pair the names
 	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports && rm read_pairs
+	#ADD multiqc HERE?
 #TRIM_GALORE
 #DIVERSITY CUTTING
 	cd Trim_Galore
@@ -75,7 +75,8 @@ TrimMake:
 	parallel --colsep '\t' "python ./trimRRBSdiversityAdaptCustomers.py -1 {1} -2 {2}" :::: read_pairs
 	mv *trimmed* ../Diversity_Cut
 	rm read_pairs; cd ../Diversity_Cut
-	fastqc --threads $CORES --outdir ./Fastqc_Trimmed *trimmed* #On server I dont need the paranthesis in CORES but on my desktop I do? wtf?
+	fastqc --threads $CORES --outdir ./Fastqc_Trimmed *trimmed*
+	#ADD multiqc HERE
 	cd ..
 	mv *fastq.gz ./Raw_Data/ #Moving raw data to appropriate folder
 #DIVERSITY CUTTING
@@ -111,7 +112,7 @@ BismarkMake:
 	mv ./*bt2_PE_report.txt ../Bismark;
 	rm read_pairs
 #MAKE BAM
-#LATER##GENERATE BISMARK REPORTS
+#LATER##GENERATE BISMARK REPORTS - ADD MULTIQC STEP!
 	cd ../Bismark/
 	#mv bismark_summary_report* ./Bismark_Summary
 	parallel ../../Programs/*ismark-*/bam2nuc --genome_folder ../../Genomes/Mouse_mm10/ ::: *_pe.bam
@@ -119,6 +120,7 @@ BismarkMake:
 	parallel --colsep '\t' ../../Programs/*ismark-*/bismark2report --dir ./Bismark_Report ::: *bam #This is final report after everything
 	mv *PE_report.* ./Bismark_Report
 	mv *nucleotide_stats* ./Bismark_Report
+	#ADD multiqc HERE?
 #LATER##GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
