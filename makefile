@@ -226,8 +226,12 @@ result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
                          dir.reports=report_dir)
 
 
-
-
+ADD!
+rnb.execute.low.coverage.masking
+rnb.execute.na.removal
+rnb.execute.high.coverage.removal
+rnb.execute.snp.removal
+rnb.execute.variability.removal
 
 DOWNLOADING ANNOTATIONS:
 https://genome.ucsc.edu/cgi-bin/hgTables
