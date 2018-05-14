@@ -66,8 +66,8 @@ TrimMake:
 #TRIM_GALORE
 	ls *R1* | sort >> r1; ls *R3* | sort >> r2; paste r1 r2 >> read_pairs; rm r1 r2 #Outputs list of paired reads files
 	parallel --colsep '\t' "trim_galore --paired  --retain_unpaired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {1} {2}" :::: read_pairs #Using paired, columned list we pair the names
-	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports && rm read_pairs
-	#ADD multiqc HERE?
+	mv ./Trim_Galore/*trimming_report.txt ./Trim_Galore/Trim_Galore_Raports && rm read_pairs 
+	#ADD multiqc HERE
 #TRIM_GALORE
 #DIVERSITY CUTTING
 	cd Trim_Galore
