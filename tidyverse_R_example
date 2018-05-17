@@ -1,0 +1,75 @@
+source("https://bioconductor.org/biocLite.R")
+biocLite("tidyverse")
+biocLite("foreign")
+biocLite("broom")
+biocLite("DescTools")
+library(tidyverse)
+library(broom)
+library(DescTools)
+
+
+#Load data
+setwd("I:/R Projects/tidyverse")
+Dawid1 <- read_tsv("Dawid1.txt", 
+                   col_names = T, 
+                   col_types = "cccccddddddddddddd", 
+                   locale = locale(decimal_mark = ",")) ## GOOD FUNCTION locale()
+
+#Get data into tidy format
+Dawid2 <- gather(Dawid1, 
+                 key = Geny, 
+                 value = Stosunek,
+                 -ID, -Stadium, -Probka, -Grupa, -Porownanie)  %>%
+  mutate(ID = NULL,
+          Stadium = factor(Stadium), #Change factors to actuall factors
+         Probka = NULL,
+         Grupa = factor(Grupa),
+         Porownanie = NULL,
+         Geny = factor(Geny))
+
+#Adding mean and std devation?
+Shapiro_Wilk <- Dawid2 %>%
+  group_by(Stadium, Geny, Grupa) %>%
+  nest() %>%
+  mutate(
+    Srednia = data %>% map_dbl(map_dbl, mean),
+    Od_std = data %>% map_dbl(~.[[1]] %>% sd)) %>% ## THIS WILL BE MY MAPPING METHOD OF CHOICE FOR NOW
+  unnest()
+
+#I want to study each gene in each developmental stage, so collapse all the other data
+Shapiro_Wilk2 <- Shapiro_Wilk %>%
+  group_by(Stadium, Geny) %>%
+  nest() %>%
+
+#wchodzi do każdego elementu listy i jeśli znajdzie w tym elemencie row w którym Stosunek == NA, to usuwa ten row
+x %>% map(~ filter(.x, !is.na(.x$Stosunek)) ) -> filtered_data 
+
+#Jeżeli wykasowaliśmy cały row Stosunek, to tam nie zastosowywuj anovy
+ANOVA_ <-  map(.x = filtered_data, ~ if (length(.x$Stosunek != 0)) { tidy(aov(Stosunek ~ Grupa, data = .x)) })
+SWA <- Shapiro_Wilk2 %>%  mutate(ANOVA = ANOVA_)
+
+#Sprawdza czy pvalue w ANOVIE jest większe od 0.05 albo nie istnieje i daje FALSE to tych elementów
+ShouldIDunnet <- ANOVA_ %>% map_lgl(~ if (is.null(.x)) { F } else if(.x[[1,6]] < 0.05) { T } else { F })
+SWA2 <- SWA %>%  mutate(Dunnet = ShouldIDunnet)
+
+#Select only rows, które mają istnotnosć ANOVIE
+tests <- SWA2 %>% 
+  filter(Dunnet)
+
+#Make Dunnet test  
+Dunnet_ <-  map(.x = tests$data, ~ DunnettTest(Stosunek ~ Grupa, data = .x, control = "K"))
+FIN <- tests %>% mutate(Dunn = Dunnet_, Dunnet = NULL)
+
+#Wybierzmy rowy z ANOVA o nieistotnym p, żeby podczepić te wyniki pod wyniki istotne
+untests <- SWA2 %>% 
+  filter(!Dunnet) %>% 
+  mutate(Dunn = NA, Dunnet = NULL)
+
+#Połączmy tabelki z istotnym i nieistotnym wynikiem
+FINISH <- rbind(FIN, untests)
+
+#Lets draw this
+Dawid2 %>%  
+  ggplot(aes(x = Geny, y = Stosunek, color = Grupa))+
+    geom_boxplot()+
+    facet_grid(~Stadium)
