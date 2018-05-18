@@ -201,7 +201,7 @@ rnb.options(
   #min.group.size = 1,
   differential.comparison.columns = "treatment")
 #SETUP RUN OPTIONS
-
+exploratory.columns = "tissue_x_treatment",
 
 Sys.getenv()
 Sys.setenv(R_GSCMD = "C:/Program Files/gs/gs9.23/bin/gswin64c.exe")
