@@ -1,4 +1,3 @@
-
 #GET THE TOOLS
 source("https://bioconductor.org/biocLite.R")
 biocLite("RnBeads.mm9")
@@ -20,7 +19,7 @@ library(GOstats)
 setwd("D:/Zycie_zawodowe/Fede_seq/rnbeads")
 data_dir <- paste0(getwd(), "/data_dir")
 dataset_dir <- paste0(data_dir, "/dataset_dir")
-sample_annotation <- paste0(data_dir, "/sample_annotation.csv")
+sample_annotation <- paste0(data_dir, "/sample_annotationL.csv")
 analysis_dir <- paste0(getwd(), "/analysis_dir")
 report_dir <- paste0(analysis_dir, "/reports")
 #SETUP WORKING ENVIROMENT
@@ -34,7 +33,7 @@ parallel.isEnabled()
 
 #SETUP RUN OPTIONS
 rnb.options(
-  analysis.name = "Fede_Placenta1",
+  analysis.name = "Fede_Brain1",
   #import.bed.test.only = T,
   assembly = "mm10",
   region.aggregation = "coverage.weighted",
@@ -57,7 +56,7 @@ rnb.options(
   #filtering.deviation.threshold = 0,
   
   inference = TRUE,
-  inference.targets.sva = "batch",
+  inference.targets.sva = c("prep_batch", "seq_batch"),
   #inference.reference.methylome.column = 
   #inference.max.cell.type.markers = 
   #inference.top.cell.type.markers = 
@@ -75,7 +74,7 @@ rnb.options(
   #differential.permutations = 
   differential.enrichment.go = F,
   differential.adjustment.sva = T,
-  covariate.adjustment.columns = "batch",
+  covariate.adjustment.columns = c("prep_batch", "seq_batch"),
   differential.comparison.columns = "treatment"
   
   #export.to.ewasher
