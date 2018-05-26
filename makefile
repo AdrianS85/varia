@@ -11,8 +11,6 @@ PrepareMake:
 	mkdir Raw_Data Fastqc_Raw Trim_Galore Diversity_Cut Fastq_Screen_Div_Cut Bismark Bismark_Strip_and_Dedup Bedgraph && 
 	mkdir ./Trim_Galore/Trim_Galore_Raports ./Diversity_Cut/Fastqc_Trimmed ./Bismark/Bismark_Report ./Bismark/Bismark_Raw && 
 	mkdir ./Bismark/Bismark_Raw/Bismark_Raw_Bamqc ./Bismark_Strip_and_Dedup/Bismark_Bamqc ./Bismark_Strip_and_Dedup/Strip_and_Dedup_Report && 
-	cp ../Programs/FastQC_aggregate.sh ./Fastqc_Raw/ && 
-	cp ../Programs/FastQC_aggregate.sh ./Diversity_Cut/Fastqc_Trimmed && 
 	cp ../Programs/trimRRBSdiversityAdaptCustomers.py ./Trim_Galore/ && 
 	cp ../Programs/strip_bismark_sam.sh ./Bismark && 
 	cp ../Programs/nugentechnologies*/nudup.py ./Bismark && 
@@ -59,7 +57,6 @@ TrimMake:
 	export CORES=32
 	fastqc --threads ${CORES} --outdir ./Fastqc_Raw *fastq*
 	cd ./Fastqc_Raw 
-	chmod 755 FastQC_aggregate.sh
 	./multiqc .
 	cd ../
 #FASTQC FROM RAW DATA
