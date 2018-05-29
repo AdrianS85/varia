@@ -3,13 +3,19 @@ biocLite("tidyverse")
 biocLite("foreign")
 biocLite("broom")
 biocLite("DescTools")
+biocLite("qdapTools")
+biocLite("devtools")
+biocLite("Hmisc")
+install_github("const-ae/ggsignif")
 library(tidyverse)
 library(broom)
-library(DescTools)
-
+library(DescTools) #tu też jest %nin%??
+library(devtools)
+library(Hmisc) # defines %nin%
+uninstall.packages("qdapTools")
 
 #Load data
-setwd("I:/R Projects/tidyverse")
+setwd("F:/R Projects/tidyverse")
 Dawid1 <- read_tsv("Dawid1.txt", 
                    col_names = T, 
                    col_types = "cccccddddddddddddd", 
@@ -42,7 +48,7 @@ Shapiro_Wilk2 <- Shapiro_Wilk %>%
   nest() %>%
 
 #wchodzi do każdego elementu listy i jeśli znajdzie w tym elemencie row w którym Stosunek == NA, to usuwa ten row
-x %>% map(~ filter(.x, !is.na(.x$Stosunek)) ) -> filtered_data 
+Shapiro_Wilk2$data %>% map(~ filter(.x, !is.na(.x$Stosunek)) ) -> filtered_data 
 
 #Jeżeli wykasowaliśmy cały row Stosunek, to tam nie zastosowywuj anovy
 ANOVA_ <-  map(.x = filtered_data, ~ if (length(.x$Stosunek != 0)) { tidy(aov(Stosunek ~ Grupa, data = .x)) })
@@ -68,8 +74,112 @@ untests <- SWA2 %>%
 #Połączmy tabelki z istotnym i nieistotnym wynikiem
 FINISH <- rbind(FIN, untests)
 
-#Lets draw this
+#Constructing output for normal human read
+#Construct reference columns
+FINISH$ANOVA[[20]][[1,6]]
+out1 <- as.data.frame(FINISH$Stadium)
+out2 <- as.data.frame(FINISH$Geny)
+out12 <- cbind(out1, out2)
+#Add anova result column
+out3 <- FINISH$ANOVA %>% map(~ .x[1,6])
+out12$anova <- as.numeric(out3)
+
+FINISH$Dunn[3]
+
+write_tsv(out12, "out.txt")
+#Add post-hoc columns
+out4 <- FINISH$Dunn %>% map(~ .x[1,6])
+tidy(FINISH$Dunn[[1]])
+
+  #https://stackoverflow.com/questions/12040245/how-to-increase-the-space-between-the-bars-in-a-bar-plot-in-ggplot2?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa    
 Dawid2 %>%  
   ggplot(aes(x = Geny, y = Stosunek, color = Grupa))+
     geom_boxplot()+
-    facet_grid(~Stadium)
+    facet_wrap(~Stadium)+
+    theme(axis.text.x = element_text(angle = 90))
+    scale_x_discrete()
+ggsave("x.pdf", dpi = "300")
+scale = 
+
+
+geom_signif(comparisons = 
+              list(c("compact", "midsize"), 
+                   c("minivan", "suv")),
+            textsize=6)+
+  
+  
+out3 <- as.data.frame.list(FINISH$data)
+out4 <- unlist(out3)
+out5 <- matrix(out4, byrow=F, 65, 4)
+
+out1 <- as.character(FINISH$Stadium)
+out2 <- as.character(FINISH$Geny)
+out3 <- as.data.frame(cbind(out1, out2))
+
+out3 <- as.data.frame(cbind(out1, out2))
+
+FINISH$ANOVA %>% map(~ write_tsv(.x, "1.txt", append = T))
+
+
+
+rm(out3)
+
+#################################################################################
+
+
+setwd("F:/R Projects/tidyverse")
+Dawid2 <- read_tsv("Dawid2.txt", 
+                   col_names = T, 
+                   col_types = "cddddddddddddd", 
+                   locale = locale(decimal_mark = ".")) ## GOOD FUNCTION locale()
+
+#Get data into tidy format
+Dawid3 <- Dawid2 %>%
+  mutate(FLIP = NULL) %>%
+  gather(         key = Geny, 
+                 value = Stosunek,
+                 -Stadium)  %>%
+  mutate(ID = NULL,
+         Stadium = factor(Stadium))
+
+
+
+#I want to study each gene in each developmental stage, so collapse all the other data
+Dawid4 <- Dawid3 %>%
+  group_by(Geny) %>%
+  nest()
+  
+#wchodzi do każdego elementu listy i jeśli znajdzie w tym elemencie row w którym Stosunek == NA, to usuwa ten row
+Dawid4$data %>% map(~ filter(.x, !is.na(.x$Stosunek)) ) -> Dawid4_filtered 
+
+
+#Jeżeli wykasowaliśmy cały row Stosunek, to tam nie zastosowywuj anovy
+ANOVA_ <-  map(.x = Dawid4_filtered, ~ tidy(aov(Stosunek ~ Stadium, data = .x)) )
+Dawid4_filtered_A <- Dawid4 %>%  mutate(ANOVA = ANOVA_)
+
+#Sprawdza czy pvalue w ANOVIE jest większe od 0.05 albo nie istnieje i daje FALSE to tych elementów
+ShouldIDunnet <- ANOVA_ %>% map_lgl(~ if (is.null(.x)) { F } else if(.x[[1,6]] < 0.05) { T } else { F })
+Dawid4_filtered_A_D <- Dawid4_filtered_A %>%  mutate(Dunnet = ShouldIDunnet)
+
+#Select only rows, które mają istnotnosć ANOVIE
+tests <- Dawid4_filtered_A_D %>% 
+  filter(Dunnet)
+
+#Make Tukey test  
+ANOVA_ <-  map(.x = Dawid4_filtered, ~ tidy(TukeyHSD(aov(Stosunek ~ Stadium, data = .x))) )
+Dawid4_filtered_A_D$xxx <- Dawid4_filtered_A_D$ANOVA %>% map(tidy)
+
+Dawid4_filtered_A_D$xxx[1]
+
+
+  
+  
+Dawid3 %>% 
+  mutate(Stadium = factor(Stadium, levels = c("OK", "ZK", "TwoK", "EightK", "BK"))) %>% 
+  mutate(Stadium = recode(Stadium, OK = "o", ZK = "z", TwoK = "t", EightK = "e", BK = "b")) %>% 
+  filter(Geny %in% c("SIRT2", "SIRT1", "FOXO3")) %>% 
+  ggplot(aes(x = Stadium, y = Stosunek, color = Stadium))+
+  geom_boxplot()+
+  facet_wrap(~Geny)+
+  theme(axis.text.x = element_text(angle = 90))
+scale_x_discrete()
