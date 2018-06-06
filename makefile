@@ -132,7 +132,7 @@ BismarkMake:
 	mv *sam_dup_log.txt ../Bismark_Strip_and_Dedup/Strip_and_Dedup_Report
 #DEDUPULICATION OVATION-SPECIFIC
 #BAMQC
-	parallel bamqc ::: *.pe.bam #I think remove
+	parallel bamqc ::: *.bam #I think remove
 	mv *bamqc.html ../Bismark_Raw/Bismark_Raw_Bamqc; mv *bamqc.zip ./Bismark_Raw/Bismark_Raw_Bamqc; #I think remove
 	parallel bamqc ::: *.final.bam
 	mv *bamqc.html ../Bismark_Strip_and_Dedup/Bismark_Bamqc; 
