@@ -131,14 +131,6 @@ BismarkMake:
 	parallel --colsep '\t' "python ./nudup.py --paired-end -f {1} -o {2} {3}" :::: read_pairs #Can also use .bam
 	mv *sam_dup_log.txt ../Bismark_Strip_and_Dedup/Strip_and_Dedup_Report
 #DEDUPULICATION OVATION-SPECIFIC
-#BAMQC
-	parallel bamqc ::: *.bam #I think remove
-	mv *bamqc.html ../Bismark_Raw/Bismark_Raw_Bamqc; mv *bamqc.zip ./Bismark_Raw/Bismark_Raw_Bamqc; #I think remove
-	parallel bamqc ::: *.final.bam
-	mv *bamqc.html ../Bismark_Strip_and_Dedup/Bismark_Bamqc; 
-	mv *bamqc.zip ../Bismark_Strip_and_Dedup/Bismark_Bamqc;
-	
-#BAMQC
 #METHYLATION CALLING
 	ls *sorted.dedup.bam >> r2 && cp r2 r1_1 && sed 's/sorted.dedup.bam$/sorted.dedup.final.bam/' r1_1 >> r1 && paste r1 r2 >> read_pairs && rm r1 r1_1 r2
 	parallel --colsep '\t' samtools sort -n -o {1} {2} :::: read_pairs ## Needs to sort the files cause they are desorted by nugen deduplication script
@@ -148,6 +140,12 @@ BismarkMake:
 #extraction. Please use an unsorted file instead or sort the file using 'samtools sort -n' (by read name). This may also occur using                                      
 #samtools merge as it does not guarantee the read order. To properly merge files please use 'samtools merge -n' or 'samtools cat'.
 #METHYLATION CALLING
+#BAMQC
+	parallel bamqc ::: *.final.bam
+	mv *bamqc.html ../Bismark_Strip_and_Dedup/Bismark_Bamqc; 
+	mv *bamqc.zip ../Bismark_Strip_and_Dedup/Bismark_Bamqc;
+	
+#BAMQC
 #CLEANUP
 	mv *sam.sorted.dedup* ../Bismark_Strip_and_Dedup
 	mv *sam.sorted.markdup* ../Bismark_Strip_and_Dedup
