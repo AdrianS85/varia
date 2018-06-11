@@ -118,6 +118,7 @@ BismarkMake:
 	mv *PE_report.* ./Bismark_Report
 	mv *nucleotide_stats* ./Bismark_Report
 	#ADD multiqc HERE
+	#ADD bamqc HERE
 #LATER##GENERATE BISMARK REPORTS
 #STRIP OVATION-SPECIFIC
 	ls *.bam >> r1; cp r1 r2; sed 's/\.bam$/.sam/' r2 >> r3; paste r3 r1 >> read_pairs; rm r1 r2 r3 # Getting nice names for sam files
