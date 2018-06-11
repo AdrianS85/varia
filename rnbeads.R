@@ -49,6 +49,7 @@ rnb.options(
   qc.coverage.violins = FALSE,
   qc.coverage.threshold.plot = c(1, 2, 3, 5, 10),
   
+  filtering.snp = "no",
   filtering.missing.value.quantile = 0.4,
   #filtering.coverage.threshold = 5,
   filtering.low.coverage.masking = T,
