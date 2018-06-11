@@ -4,7 +4,8 @@ print:
 
 #for analyzing all the files in given folder; make fastqcMake; put all needed scripts into "Programs" folder; questions: czy napewno dobre kodowanie?,
 #Struktura folderów: Programs, Genomes, #foldery_z_rawseqfiles#
-#!! ADD nohup TO PREVENT SHUTTING DOWN PROCESSES AFTER EXITING TERMINAL
+#!! append output 1 i 2 do plików reportowych!
+
 PrepareMake: 
 #PREPARE FOLDERS
 	export CORES=32 #This is global variable
