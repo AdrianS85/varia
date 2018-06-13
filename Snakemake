@@ -1,12 +1,12 @@
 import glob
 
 SAMPLE = ["B_Biopsy_53_S7_R2_001.fastq.gz", "B_Biopsy_50_S3_R2_001.fastq.gz"]
-SAMPLE2 = [glob.glob("*R2*")]
-
+SAMPLE2 = glob.glob("*R2*")
+SAMPLE3, = glob_wildcards("{xxx}_R2_001.fastq.gz")
 
 rule xxx:
         input:
-                SAMPLE2
+                expand("{xxx}_R2_001.fastq.gz", xxx=SAMPLE3)
         shell:
-                "touch ass.txt && fastqc {input}"
+                "fastqc {input}"
         
