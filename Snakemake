@@ -1,1 +1,12 @@
+import glob
 
+SAMPLE = ["B_Biopsy_53_S7_R2_001.fastq.gz", "B_Biopsy_50_S3_R2_001.fastq.gz"]
+SAMPLE2 = [glob.glob("*R2*")]
+
+
+rule xxx:
+        input:
+                SAMPLE2
+        shell:
+                "touch ass.txt && fastqc {input}"
+        
