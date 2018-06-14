@@ -106,10 +106,10 @@ result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
                          data.type="bs.bed.dir", 
                          dir.reports=report_dir) ## results in a list with two elements: the dataset (rnb.set) and a report
 RNBset <- result$rnb.set
-rnb.run.qc(RNBset, report_dir)
-rnb.run.preprocessing(RNBset, report_dir)
-rnb.run.inference(RNBset, report_dir)
-rnb.run.exploratory(RNBset, report_dir)
+QC_RNBset <- rnb.run.qc(RNBset, report_dir) ## Outputs just report i think
+PP_RNBset <- rnb.run.preprocessing(QC_RNBset, report_dir)
+I_RNBset <- rnb.run.inference(PP_RNBset$rnb.set, report_dir)
+E_RNBset <- rnb.run.exploratory(I_RNBset$rnb.set, report_dir)
 rnb.run.differential(RNBset, report_dir)
 rnb.run.tnt(RNBset, report_dir)
 
