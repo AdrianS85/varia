@@ -38,36 +38,36 @@ rnb.options(
   assembly = "mm10",
   region.aggregation = "coverage.weighted",
   identifiers.column="sampleID",
-  
+  #IMPORT
   #import.default.data.type = "bs.bed.dir",
   import.bed.style = "bismarkCov",
   import.gender.prediction = F,
   #import.bed.frame.shift
-  
+  #QC
   qc.coverage.plots = TRUE,
   qc.coverage.histograms = TRUE,
   qc.coverage.violins = FALSE,
   qc.coverage.threshold.plot = c(1, 2, 3, 5, 10),
-  
+  #FILTERING
   filtering.snp = "no",
   filtering.missing.value.quantile = 0.4,
   #filtering.coverage.threshold = 5,
   filtering.low.coverage.masking = T,
   #filtering.high.coverage.outliers = F, 
   #filtering.deviation.threshold = 0,
-  
+  #INFERENCE
   inference = TRUE,
   inference.targets.sva = c("prep_batch", "seq_batch"),
   #inference.reference.methylome.column = 
   #inference.max.cell.type.markers = 
   #inference.top.cell.type.markers = 
-  
+  #EXPLORATORY
   #exploratory.columns
   #exploratory.gene.symbols  = 
   #exploratory.deviation.plots = 
   #exploratory.custom.loci.bed = 
   exploratory.clustering.top.sites = 200,
-  
+  #DIFFERENTIAL
   #min.group.size = 1,
   #differential.comparison.columns.all.pairwise = 
   #differential.variability = 
@@ -77,7 +77,7 @@ rnb.options(
   differential.adjustment.sva = T,
   covariate.adjustment.columns = c("prep_batch", "seq_batch"),
   differential.comparison.columns = "treatment"
-  
+  #OTHER
   #export.to.ewasher
   )
 #SETUP RUN OPTIONS
@@ -101,12 +101,13 @@ rnb.run.analysis(
 #RUN
 
 
-#STEP-BY-STEP DEBUGGING
+#STEP-BY-STEP ANALYSIS
+## DATA_IMPORT -> (QUALITY_CONTROL, PREPROCESSING), PREPROCESSING -> INFERENCE -> (EXPLORATION, DIFFERENTIAL)
 result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
                          data.type="bs.bed.dir", 
                          dir.reports=report_dir) ## results in a list with two elements: the dataset (rnb.set) and a report
 RNBset <- result$rnb.set
-QC_RNBset <- rnb.run.qc(RNBset, report_dir) ## Outputs just report i think
+rnb.run.qc(RNBset, report_dir) ## Outputs just report i think
 PP_RNBset <- rnb.run.preprocessing(QC_RNBset, report_dir)
 I_RNBset <- rnb.run.inference(PP_RNBset$rnb.set, report_dir)
 E_RNBset <- rnb.run.exploratory(I_RNBset$rnb.set, report_dir)
