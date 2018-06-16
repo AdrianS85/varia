@@ -109,9 +109,9 @@ result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
 RNBset <- result$rnb.set
 rnb.run.qc(RNBset, report_dir) ## Outputs just report i think
 PP_result <- rnb.run.preprocessing(result$rnb.set, report_dir)
-I_RNBset <- rnb.run.inference(PP_RNBset$rnb.set, report_dir)
-E_RNBset <- rnb.run.exploratory(I_RNBset$rnb.set, report_dir)
-rnb.run.differential(RNBset, report_dir)
+I_result <- rnb.run.inference(PP_result$rnb.set, report_dir)
+E_result <- rnb.run.exploratory(I_result$rnb.set, report_dir)
+D_result <- rnb.run.differential(I_result$rnb.set, report_dir)
 rnb.run.tnt(RNBset, report_dir)
 
 Sys.getenv()
