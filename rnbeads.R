@@ -2,6 +2,7 @@
 source("https://bioconductor.org/biocLite.R")
 biocLite("RnBeads.mm9")
 biocLite("RnBeads.mm10")
+biocLite("BSgenome.Mmusculus.UCSC.mm10")
 biocLite("RnBeads")
 biocLite("doParallel")
 biocLite("ggbio")
@@ -107,7 +108,7 @@ result <- rnb.run.import(data.source=c(dataset_dir, sample_annotation),
                          data.type="bs.bed.dir", 
                          dir.reports=report_dir) ## results in a list with two elements: the dataset (rnb.set) and a report
 RNBset <- result$rnb.set
-rnb.run.qc(RNBset, report_dir) ## Outputs just report i think
+rnb.run.qc(result$rnb.set, report_dir) ## Outputs just report i think
 PP_result <- rnb.run.preprocessing(result$rnb.set, report_dir)
 I_result <- rnb.run.inference(PP_result$rnb.set, report_dir)
 E_result <- rnb.run.exploratory(I_result$rnb.set, report_dir)
