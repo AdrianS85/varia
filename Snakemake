@@ -10,3 +10,11 @@ rule xxx:
         shell:
                 "fastqc {input}"
         
+shell("""
+test()
+{{
+     echo bla
+}}
+export -f
+echo '1\\n2\\n3' | parallel -k 'test'
+""")
