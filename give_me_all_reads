@@ -9,6 +9,17 @@ READS <- subset(raw, raw$V2)
 Test25percent <- length(READS$V1)/length(raw$V1) # Check if number of reads is 25% of number of lines in fastq file
 
 
+### Read1
+READS_unique <- as.data.table(table(READS))  # Colapse reads and get their counts
+BSPP_DNTT_cg19935065 <- subset(READS_unique, like(READS_unique$V1, "^TACCCATACCTTAAAACAA.+$"))
+BSPP_ANKRD34C_cg03399905 <- subset(READS_unique, like(READS_unique$V1, "^(ACTAAACTCCGAAACTC|ACTAAACTCCAAAACTC).+$"))
+BSPP_POU4F2_cg02650266 <- subset(READS_unique, like(READS_unique$V1, "^CCTATCCACCCCTAACCTC.+$"))
+REST_OF_PROBES <- subset(READS_unique, !like(READS_unique$V1, "^(ACTAAACTCCGAAACTC|ACTAAACTCCAAAACTC|CCTATCCACCCCTAACCTC|TACCCATACCTTAAAACAA).+$"))
+FOUR_READ_PROBES <- subset(REST_OF_PROBES, REST_OF_PROBES$N <= 4) 
+FOUR_READ_PROBES$names <- str_sub(FOUR_READ_PROBES$V1, start = 1L, end = 15L) ###Poszereguj po pierwszych 15 literach - to chyba będzie się równało szeregowaniu po sondach
+FOUR_READ_PROBES_Earms <- as.data.table(table(FOUR_READ_PROBES$names)) 
+
+
 ### Read2
 READS_unique <- as.data.table(table(READS))  # Colapse reads and get their counts
 BSPP_DNTT_cg19935065 <- subset(READS_unique, like(READS_unique$V1, "^GTTGGGATTATAGGTGTGAGT.+$"))
