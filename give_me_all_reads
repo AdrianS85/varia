@@ -1,0 +1,32 @@
+library(data.table)
+setwd("C:/Users/arturs/Downloads")
+raw <- fread("BSPP6-6-91_S6_L001_R2_001.fastq", header = F)
+
+
+### Take only reads from fastq file
+raw$V2 <- like(raw$V1, "^[A|T|C|G]+$") 
+READS <- subset(raw, raw$V2)
+Test25percent <- length(READS$V1)/length(raw$V1) # Check if number of reads is 25% of number of lines in fastq file
+
+
+### Read2
+READS_unique <- as.data.table(table(READS))  # Colapse reads and get their counts
+BSPP_DNTT_cg19935065 <- subset(READS_unique, like(READS_unique$V1, "^GTTGGGATTATAGGTGTGAGT.+$"))
+BSPP_ANKRD34C_cg03399905 <- subset(READS_unique, like(READS_unique$V1, "^TTGAGAAATGATGGGAGAAGTAT.+$"))
+BSPP_POU4F2_cg02650266 <- subset(READS_unique, like(READS_unique$V1, "^TAGAAGGGGGTTAAGGATTAT.+$"))
+REST_OF_PROBES <- subset(READS_unique, !like(READS_unique$V1, "^(GTTGGGATTATAGGTGTGAGT|TTGAGAAATGATGGGAGAAGTAT|TAGAAGGGGGTTAAGGATTAT).+$"))
+FOUR_READ_PROBES <- subset(REST_OF_PROBES, REST_OF_PROBES$N <= 4) 
+FOUR_READ_PROBES$names <- str_sub(FOUR_READ_PROBES$V1, start = 1L, end = 15L) ###Poszereguj po pierwszych 15 literach - to chyba będzie się równało szeregowaniu po sondach
+FOUR_READ_PROBES_Earms <- as.data.table(table(FOUR_READ_PROBES$names)) 
+  
+  
+### Raport
+RAPORT <- NULL
+RAPORT$DNTT_sum <- sum(BSPP_DNTT_cg19935065$N)
+RAPORT$ANKRD34C_sum <- sum(BSPP_ANKRD34C_cg03399905$N)
+RAPORT$POU4F2_sum <- sum(BSPP_POU4F2_cg02650266$N)
+RAPORT$TOTAL_DAP_PROBES_sum <- RAPORT$DNTT_sum + RAPORT$ANKRD34C_sum + RAPORT$POU4F2_sum
+RAPORT$TOTAL_DAP_PROBES_percentage <- RAPORT$TOTAL_DAP_PROBES_sum/length(READS$V1)
+RAPORT$FOUR_READ_sum <- length(FOUR_READ_PROBES$V1)
+RAPORT$TOTAL_FOUR_READ_percentage <- RAPORT$FOUR_READ_sum/length(READS$V1)
+RAPORT <- as.data.frame(RAPORT)
