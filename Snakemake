@@ -1,20 +1,48 @@
-import glob
+SAMPLES, = glob_wildcards("{x}.fastq.gz")
+BASE_NAME, = glob_wildcards("{b}_R1_001.fastq.gz")
+RUNID = "_test"
 
-SAMPLE = ["B_Biopsy_53_S7_R2_001.fastq.gz", "B_Biopsy_50_S3_R2_001.fastq.gz"]
-SAMPLE2 = glob.glob("*R2*")
-SAMPLE3, = glob_wildcards("{xxx}_R2_001.fastq.gz")
-
-rule xxx:
+rule all:
         input:
-                expand("{xxx}_R2_001.fastq.gz", xxx=SAMPLE3)
+                expand("./Fastqc_Raw/{x}_fastqc.{ext}", x=SAMPLES, ext=['zip', 'html']),
+                expand("./Diversity/{b}_R1_001_val_1.fq_trimmed.fq.gz", b=BASE_NAME),
+                expand("./Diversity/{b}_R3_001_val_2.fq_trimmed.fq.gz", b=BASE_NAME)
+
+#3.30 min
+rule Raw_Fastqc:
+        input:
+                "{x}.fastq.gz"
+        output:
+                "./Fastqc_Raw/{x}_fastqc.zip",
+                "./Fastqc_Raw/{x}_fastqc.html"
         shell:
-                "fastqc {input}"
-        
-shell("""
-test()
-{{
-     echo bla
-}}
-export -f
-echo '1\\n2\\n3' | parallel -k 'test'
-""")
+                "fastqc --outdir ./Fastqc_Raw {input} &>> ./Fastqc_Raw/fastqc_raport{RUNID}.txt"
+
+#30 min
+rule Trim:
+        input:
+                R1 = "{b}_R1_001.fastq.gz",
+                R2 = "{b}_R3_001.fastq.gz"
+        output:
+                "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
+                "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
+        shell:
+                "trim_galore --paired --output_dir ./Trim_Galore"
+                " -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {input.R1} {input.R2}"
+                " &>> ./Trim_Galore/trim_raport{RUNID}.txt"
+
+#90 min
+rule Diversity:
+        input:
+                V1 = "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
+                V2 = "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
+        params:
+                CP1 = "{b}_R1_001_val_1.fq_trimmed.fq.gz",
+                CP2 = "{b}_R3_001_val_2.fq_trimmed.fq.gz"
+        output:
+                "./Diversity/{b}_R1_001_val_1.fq_trimmed.fq.gz",
+                "./Diversity/{b}_R3_001_val_2.fq_trimmed.fq.gz"
+        shell:
+                "python ./Programs/trimRRBSdiversityAdaptCustomers.py -1 {input.V1} -2 {input.V2}"
+                " &>> ./Diversity/div_raport{RUNID}.txt"
+                " && mv {params.CP1} {params.CP2} ./Diversity/"
