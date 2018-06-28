@@ -24,8 +24,8 @@ rule Trim:
                 R1 = "{b}_R1_001.fastq.gz",
                 R2 = "{b}_R3_001.fastq.gz"
         output:
-                "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
-                "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
+                T1 = "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
+                T2 = "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
         shell:
                 "trim_galore --paired --output_dir ./Trim_Galore"
                 " -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {input.R1} {input.R2}"
@@ -34,11 +34,11 @@ rule Trim:
 #90 min
 rule Diversity:
         input:
-                V1 = "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
-                V2 = "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
+                V1 = rules.Trim.output.T1,
+                V2 = rules.Trim.output.T2
         params:
-                CP1 = "{b}_R1_001_val_1.fq_trimmed.fq.gz",
-                CP2 = "{b}_R3_001_val_2.fq_trimmed.fq.gz"
+                CP1 = "./Trim_Galore/{b}_R1_001_val_1.fq_trimmed.fq.gz",
+                CP2 = "./Trim_Galore/{b}_R3_001_val_2.fq_trimmed.fq.gz"
         output:
                 "./Diversity/{b}_R1_001_val_1.fq_trimmed.fq.gz",
                 "./Diversity/{b}_R3_001_val_2.fq_trimmed.fq.gz"
