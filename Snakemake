@@ -1,12 +1,15 @@
 SAMPLES, = glob_wildcards("{x}.fastq.gz")
-BASE_NAME, = glob_wildcards("{b}_R1_001.fastq.gz")
+BASE_NAME, = glob_wildcards("{b}_R1_002.fastq.gz")
 RUNID = "_test"
 
 rule all:
         input:
                 expand("./Fastqc_Raw/{x}_fastqc.{ext}", x=SAMPLES, ext=['zip', 'html']),
-                expand("./Diversity/{b}_R1_001_val_1.fq_trimmed.fq.gz", b=BASE_NAME),
-                expand("./Diversity/{b}_R3_001_val_2.fq_trimmed.fq.gz", b=BASE_NAME)
+                expand("./Diversity/{b}_R1_002_val_1.fq_trimmed.fq.gz", b=BASE_NAME),
+                expand("./Diversity/{b}_R3_002_val_2.fq_trimmed.fq.gz", b=BASE_NAME),
+                expand("./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
+                expand("./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html'])
+
 
 #3.30 min
 rule Raw_Fastqc:
@@ -21,11 +24,11 @@ rule Raw_Fastqc:
 #30 min
 rule Trim:
         input:
-                R1 = "{b}_R1_001.fastq.gz",
-                R2 = "{b}_R3_001.fastq.gz"
+                R1 = "{b}_R1_002.fastq.gz",
+                R2 = "{b}_R3_002.fastq.gz"
         output:
-                T1 = "./Trim_Galore/{b}_R1_001_val_1.fq.gz",
-                T2 = "./Trim_Galore/{b}_R3_001_val_2.fq.gz"
+                OT1 = "./Trim_Galore/{b}_R1_002_val_1.fq.gz",
+                OT2 = "./Trim_Galore/{b}_R3_002_val_2.fq.gz"
         shell:
                 "trim_galore --paired --output_dir ./Trim_Galore"
                 " -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {input.R1} {input.R2}"
@@ -34,15 +37,28 @@ rule Trim:
 #90 min
 rule Diversity:
         input:
-                V1 = rules.Trim.output.T1,
-                V2 = rules.Trim.output.T2
+                ID1 = rules.Trim.output.OT1,
+                ID2 = rules.Trim.output.OT2
         params:
-                CP1 = "./Trim_Galore/{b}_R1_001_val_1.fq_trimmed.fq.gz",
-                CP2 = "./Trim_Galore/{b}_R3_001_val_2.fq_trimmed.fq.gz"
+                PD1 = "./Trim_Galore/{b}_R1_002_val_1.fq_trimmed.fq.gz",
+                PD2 = "./Trim_Galore/{b}_R3_002_val_2.fq_trimmed.fq.gz"
         output:
-                "./Diversity/{b}_R1_001_val_1.fq_trimmed.fq.gz",
-                "./Diversity/{b}_R3_001_val_2.fq_trimmed.fq.gz"
+                OD1 = "./Diversity/{b}_R1_002_val_1.fq_trimmed.fq.gz",
+                OD2 = "./Diversity/{b}_R3_002_val_2.fq_trimmed.fq.gz"
         shell:
-                "python ./Programs/trimRRBSdiversityAdaptCustomers.py -1 {input.V1} -2 {input.V2}"
+                "python ./Programs/trimRRBSdiversityAdaptCustomers.py -1 {input.ID1} -2 {input.ID2}"
                 " &>> ./Diversity/div_raport{RUNID}.txt"
-                " && mv {params.CP1} {params.CP2} ./Diversity/"
+                " && mv {params.PD1} {params.PD2} ./Diversity/"
+                #" && fastqc --outdir ./Fastqc_Div {output.OD1} &>> ./Fastqc_Div/fastqc_div_raport{RUNID}.txt"
+                #" && fastqc --outdir ./Fastqc_Div {output.OD2} &>> ./Fastqc_Div/fastqc_div_raport{RUNID}.txt"
+
+rule Div_Fastqc:
+        input:
+                IDF = rules.Diversity.output
+        output:
+                "./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.zip",
+                "./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.html",
+                "./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.zip",
+                "./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.html"
+        shell:
+                "fastqc --outdir ./Div_Fastqc {input} &>> ./Div_Fastqc/div_fastqc_raport{RUNID}.txt"
