@@ -7,8 +7,7 @@ rule all:
                 expand("./Fastqc_Raw/{x}_fastqc.{ext}", x=SAMPLES, ext=['zip', 'html']),
                 expand("./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
                 expand("./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
-        #       expand("./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam", b=BASE_NAME),
-                expand("./Deduped/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam", b=BASE_NAME)
+                expand("./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz", b=BASE_NAME)
 
 #3.30 min
 rule Raw_Fastqc:
@@ -94,3 +93,12 @@ rule Deduplication:
                 " && python ./Programs/nugentechnologies-nudup-468c62e/nudup.py --paired-end -f {params.PDD2} -o {params.PDD4} {params.PDD3}"
                 " && samtools sort -n -o {params.PDD6} {params.PDD5}"
                 " && mv {params.PDD6} ./Deduped"
+                
+rule Calling:
+        input:
+                rules.Deduplication.output
+        output:
+                "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz"
+        shell:
+                "./Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output Bedgraph --paired-end --comprehensive --merge_non_CpG {input}"                
+                
