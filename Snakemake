@@ -5,11 +5,10 @@ RUNID = "_test"
 rule all:
         input:
                 expand("./Fastqc_Raw/{x}_fastqc.{ext}", x=SAMPLES, ext=['zip', 'html']),
-                expand("./Diversity/{b}_R1_002_val_1.fq_trimmed.fq.gz", b=BASE_NAME),
-                expand("./Diversity/{b}_R3_002_val_2.fq_trimmed.fq.gz", b=BASE_NAME),
                 expand("./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
-                expand("./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html'])
-
+                expand("./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
+        #       expand("./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam", b=BASE_NAME),
+                expand("./Deduped/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam", b=BASE_NAME)
 
 #3.30 min
 rule Raw_Fastqc:
@@ -62,3 +61,36 @@ rule Div_Fastqc:
                 "./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.html"
         shell:
                 "fastqc --outdir ./Div_Fastqc {input} &>> ./Div_Fastqc/div_fastqc_raport{RUNID}.txt"
+
+rule Bismark:
+        input:
+                IB1 = rules.Diversity.output.OD1,
+                IB2 = rules.Diversity.output.OD2
+        params:
+                PB1 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam",
+                PB2 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_PE_report.txt"
+        output:
+                "./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam"
+        shell:
+                "./Programs/*ismark-*/bismark --bowtie2 --genome_folder ./Genomes/Mouse/ -1 {input.IB1} -2 {input.IB2}"
+                " &>> ./Bismark_Raw/bis_raport{RUNID}.txt"
+                " && mv {params.PB1} {params.PB2} ./Bismark_Raw/"
+
+rule Deduplication:
+        input:
+                rules.Bismark.output
+        params:
+                PDD1 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam",
+                PDD2 = "{b}_R2_002.fastq.gz",
+                PDD3 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam",
+                PDD4 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped",
+                PDD5 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam",
+                PDD6 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam"
+        output:
+                "./Deduped/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam"
+        shell:
+                "samtools view -h -o {params.PDD1} {input}"
+                " && ./Programs/strip_bismark_sam.sh {params.PDD1}"
+                " && python ./Programs/nugentechnologies-nudup-468c62e/nudup.py --paired-end -f {params.PDD2} -o {params.PDD4} {params.PDD3}"
+                " && samtools sort -n -o {params.PDD6} {params.PDD5}"
+                " && mv {params.PDD6} ./Deduped"
