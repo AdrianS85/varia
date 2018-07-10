@@ -1,36 +1,53 @@
-SAMPLES, = glob_wildcards("{x}.fastq.gz")
+SHORT_NAME, = glob_wildcards("{x}.fastq.gz")
 BASE_NAME, = glob_wildcards("{b}_R1_002.fastq.gz")
 RUNID = "_test"
 
+### CLEAN UP: rm -Rf Bismark_Raw/ Div_Fastqc/ Diversity/ Fastqc_Raw/ Trim_Galore/ Deduplicated Bedgraph Bismark_Raw_Reports Final_Bamqc Reports
+
+report: "Reports/workflow.rst"
+
 rule all:
         input:
-                expand("./Fastqc_Raw/{x}_fastqc.{ext}", x=SAMPLES, ext=['zip', 'html']),
-                expand("./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
-                expand("./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
-                expand("./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz", b=BASE_NAME)
+                expand("./Reports/Raw_Fastqc/{x}_fastqc.{ext}", x=SHORT_NAME, ext=['zip', 'html']),
+                expand("./Trim_Galore/{b}_R1_002_val_1.fq.gz", b=BASE_NAME),
+                expand("./Trim_Galore/{b}_R3_002_val_2.fq.gz", b=BASE_NAME),
+                expand("./Diversity/{b}_R1_002_val_1.fq_trimmed.fq.gz", b=BASE_NAME),
+                expand("./Diversity/{b}_R3_002_val_2.fq_trimmed.fq.gz", b=BASE_NAME),
+                expand("./Reports/Diversity_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
+                expand("./Reports/Diversity_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.{ext}", b=BASE_NAME, ext=['zip', 'html']),
+                expand("./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam", b=BASE_NAME),
+                expand("./Deduplicated/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam", b=BASE_NAME),
+                expand("./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz", b=BASE_NAME),
+                expand("./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bedGraph.gz",  b=BASE_NAME)
 
 #3.30 min
 rule Raw_Fastqc:
         input:
-                "{x}.fastq.gz"
+                IRF = "{x}.fastq.gz"
         output:
-                "./Fastqc_Raw/{x}_fastqc.zip",
-                "./Fastqc_Raw/{x}_fastqc.html"
+                ORF1 = "./Reports/Raw_Fastqc/{x}_fastqc.zip",
+                ORF2 = "./Reports/Raw_Fastqc/{x}_fastqc.html"
         shell:
-                "fastqc --outdir ./Fastqc_Raw {input} &>> ./Fastqc_Raw/fastqc_raport{RUNID}.txt"
+                "fastqc --outdir ./Reports/Raw_Fastqc {input} &>> ./Reports/Raw_Fastqc/fastqc_report_{RUNID}.txt"
 
 #30 min
 rule Trim:
         input:
                 R1 = "{b}_R1_002.fastq.gz",
                 R2 = "{b}_R3_002.fastq.gz"
+        params:
+                PT1 = "./Trim_Galore/{b}_R1_002.fastq.gz_trimming_report.txt",
+                PT2 = "./Trim_Galore/{b}_R3_002.fastq.gz_trimming_report.txt"
         output:
                 OT1 = "./Trim_Galore/{b}_R1_002_val_1.fq.gz",
-                OT2 = "./Trim_Galore/{b}_R3_002_val_2.fq.gz"
+                OT2 = "./Trim_Galore/{b}_R3_002_val_2.fq.gz",
+                OT3 = "./Reports/Trim_Galore/{b}_R1_002.fastq.gz_trimming_report.txt",
+                OT4 = "./Reports/Trim_Galore/{b}_R3_002.fastq.gz_trimming_report.txt",
         shell:
                 "trim_galore --paired --output_dir ./Trim_Galore"
                 " -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC {input.R1} {input.R2}"
-                " &>> ./Trim_Galore/trim_raport{RUNID}.txt"
+                " &>> ./Reports/Trim_Galore/trim_report_{RUNID}.txt"
+                " && mv {params.PT1} {params.PT2} Reports/Trim_Galore/"
 
 #90 min
 rule Diversity:
@@ -39,27 +56,25 @@ rule Diversity:
                 ID2 = rules.Trim.output.OT2
         params:
                 PD1 = "./Trim_Galore/{b}_R1_002_val_1.fq_trimmed.fq.gz",
-                PD2 = "./Trim_Galore/{b}_R3_002_val_2.fq_trimmed.fq.gz"
+                PD2 = "./Trim_Galore/{b}_R3_002_val_2.fq_trimmed.fq.gz",
         output:
                 OD1 = "./Diversity/{b}_R1_002_val_1.fq_trimmed.fq.gz",
                 OD2 = "./Diversity/{b}_R3_002_val_2.fq_trimmed.fq.gz"
         shell:
                 "python ./Programs/trimRRBSdiversityAdaptCustomers.py -1 {input.ID1} -2 {input.ID2}"
-                " &>> ./Diversity/div_raport{RUNID}.txt"
+                " &>> ./Reports/div_report_{RUNID}.txt" #######################################
                 " && mv {params.PD1} {params.PD2} ./Diversity/"
-                #" && fastqc --outdir ./Fastqc_Div {output.OD1} &>> ./Fastqc_Div/fastqc_div_raport{RUNID}.txt"
-                #" && fastqc --outdir ./Fastqc_Div {output.OD2} &>> ./Fastqc_Div/fastqc_div_raport{RUNID}.txt"
 
 rule Div_Fastqc:
         input:
                 IDF = rules.Diversity.output
         output:
-                "./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.zip",
-                "./Div_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.html",
-                "./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.zip",
-                "./Div_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.html"
+                ODF1 = "./Reports/Diversity_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.zip",
+                ODF2 = "./Reports/Diversity_Fastqc/{b}_R1_002_val_1.fq_trimmed_fastqc.html",
+                ODF3 = "./Reports/Diversity_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.zip",
+                ODF4 = "./Reports/Diversity_Fastqc/{b}_R3_002_val_2.fq_trimmed_fastqc.html"
         shell:
-                "fastqc --outdir ./Div_Fastqc {input} &>> ./Div_Fastqc/div_fastqc_raport{RUNID}.txt"
+                "fastqc --outdir ./Reports/Diversity_Fastqc {input} &>> ./Reports/Diversity_Fastqc/div_fastqc_report_{RUNID}.txt"
 
 rule Bismark:
         input:
@@ -67,38 +82,69 @@ rule Bismark:
                 IB2 = rules.Diversity.output.OD2
         params:
                 PB1 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam",
-                PB2 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_PE_report.txt"
+                PB2 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_PE_report.txt",
+                PB3 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.nucleotide_stats.txt",
+                PB4 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_PE_report.html",
+                PB5 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe_bamqc.html",
+                PB6 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe_bamqc.zip"
         output:
-                "./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam"
+                OB1 = "./Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.bam",
+                OB2 = "./Reports/Bismark_Raw/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_PE_report.txt"
         shell:
-                "./Programs/*ismark-*/bismark --bowtie2 --genome_folder ./Genomes/Mouse/ -1 {input.IB1} -2 {input.IB2}"
-                " &>> ./Bismark_Raw/bis_raport{RUNID}.txt"
-                " && mv {params.PB1} {params.PB2} ./Bismark_Raw/"
+                "./Programs/*ismark-*/bismark --bowtie2 --genome_folder ./Genome/ -1 {input.IB1} -2 {input.IB2}"
+                " &>> ./Reports/Bismark_Raw/bis_report_{RUNID}.txt"
+                " && ./Programs/*ismark-*/bam2nuc --genome_folder ./Genome/ {params.PB1}"
+                " && ./Programs/*ismark-*/bismark2summary {params.PB1}"
+                " && ./Programs/*ismark-*/bismark2report {params.PB1}"
+                " && bamqc {params.PB1}"
+                " && mv {params.PB1} ./Bismark_Raw/"
+                " && mv {params.PB2} {params.PB3} {params.PB4} {params.PB5} {params.PB6} ./Reports/Bismark_Raw/"
 
 rule Deduplication:
         input:
-                rules.Bismark.output
+                rules.Bismark.output.OB1
         params:
                 PDD1 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam",
                 PDD2 = "{b}_R2_002.fastq.gz",
                 PDD3 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam",
                 PDD4 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped",
                 PDD5 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam",
-                PDD6 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam"
+                PDD6 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam",
+                PDD7 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped_dup_log.txt",
+                PDD8 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.markdup.bam",
+                PDD9 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted_bamqc.html",
+                PDD10 = "{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted_bamqc.zip"
         output:
-                "./Deduped/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam"
+                ODD1 = "./Deduplicated/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam",
+                ODD2 = "./Reports/Deduplication/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted_bamqc.zip"
         shell:
-                "samtools view -h -o {params.PDD1} {input}"
-                " && ./Programs/strip_bismark_sam.sh {params.PDD1}"
+                "samtools view -h -o {params.PDD1} {input} &>> ./Reports/Deduplication/bam_to_sam_report_{RUNID}.txt"
+                " && ./Programs/strip_bismark_sam.sh {params.PDD1} &>> ./Reports/Deduplication/strip_report_{RUNID}.txt"
+                " && rm {params.PDD1}"
                 " && python ./Programs/nugentechnologies-nudup-468c62e/nudup.py --paired-end -f {params.PDD2} -o {params.PDD4} {params.PDD3}"
-                " && samtools sort -n -o {params.PDD6} {params.PDD5}"
-                " && mv {params.PDD6} ./Deduped"
-                
+                " &>> ./Reports/Deduplication/nudup_report_{RUNID}.txt"
+                " && rm {params.PDD3}"
+                " && samtools sort -n -o {params.PDD6} {params.PDD5} &>> ./Reports/Deduplication/sort_report_{RUNID}.txt"
+                " && rm {params.PDD5} {params.PDD8}"
+                u &&
+                " && mv {params.PDD6} ./Deduplicated"
+                " && mv {params.PDD7} {params.PDD9} {params.PDD10} ./Reports/Deduplication/"
+
 rule Calling:
         input:
-                rules.Deduplication.output
+                rules.Deduplication.output.ODD1
+        params:
+                PC1 = "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.M-bias.txt",
+                PC2 = "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted_splitting_report.txt",
+                PC3 = "./Bedgraph/CpG_context_{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.txt",
+                PC4 = "./Bedgraph/Non_CpG_context_{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.txt"
         output:
-                "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz"
+                OC1 = "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bismark.cov.gz",
+                OC2 = "./Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bedGraph.gz",
+                OC3 = "./Reports/Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.M-bias.txt",
+                OC4 = "./Reports/Bedgraph/{b}_R1_002_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted_splitting_report.txt"
         shell:
-                "./Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output Bedgraph --paired-end --comprehensive --merge_non_CpG {input}"                
-                
+                "./Programs/*ismark-*/bismark_methylation_extractor --bedGraph --output Bedgraph --paired-end --comprehensive --merge_non_CpG {input}"
+                " &>> ./Reports/Bedgraph/calling_report_{RUNID}.txt"
+                " && mv {params.PC1} {params.PC2} Reports/Bedgraph/"
+                " && rm {params.PC3} {params.PC4}"
