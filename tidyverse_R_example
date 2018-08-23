@@ -183,3 +183,13 @@ Dawid3 %>%
   facet_wrap(~Geny)+
   theme(axis.text.x = element_text(angle = 90))
 scale_x_discrete()
+
+
+###########################################################################################################################
+library(tidyverse)
+xxx <- read.table("x.txt", sep = "\t", header = T)
+yyy <- xxx %>% transform(Sequencer=reorder(Sequencer, -Number.of.entries)) ##Change order of factors based on another value
+yyy %>%
+  ggplot(mapping = aes(x = Sequencer, y = Number.of.entries, fill = Developer))+ 
+    geom_col()
+###########################################################################################################################
