@@ -1,0 +1,28 @@
+rule Trim:
+    input: B_EmbrioTransfer_84_S12_R1_001.fastq.gz, B_EmbrioTransfer_84_S12_R3_001.fastq.gz
+    output: Trim_Galore/B_EmbrioTransfer_84_S12_R1_001_val_1.fq.gz, Trim_Galore/B_EmbrioTransfer_84_S12_R3_001_val_2.fq.gz, Reports/Trim_Galore/B_EmbrioTransfer_84_S12_R1_001.fastq.gz_trimming_report.txt, Reports/Trim_Galore/B_EmbrioTransfer_84_S12_R3_001.fastq.gz_trimming_report.txt
+    jobid: 76
+    wildcards: b=B_EmbrioTransfer_84_S12
+    threads: 10
+    resources: mem_mb=32000
+
+/TrimGalore*/trim_galore --paired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC B_EmbrioTransfer_84_S12_R1_001.fastq.gz B_EmbrioTransfer_84_S12_R3_001.fastq.gz &>> Reports/Trim_Galore/Trim_Log.txt && mv Trim_Galore/B_EmbrioTransfer_84_S12_R1_001.fastq.gz_trimming_report.txt Trim_Galore/B_EmbrioTransfer_84_S12_R3_001.fastq.gz_trimming_report.txt Reports/Trim_Galore/
+    [Sat Sep  8 11:34:26 2018]
+    Error in rule Trim:
+        jobid: 76
+        output: Trim_Galore/B_EmbrioTransfer_84_S12_R1_001_val_1.fq.gz, Trim_Galore/B_EmbrioTransfer_84_S12_R3_001_val_2.fq.gz, Reports/Trim_Galore/B_EmbrioTransfer_84_S12_R1_001.fastq.gz_trimming_report.txt, Reports/Trim_Galore/B_EmbrioTransfer_84_S12_R3_001.fastq.gz_trimming_report.txt
+
+RuleException:
+CalledProcessError in line 57 of /Analysis/Snakefile:
+Command ' set -euo pipefail;  /TrimGalore*/trim_galore --paired --output_dir ./Trim_Galore -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC B_EmbrioTransfer_84_S12_R1_001.fastq.gz B_EmbrioTransfer_84_S12_R3_001.fastq.gz &>> Reports/Trim_Galore/Trim_Log.txt && mv Trim_Galore/B_EmbrioTransfer_84_S12_R1_001.fastq.gz_trimming_report.txt Trim_Galore/B_EmbrioTransfer_84_S12_R3_001.fastq.gz_trimming_report.txt Reports/Trim_Galore/ ' returned non-zero exit status 1.
+  File "/Analysis/Snakefile", line 57, in __rule_Trim
+  File "/usr/lib/python3.6/concurrent/futures/thread.py", line 56, in run
+[Sat Sep  8 11:39:49 2018]
+Finished job 127.
+1 of 161 steps (0.62%) done
+[Sat Sep  8 12:53:28 2018]
+Finished job 42.
+2 of 161 steps (1%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Analysis/.snakemake/log/2018-09-08T111516.223202.snakemake.log
