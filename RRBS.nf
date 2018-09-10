@@ -286,7 +286,7 @@ Rep_out4.subscribe onComplete: {
                            multiqc -n Bismark_multiqc.html /Analysis/Bismark/.; 
                            mv -R /Analysis/Bismark/Bismark_multiqc.html /Analysis/Bismark/Bismark_multiqc_data /Analysis/Bismark/Multiqc/ 
                            """
-}}
+}}}
 
 workflow.onComplete {
          def msg = """\
