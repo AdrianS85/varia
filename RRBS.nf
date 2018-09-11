@@ -60,7 +60,7 @@ process Fastqc_Raw {
          file '*_fastqc.{zip,html}' into (FR_out1, FR_out2) //INFO: {} brackets include OR operator
 
          """
-         fastqc $ALL; echo $params.outputFR
+         fastqc $ALL
          """
 }
 
