@@ -1,0 +1,90 @@
+Sep-12 15:33:10.211 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 145; name: Bismark_Report (2); status: COMPLETED; exit: 1; error: -; workDir: /Analysis/work/51/86376be34e6bd9b1835aab4c452500]
+Sep-12 15:33:10.463 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'Bismark_Report (2)'
+
+Caused by:
+  Process `Bismark_Report (2)` terminated with an error exit status (1)
+
+Command executed:
+
+  bam2nuc --genome_folder /Analysis/Genome/ B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam; bamqc B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+
+Command exit status:
+  1
+
+Command output:
+  Started analysis of B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 5% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 10% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 15% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 20% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 25% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 30% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 35% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 40% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 45% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 50% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 55% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 60% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 65% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 70% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 75% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 80% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 85% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 90% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 95% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Approx 100% complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  Analysis complete for B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.bam
+  
+  Command error:
+  Processed 21500000 lines
+  Processed 22000000 lines
+  Processed 22500000 lines
+  Processed 23000000 lines
+  Processed 23500000 lines
+  Processed 24000000 lines
+  Processed 24500000 lines
+  Processed 25000000 lines
+  Processed 25500000 lines
+  Processed 26000000 lines
+  Processed 26500000 lines
+  Processed 27000000 lines
+  Processed 27500000 lines
+  Processed 28000000 lines
+  Processed 28500000 lines
+  Processed 29000000 lines
+  Processed 29500000 lines
+  Processed 30000000 lines
+  Processed 30500000 lines
+  Processed 31000000 lines
+  Processed 31500000 lines
+  Processed 32000000 lines
+  Processed 32500000 lines
+  
+  Printing nucleotide stats to >> B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.nucleotide_stats.txt <<
+  Final Stage: Calculating averages
+  =================================
+
+  (di-)nucleotide       count sample    percent sample  count genomic   percent genomic coverage
+  A     457255243       23.10   773280124       29.15   0.591
+  C     539006079       27.23   552647817       20.83   0.975
+  G     546809978       27.62   552690118       20.83   0.989
+  T     436708432       22.06   774165441       29.18   0.564
+  AA    113946147       5.85    241794692       9.11    0.471
+  AC    102112271       5.24    141191041       5.32    0.723
+  AG    153557287       7.88    194604977       7.34    0.789
+  AT    83803893        4.30    195689277       7.38    0.428
+  CA    143039842       7.34    197435089       7.44    0.724
+  CC    150989934       7.75    138565042       5.22    1.090
+  CG    80777544        4.15    21908008        0.83    3.687
+  CT    143820238       7.38    194739447       7.34    0.739
+  GA    126461508       6.49    164938261       6.22    0.767
+  GC    148375542       7.62    107792244       4.06    1.376
+  GG    167950776       8.62    138558808       5.22    1.212
+  GT    99804813        5.12    141400667       5.33    0.706
+  TA    69934670        3.59    169111923       6.37    0.414
+  TC    117325086       6.02    165099359       6.22    0.711
+  TG    140099078       7.19    197618082       7.45    0.709
+  TT    105618205       5.42    242335925       9.14    0.436
+
+Work dir:
+  /Analysis/work/51/86376be34e6bd9b1835aab4c452500
