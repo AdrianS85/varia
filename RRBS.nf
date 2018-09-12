@@ -224,7 +224,7 @@ process DeDuplication {
          """
          samtools view -h -o ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam ${dd1}; 
          strip_bismark_sam.sh ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam; 
-         python /nugentechnologies-nudup-7a126eb/nudup.py --paired-end -f ${dd3} -o ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam; 
+         python /nugentechnologies-nudup-7a126eb/nudup.py -T /Analysis/tmp/ --paired-end -f ${dd3} -o ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sam; 
          samtools sort -n -o ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam;
          bamqc ${ID}_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.sorted.bam 
          """
