@@ -12,6 +12,8 @@ nextflow run RRBS.nf
 
 //RP.subscribe { println "RP : $it" }
 
+NXF_WORK
+NXF_TEMP
 
 https://github.com/FelixKrueger/Bismark/issues/111
 
