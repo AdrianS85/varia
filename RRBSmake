@@ -1,1 +1,26 @@
 
+### This adress is needed to 
+export FASTQ_DEDUP_FOL=/tmp/
+
+cd ../Bismark
+
+parallel --verbose "samtools view -h -o {.}.sam {}" ::: *pe.bam &> sam1_raport.txt;
+
+parallel --verbose "strip_bismark_sam.sh {}" ::: *sam &> strip_raport.txt;
+
+ls *stripped.sam | sort >> nudup.txt &&
+ls $FASTQ_DEDUP_FOL*_R2_* | sort >> fq2.txt &&
+parallel --verbose --link "python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f {1} -o {2.} {2}" :::: fq2.txt nudup.txt &> nudup_raport.txt
+
+parallel "samtools sort -n -o {.}.sorted.bam {}" ::: *sorted.dedup.bam &> sam2_raport.txt
+
+parallel bamqc ::: *dedup.sorted.bam
+
+parallel "bismark_methylation_extractor --bedGraph --paired-end --comprehensive --merge_non_CpG" ::: *dedup.sorted.bam &> bedgraph.txt
+
+mkdir Bedgraph_rest && mv *.sorted.txt Bedgraph_rest
+
+bismark2report 
+bismark2summary
+multiqc -n Bismark_multiqc.html .
+rm -R /Analysis/work/
