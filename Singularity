@@ -20,6 +20,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         wget https://github.com/nugentechnologies/NuMetRRBS/blob/master/strip_bismark_sam.sh
         mv strip_bismark_sam.sh /usr/bin
         
+        wget https://github.com/nugentechnologies/NuMetRRBS/blob/master/trimRRBSdiversityAdaptCustomers.py
+        
+        
         wget -qO- https://get.nextflow.io | bash
         mv nextflow /usr/bin
         
@@ -38,6 +41,11 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         unzip master.zip
         export PATH="/TrimGalore-master:$PATH"
         rm master.zip
+        
+        wget https://github.com/s-andrews/BamQC/archive/master.zip
+        unzip master.zip
+        export PATH="/BamQC-master:$PATH"
+        
         
         
         pip install multiqc cutadapt
