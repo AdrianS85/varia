@@ -28,10 +28,12 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         export PATH="/Bismark-master:$PATH"
         rm master.zip
         
-        wget https://github.com/s-andrews/FastQC/archive/master.zip
-        unzip master.zip
-        export PATH="/FastQC-master:$PATH"
-        rm master.zip
+        wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.7.zip
+        unzip fastqc_v0.11.7.zip
+        chmod 755 FastQC/fastqc
+        export PATH="/FastQC:$PATH"
+        rm fastqc_v0.11.7.zip
+        
         
         
         
