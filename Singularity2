@@ -1,3 +1,4 @@
+BootStrap: docker
 From: ubuntu:18.04
 MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
