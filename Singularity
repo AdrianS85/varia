@@ -48,5 +48,10 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         chmod 755 BamQC-master/bamqc
         rm master.zip
         
+        wget https://github.com/nugentechnologies/nudup/archive/master.zip
+        unzip master.zip
+        export PATH="/nudup-master:$PATH"
+        rm master.zip
+        
         pip install multiqc cutadapt
 
