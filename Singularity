@@ -45,8 +45,8 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         wget https://github.com/s-andrews/BamQC/archive/master.zip
         unzip master.zip
         export PATH="/BamQC-master:$PATH"
-        
-        
+        chmod 755 BamQC-master/bamqc
+        rm master.zip
         
         pip install multiqc cutadapt
 
