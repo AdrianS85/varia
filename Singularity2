@@ -1,15 +1,20 @@
 From: ubuntu:18.04
 MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
-#sudo singularity build --writable RRBS_Singularity.simg ./Singularity
-#SANDBOX: sudo singularity build -s sandbox1.simg ./Singularity
-#sudo singularity shell --cleanenv --bind ./Analysis:/Analysis --workdir /Analysis --writable RRBS_Singularity.simg
-#File folder needs to be structured as such: Folder Analysis to be Binded with container. Inside this folder: 1)Files to be analyzed, .gz packed, 2)Folder "Genome" with Bismark index "Bisulfite_Genome", Reference genome e.g. "Mus_musculus_genomic_refseq_GRCm38.p5.fa"... also there is "doc_Mus_musculus_db_refseq.txt", 3) Snakefile?
+#BUILD: sudo singularity build --writable RRBS_Singularity_New.simg ./Singularity2
+#SANDBOX: sudo singularity build -s sandbox1.simg ./Singularity2
+#ENTER: sudo singularity shell --cleanenv --bind ./Analysis:/ --workdir /Analysis --writable RRBS_Singularity.simg
 
-%environment
-        export PATH="/samtools-1.9:$PATH"
+#File folder needs to be structured as such: 
+#Create directory which will be binded with singularity on the root level (for example Analysis: --bind ./Analysis:/). This will take care of temporary files being written in singularity-based folders that would not have access to disk space.
+#Create directory inside this directory, which will hold all the data (for example Analysis2)
+#Hence in a single directory we will have .simg file and Analysis/Analysis2 directory. The Analysis/Analysis2 directory must contain:
+#1) Files to be analyzed (.fastq format, .gz packed)
+#2) Folder "Genome" with Bismark index "Bisulfite_Genome" and reference genome in .fa format
+#3) nextflow workflow file
 
-
+#%environment
+        #export PATH="/samtools-1.9:$PATH"
 
 %post
         apt update
@@ -52,6 +57,16 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         unzip master.zip
         export PATH="/nudup-master:$PATH"
         rm master.zip
+        
+        wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+        tar -xjvf samtools-1.9.tar.bz2
+        cd samtools-1.9
+        ./configure
+        make
+        make install
+        cd ..
+        rm samtools-1.9.tar.bz2
+        export PATH="/samtools-1.9:$PATH"
         
         pip install multiqc cutadapt
 
