@@ -34,7 +34,10 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         export PATH="/FastQC:$PATH"
         rm fastqc_v0.11.7.zip
         
-        
+        wget https://github.com/FelixKrueger/TrimGalore/archive/master.zip
+        unzip master.zip
+        export PATH="/TrimGalore-master:$PATH"
+        rm master.zip
         
         
         pip install multiqc cutadapt
