@@ -14,17 +14,17 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 #2) Folder "Genome" with Bismark index "Bisulfite_Genome" and reference genome in .fa format
 #3) nextflow workflow file
 
-#%environment
+%environment
         export PATH=/samtools-1.9:$PATH
 	export PATH=/Bismark-master:$PATH
 	export PATH=/FastQC:$PATH
 	export PATH=/TrimGalore-master:$PATH
-	export PATH=/BamQC-master:$PATH
+	export PATH=/BamQC-master/bin:$PATH
 	export PATH=/nudup-master:$PATH
 
 %post
         apt update
-        apt -y install vim wget perl unzip default-jdk bowtie2 python-pip libcurl3 libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev
+        apt -y install vim wget perl unzip default-jdk bowtie2 python-pip libcurl3 libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev ant
         
         cd /
         
@@ -34,10 +34,11 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         wget https://github.com/nugentechnologies/NuMetRRBS/blob/master/trimRRBSdiversityAdaptCustomers.py
         
         
-        wget -qO- https://get.nextflow.io | bash
+        wget -qO- https://get.nextflow.io | bash ####v0.32.0.4897
         mv nextflow /usr/bin
+	/usr/bin/nextflow -v ####nextflow downloads additional dependencies here
 
-        wget https://github.com/FelixKrueger/Bismark/archive/master.zip
+        wget https://github.com/FelixKrueger/Bismark/archive/master.zip ####v0.20.0
         unzip master.zip
         rm master.zip
         
@@ -46,13 +47,16 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         chmod 755 FastQC/fastqc
         rm fastqc_v0.11.7.zip
         
-        wget https://github.com/FelixKrueger/TrimGalore/archive/master.zip
+        wget https://github.com/FelixKrueger/TrimGalore/archive/master.zip ####v0.5.0_dev
         unzip master.zip
         rm master.zip
         
-        wget https://github.com/s-andrews/BamQC/archive/master.zip
+        wget https://github.com/s-andrews/BamQC/archive/master.zip ####v0.1.25_devel
         unzip master.zip
-        chmod 755 BamQC-master/bamqc
+	cd /BamQC-master
+	ant
+	chmod 755 bin/bamqc
+	cd ..
         rm master.zip
         
         wget https://github.com/nugentechnologies/nudup/archive/master.zip
@@ -69,3 +73,5 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         rm samtools-1.9.tar.bz2
         
 	pip install multiqc cutadapt
+
+	#### multiqc.v1.6, cutadapt.v1.18, bowtie2.v2.3.4.1.64bit, openjdk.v10.0.2, Python 2.7.15rc1
