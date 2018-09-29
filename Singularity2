@@ -4,7 +4,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 #BUILD: sudo singularity build --writable RRBS_Singularity_New.simg ./Singularity2
 #SANDBOX: sudo singularity build -s sandbox1.simg ./Singularity2
-#ENTER: sudo singularity shell --cleanenv --bind ./Analysis:/ --workdir /Analysis --writable RRBS_Singularity.simg
+#ENTER: sudo singularity shell --cleanenv --bind ./Analysis:/ --workdir /Analysis --writable RRBS_Singularity_New.simg
 
 #File folder needs to be structured as such: 
 #Create directory which will be binded with singularity on the root level (for example Analysis: --bind ./Analysis:/). This will take care of temporary files being written in singularity-based folders that would not have access to disk space.
@@ -15,11 +15,16 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 #3) nextflow workflow file
 
 #%environment
-        #export PATH="/samtools-1.9:$PATH"
+        export PATH=/samtools-1.9:$PATH
+	export PATH=/Bismark-master:$PATH
+	export PATH=/FastQC:$PATH
+	export PATH=/TrimGalore-master:$PATH
+	export PATH=/BamQC-master:$PATH
+	export PATH=/nudup-master:$PATH
 
 %post
         apt update
-        apt -y install vim wget perl unzip default-jdk bowtie2 python-pip libcurl3
+        apt -y install vim wget perl unzip default-jdk bowtie2 python-pip libcurl3 libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev
         
         cd /
         
@@ -31,32 +36,27 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         
         wget -qO- https://get.nextflow.io | bash
         mv nextflow /usr/bin
-        
+
         wget https://github.com/FelixKrueger/Bismark/archive/master.zip
         unzip master.zip
-        export PATH="/Bismark-master:$PATH"
         rm master.zip
         
         wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.7.zip
         unzip fastqc_v0.11.7.zip
         chmod 755 FastQC/fastqc
-        export PATH="/FastQC:$PATH"
         rm fastqc_v0.11.7.zip
         
         wget https://github.com/FelixKrueger/TrimGalore/archive/master.zip
         unzip master.zip
-        export PATH="/TrimGalore-master:$PATH"
         rm master.zip
         
         wget https://github.com/s-andrews/BamQC/archive/master.zip
         unzip master.zip
-        export PATH="/BamQC-master:$PATH"
         chmod 755 BamQC-master/bamqc
         rm master.zip
         
         wget https://github.com/nugentechnologies/nudup/archive/master.zip
         unzip master.zip
-        export PATH="/nudup-master:$PATH"
         rm master.zip
         
         wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
@@ -67,7 +67,5 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
         make install
         cd ..
         rm samtools-1.9.tar.bz2
-        export PATH="/samtools-1.9:$PATH"
         
-        pip install multiqc cutadapt
-
+	pip install multiqc cutadapt
