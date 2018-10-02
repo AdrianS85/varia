@@ -1,1 +1,32 @@
-wget https://netcologne.dl.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4.3/bowtie2-2.3.4.3-source.zip
+BootStrap: docker
+From: ubuntu:18.04
+MirrorURL: http://us.archive.ubuntu.com/ubuntu/
+
+#http://srnanalyzer.systemsbiology.net/
+
+%environment
+    export PATH=/bowtie-1.2.2-linux-x86_64:$PATH
+    export PATH=/fastx_toolkit/bin:$PATH
+    export LANGUAGE=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+
+
+%post
+    apt update
+    apt install -y unzip python-pip language-pack-en
+
+    pip install cutadapt
+
+    wget https://netix.dl.sourceforge.net/project/bowtie-bio/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip
+    unzip bowtie-1.2.2-linux-x86_64.zip
+    rm bowtie-1.2.2-linux-x86_64.zip
+    
+    wget http://hannonlab.cshl.edu/fastx_toolkit/fastx_toolkit_0.0.13_binaries_Linux_2.6_amd64.tar.bz2
+    mkdir fastx_toolkit
+    cd fastx_toolkit
+    tar -jxf fastx_toolkit_0.0.13_binaries_Linux_2.6_amd64.tar.bz2
+    cd ..
+    
+
+
