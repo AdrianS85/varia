@@ -7,6 +7,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 %environment
     export PATH=/bowtie-1.2.2-linux-x86_64:$PATH
     export PATH=/fastx_toolkit/bin:$PATH
+    export PATH=/sRNAnalyzer:$PATH
     export LANGUAGE=en_US.UTF-8
     export LANG=en_US.UTF-8
     export LC_ALL=en_US.UTF-8
@@ -28,5 +29,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
     tar -jxf fastx_toolkit_0.0.13_binaries_Linux_2.6_amd64.tar.bz2
     cd ..
     
-
-
+    wget http://srnanalyzer.systemsbiology.net/downloads/sRNAnalyzer.tar.gz
+    tar -zxf sRNAnalyzer.tar.gz
+    sRNAnalyzer
+    
+    wget http://srnanalyzer.systemsbiology.net/downloads/sRNA_DBs.tar.gz
+    tar -zxf sRNA_DBs.tar.gz
