@@ -1,0 +1,245 @@
+78842 Tue Oct  2 12:51:47 2018 -bash
+79130 Tue Oct  2 13:13:03 2018 [bioset]
+79134 Tue Oct  2 13:13:03 2018 [bioset]
+79136 Tue Oct  2 13:13:03 2018 [bioset]
+79146 Tue Oct  2 13:13:03 2018 [bioset]
+79150 Tue Oct  2 13:13:03 2018 [bioset]
+79152 Tue Oct  2 13:13:03 2018 [bioset]
+79154 Tue Oct  2 13:13:03 2018 [bioset]
+79163 Tue Oct  2 13:13:03 2018 [bioset]
+79169 Tue Oct  2 13:13:03 2018 [bioset]
+79173 Tue Oct  2 13:13:03 2018 [bioset]
+79177 Tue Oct  2 13:13:03 2018 [bioset]
+79181 Tue Oct  2 13:13:03 2018 [bioset]
+79183 Tue Oct  2 13:13:03 2018 [bioset]
+79185 Tue Oct  2 13:13:03 2018 [bioset]
+79191 Tue Oct  2 13:13:03 2018 [bioset]
+79279 Tue Oct  2 13:17:09 2018 [kworker/11:2]
+79281 Tue Oct  2 13:17:20 2018 SCREEN -S bismark
+79282 Tue Oct  2 13:17:20 2018 /bin/bash
+79341 Tue Oct  2 13:19:43 2018 sudo parallel --verbose --joblog jolog.txt --colsep \t singularity exec --cleanenv --bind ./Analysis:/tmp --pwd /tmp/Bismark2 --writab
+79342 Tue Oct  2 13:19:43 2018 sudo tee nudup_raport.txt
+79343 Tue Oct  2 13:19:43 2018 perl /usr/bin/parallel --verbose --joblog jolog.txt --colsep \t singularity exec --cleanenv --bind ./Analysis:/tmp --pwd /tmp/Bismark2
+79344 Tue Oct  2 13:19:43 2018 tee nudup_raport.txt
+79371 Tue Oct  2 13:19:43 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Biopsy_50_S3_R2_001.fastq.gz -o /tmp/Bismark2/B_B
+79373 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Biopsy_53_S7_R2_001.fastq.gz -o /tmp/Bismark2/B_B
+79374 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Biopsy_56_S11_R2_001.fastq.gz -o /tmp/Bismark2/B_
+79376 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Biopsy_62_S15_R2_001.fastq.gz -o /tmp/Bismark2/B_
+79378 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Biopsy_77_S3_R2_001.fastq.gz -o /tmp/Bismark2/B_B
+79380 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Control-NM_18_S5_R2_001.fastq.gz -o /tmp/Bismark2
+79382 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Control-NM_34_S9_R2_001.fastq.gz -o /tmp/Bismark2
+79384 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Control-NM_42_S13_R2_001.fastq.gz -o /tmp/Bismark
+79386 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Control-NM_86_S1_R2_001.fastq.gz -o /tmp/Bismark2
+79388 Tue Oct  2 13:19:44 2018 [loop0]
+79389 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_Control-NM_9_S1_R2_001.fastq.gz -o /tmp/Bismark2/
+79392 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_EmbrioTransfer_121_S4_R2_001.fastq.gz -o /tmp/Bis
+79394 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_EmbrioTransfer_69_S4_R2_001.fastq.gz -o /tmp/Bism
+79398 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_EmbrioTransfer_84_S12_R2_001.fastq.gz -o /tmp/Bis
+79400 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_EmbrioTransfer_85_S16_R2_001.fastq.gz -o /tmp/Bis
+79402 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_IVculture_27_S2_R2_001.fastq.gz -o /tmp/Bismark2/
+79404 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_IVculture_63_S6_R2_001.fastq.gz -o /tmp/Bismark2/
+79408 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_IVculture_80_S14_R2_001.fastq.gz -o /tmp/Bismark2
+79410 Tue Oct  2 13:19:44 2018 python /nugentechnologies-nudup-7a126eb/nudup.py --rmdup-only --paired-end -f /tmp/B_IVculture_97_S2_R2_001.fastq.gz -o /tmp/Bismark2/
+79413 Tue Oct  2 13:19:44 2018 [loop4]
+79414 Tue Oct  2 13:19:44 2018 [jbd2/loop0-8]
+79415 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79420 Tue Oct  2 13:19:44 2018 [loop5]
+79421 Tue Oct  2 13:19:44 2018 [jbd2/loop4-8]
+79422 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79425 Tue Oct  2 13:19:44 2018 [loop6]
+79426 Tue Oct  2 13:19:44 2018 [loop7]
+79427 Tue Oct  2 13:19:44 2018 [jbd2/loop5-8]
+79428 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79435 Tue Oct  2 13:19:44 2018 [loop8]
+79436 Tue Oct  2 13:19:44 2018 [loop9]
+79437 Tue Oct  2 13:19:44 2018 [jbd2/loop7-8]
+79438 Tue Oct  2 13:19:44 2018 [jbd2/loop6-8]
+79439 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79440 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79441 Tue Oct  2 13:19:44 2018 [loop10]
+79442 Tue Oct  2 13:19:44 2018 [loop11]
+79443 Tue Oct  2 13:19:44 2018 [jbd2/loop9-8]
+79444 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79449 Tue Oct  2 13:19:44 2018 [jbd2/loop10-8]
+79450 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79451 Tue Oct  2 13:19:44 2018 [jbd2/loop8-8]
+79452 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79462 Tue Oct  2 13:19:44 2018 [loop12]
+79463 Tue Oct  2 13:19:44 2018 [loop13]
+79464 Tue Oct  2 13:19:44 2018 [loop14]
+79465 Tue Oct  2 13:19:44 2018 [jbd2/loop11-8]
+79466 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79470 Tue Oct  2 13:19:44 2018 [jbd2/loop12-8]
+79471 Tue Oct  2 13:19:44 2018 [jbd2/loop14-8]
+79472 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79473 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79479 Tue Oct  2 13:19:44 2018 [loop16]
+79480 Tue Oct  2 13:19:44 2018 [loop17]
+79481 Tue Oct  2 13:19:44 2018 [jbd2/loop13-8]
+79482 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79491 Tue Oct  2 13:19:44 2018 [jbd2/loop17-8]
+79492 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79507 Tue Oct  2 13:19:44 2018 [loop19]
+79509 Tue Oct  2 13:19:44 2018 [jbd2/loop16-8]
+79510 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79511 Tue Oct  2 13:19:44 2018 [jbd2/loop19-8]
+79512 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79513 Tue Oct  2 13:19:44 2018 [loop20]
+79514 Tue Oct  2 13:19:44 2018 [loop21]
+79529 Tue Oct  2 13:19:44 2018 [loop22]
+79530 Tue Oct  2 13:19:44 2018 [jbd2/loop21-8]
+79531 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79532 Tue Oct  2 13:19:44 2018 [jbd2/loop20-8]
+79533 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79542 Tue Oct  2 13:19:44 2018 [jbd2/loop22-8]
+79543 Tue Oct  2 13:19:44 2018 [ext4-rsv-conver]
+79564 Tue Oct  2 13:20:34 2018 samtools view -bS -o /tmp/Bismark2/B_Control-NM_9_S1_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79574 Tue Oct  2 13:20:36 2018 samtools view -bS -o /tmp/Bismark2/B_IVculture_63_S6_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79586 Tue Oct  2 13:20:36 2018 samtools view -bS -o /tmp/Bismark2/B_IVculture_27_S2_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79608 Tue Oct  2 13:20:39 2018 samtools view -bS -o /tmp/Bismark2/B_EmbrioTransfer_69_S4_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79614 Tue Oct  2 13:20:39 2018 samtools view -bS -o /tmp/Bismark2/B_EmbrioTransfer_84_S12_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79621 Tue Oct  2 13:20:39 2018 samtools view -bS -o /tmp/Bismark2/B_Biopsy_50_S3_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79627 Tue Oct  2 13:20:39 2018 samtools view -bS -o /tmp/Bismark2/B_Biopsy_56_S11_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79633 Tue Oct  2 13:20:39 2018 samtools view -bS -o /tmp/Bismark2/B_Control-NM_34_S9_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79642 Tue Oct  2 13:20:40 2018 samtools view -bS -o /tmp/Bismark2/B_Control-NM_18_S5_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79666 Tue Oct  2 13:20:40 2018 samtools view -bS -o /tmp/Bismark2/B_Biopsy_62_S15_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79690 Tue Oct  2 13:20:42 2018 samtools view -bS -o /tmp/Bismark2/B_IVculture_80_S14_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79701 Tue Oct  2 13:20:43 2018 samtools view -bS -o /tmp/Bismark2/B_IVculture_97_S2_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79712 Tue Oct  2 13:20:43 2018 samtools view -bS -o /tmp/Bismark2/B_Biopsy_53_S7_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79723 Tue Oct  2 13:20:44 2018 samtools view -bS -o /tmp/Bismark2/B_EmbrioTransfer_85_S16_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79734 Tue Oct  2 13:20:45 2018 samtools view -bS -o /tmp/Bismark2/B_Control-NM_42_S13_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79745 Tue Oct  2 13:20:46 2018 samtools view -bS -o /tmp/Bismark2/B_EmbrioTransfer_121_S4_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79756 Tue Oct  2 13:20:47 2018 samtools view -bS -o /tmp/Bismark2/B_Biopsy_77_S3_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79767 Tue Oct  2 13:20:56 2018 samtools view -bS -o /tmp/Bismark2/B_Control-NM_86_S1_R1_001_val_1.fq_trimmed_bismark_bt2_pe.sam_stripped.sorted.dedup.bam -
+79827 Fri Sep 28 14:11:13 2018 [kworker/11:0]
+80395 Sat Sep 29 08:11:11 2018 [kworker/9:1]
+81148 Tue Oct  2 13:57:52 2018 [kworker/2:0]
+81308 Tue Oct  2 14:06:23 2018 [kworker/u194:0]
+81412 Tue Oct  2 15:09:12 2018 [kworker/u194:1]
+81416 Tue Oct  2 15:11:55 2018 samtools view -bhS /tmp/nudup_q1aa1r/named_pipe
+81417 Tue Oct  2 15:11:55 2018 [samtools] <defunct>
+81418 Tue Oct  2 15:11:55 2018 cat /tmp/nudup_2FhDvY/named_pipe /tmp/nudup_hAPpdh/named_pipe
+81419 Tue Oct  2 15:11:56 2018 tee /tmp/nudup_q1aa1r/named_pipe
+81422 Tue Oct  2 15:12:08 2018 join -t ? -j 1 /tmp/nudup_8G9qNG_sorted.fq /tmp/nudup_JlOh3C_sorted.sam
+81423 Tue Oct  2 15:12:08 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81424 Tue Oct  2 15:12:08 2018 tee /tmp/nudup_hAPpdh/named_pipe
+81425 Tue Oct  2 15:12:31 2018 samtools view -bhS /tmp/nudup_E6HVel/named_pipe
+81426 Tue Oct  2 15:12:33 2018 [samtools] <defunct>
+81427 Tue Oct  2 15:12:33 2018 cat /tmp/nudup_M9YFTE/named_pipe /tmp/nudup_pwAc_l/named_pipe
+81428 Tue Oct  2 15:12:33 2018 tee /tmp/nudup_E6HVel/named_pipe
+81430 Tue Oct  2 15:12:36 2018 join -t ? -j 1 /tmp/nudup_E0myP__sorted.fq /tmp/nudup_EbVc6X_sorted.sam
+81431 Tue Oct  2 15:12:36 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81432 Tue Oct  2 15:12:36 2018 tee /tmp/nudup_pwAc_l/named_pipe
+81435 Tue Oct  2 15:14:02 2018 samtools view -bhS /tmp/nudup_9lpVj1/named_pipe
+81436 Tue Oct  2 15:14:02 2018 [samtools] <defunct>
+81437 Tue Oct  2 15:14:02 2018 cat /tmp/nudup_XDRgvw/named_pipe /tmp/nudup_DWGzZa/named_pipe
+81438 Tue Oct  2 15:14:03 2018 tee /tmp/nudup_9lpVj1/named_pipe
+81440 Tue Oct  2 15:14:10 2018 join -t ? -j 1 /tmp/nudup_0sD14T_sorted.fq /tmp/nudup_4mxS6k_sorted.sam
+81441 Tue Oct  2 15:14:10 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81442 Tue Oct  2 15:14:10 2018 tee /tmp/nudup_DWGzZa/named_pipe
+81462 Tue Oct  2 15:18:32 2018 samtools view -bhS /tmp/nudup_Gt9PHG/named_pipe
+81463 Tue Oct  2 15:18:32 2018 [samtools] <defunct>
+81464 Tue Oct  2 15:18:32 2018 cat /tmp/nudup_0L_9Up/named_pipe /tmp/nudup_SIWKBC/named_pipe
+81465 Tue Oct  2 15:18:32 2018 tee /tmp/nudup_Gt9PHG/named_pipe
+81467 Tue Oct  2 15:18:36 2018 join -t ? -j 1 /tmp/nudup_bskzwX_sorted.fq /tmp/nudup_ipMj7C_sorted.sam
+81468 Tue Oct  2 15:18:36 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81469 Tue Oct  2 15:18:36 2018 tee /tmp/nudup_SIWKBC/named_pipe
+81474 Tue Oct  2 15:22:26 2018 samtools view -bhS /tmp/nudup_eoWjTj/named_pipe
+81475 Tue Oct  2 15:22:26 2018 [samtools] <defunct>
+81476 Tue Oct  2 15:22:26 2018 cat /tmp/nudup_VnYmV_/named_pipe /tmp/nudup_X8hzIT/named_pipe
+81477 Tue Oct  2 15:22:27 2018 tee /tmp/nudup_eoWjTj/named_pipe
+81479 Tue Oct  2 15:22:29 2018 samtools view -bhS /tmp/nudup_Yok2Bv/named_pipe
+81480 Tue Oct  2 15:22:29 2018 [samtools] <defunct>
+81481 Tue Oct  2 15:22:29 2018 cat /tmp/nudup__ArJJf/named_pipe /tmp/nudup_1QXhcu/named_pipe
+81482 Tue Oct  2 15:22:30 2018 join -t ? -j 1 /tmp/nudup_fzCKh6_sorted.fq /tmp/nudup_UCL_rm_sorted.sam
+81483 Tue Oct  2 15:22:30 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81484 Tue Oct  2 15:22:30 2018 tee /tmp/nudup_Yok2Bv/named_pipe
+81486 Tue Oct  2 15:22:30 2018 tee /tmp/nudup_X8hzIT/named_pipe
+81487 Tue Oct  2 15:22:30 2018 join -t ? -j 1 /tmp/nudup_qX3jDm_sorted.fq /tmp/nudup_hSPg6l_sorted.sam
+81488 Tue Oct  2 15:22:30 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81489 Tue Oct  2 15:22:30 2018 tee /tmp/nudup_1QXhcu/named_pipe
+81490 Tue Oct  2 15:22:57 2018 samtools view -bhS /tmp/nudup_M98thi/named_pipe
+81491 Tue Oct  2 15:22:59 2018 [samtools] <defunct>
+81492 Tue Oct  2 15:22:59 2018 cat /tmp/nudup_m7bTzn/named_pipe /tmp/nudup_004Zh_/named_pipe
+81493 Tue Oct  2 15:23:04 2018 tee /tmp/nudup_M98thi/named_pipe
+81495 Tue Oct  2 15:23:07 2018 samtools view -bhS /tmp/nudup_CvsENm/named_pipe
+81496 Tue Oct  2 15:23:07 2018 [samtools] <defunct>
+81497 Tue Oct  2 15:23:07 2018 cat /tmp/nudup_YIuFQJ/named_pipe /tmp/nudup_a51hLA/named_pipe
+81498 Tue Oct  2 15:23:08 2018 tee /tmp/nudup_CvsENm/named_pipe
+81500 Tue Oct  2 15:23:10 2018 join -t ? -j 1 /tmp/nudup_Jz8WTy_sorted.fq /tmp/nudup_3rH8u3_sorted.sam
+81501 Tue Oct  2 15:23:10 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81502 Tue Oct  2 15:23:10 2018 tee /tmp/nudup_a51hLA/named_pipe
+81503 Tue Oct  2 15:23:23 2018 samtools view -bhS /tmp/nudup_D0iyyq/named_pipe
+81504 Tue Oct  2 15:23:23 2018 [samtools] <defunct>
+81505 Tue Oct  2 15:23:23 2018 cat /tmp/nudup_mJza0p/named_pipe /tmp/nudup_8vc2kn/named_pipe
+81506 Tue Oct  2 15:23:23 2018 tee /tmp/nudup_D0iyyq/named_pipe
+81508 Tue Oct  2 15:23:24 2018 join -t ? -j 1 /tmp/nudup_JCAbEl_sorted.fq /tmp/nudup_Cl10j__sorted.sam
+81509 Tue Oct  2 15:23:24 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81510 Tue Oct  2 15:23:24 2018 tee /tmp/nudup_004Zh_/named_pipe
+81511 Tue Oct  2 15:23:25 2018 join -t ? -j 1 /tmp/nudup_smdKqS_sorted.fq /tmp/nudup_27y3LY_sorted.sam
+81512 Tue Oct  2 15:23:25 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81513 Tue Oct  2 15:23:25 2018 tee /tmp/nudup_8vc2kn/named_pipe
+81514 Tue Oct  2 15:23:31 2018 samtools view -bhS /tmp/nudup_35t8qC/named_pipe
+81515 Tue Oct  2 15:23:31 2018 [samtools] <defunct>
+81516 Tue Oct  2 15:23:31 2018 cat /tmp/nudup_dY312k/named_pipe /tmp/nudup_AopYP7/named_pipe
+81517 Tue Oct  2 15:23:32 2018 tee /tmp/nudup_35t8qC/named_pipe
+81519 Tue Oct  2 15:23:46 2018 join -t ? -j 1 /tmp/nudup_nuKHpj_sorted.fq /tmp/nudup_IBOM73_sorted.sam
+81520 Tue Oct  2 15:23:46 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81521 Tue Oct  2 15:23:46 2018 tee /tmp/nudup_AopYP7/named_pipe
+81522 Tue Oct  2 15:23:58 2018 samtools view -bhS /tmp/nudup_2CWztH/named_pipe
+81523 Tue Oct  2 15:23:58 2018 [samtools] <defunct>
+81524 Tue Oct  2 15:23:58 2018 cat /tmp/nudup_ihSB1c/named_pipe /tmp/nudup_F3vmYE/named_pipe
+81525 Tue Oct  2 15:23:58 2018 tee /tmp/nudup_2CWztH/named_pipe
+81527 Tue Oct  2 15:23:59 2018 join -t ? -j 1 /tmp/nudup_ChhHqr_sorted.fq /tmp/nudup_QLvejy_sorted.sam
+81528 Tue Oct  2 15:23:59 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81529 Tue Oct  2 15:23:59 2018 tee /tmp/nudup_F3vmYE/named_pipe
+81532 Tue Oct  2 15:24:44 2018 [kworker/u192:0]
+81538 Tue Oct  2 15:27:47 2018 samtools view -bhS /tmp/nudup_GZdL0i/named_pipe
+81539 Tue Oct  2 15:27:47 2018 [samtools] <defunct>
+81540 Tue Oct  2 15:27:47 2018 cat /tmp/nudup_T9TvHZ/named_pipe /tmp/nudup_qaUiyV/named_pipe
+81541 Tue Oct  2 15:27:47 2018 tee /tmp/nudup_GZdL0i/named_pipe
+81543 Tue Oct  2 15:27:48 2018 join -t ? -j 1 /tmp/nudup_M3mdUs_sorted.fq /tmp/nudup_t2w5KC_sorted.sam
+81544 Tue Oct  2 15:27:48 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81545 Tue Oct  2 15:27:48 2018 tee /tmp/nudup_qaUiyV/named_pipe
+81546 Tue Oct  2 15:28:22 2018 samtools view -bhS /tmp/nudup_mCfSSL/named_pipe
+81547 Tue Oct  2 15:28:22 2018 [samtools] <defunct>
+81548 Tue Oct  2 15:28:22 2018 cat /tmp/nudup_oaZY8k/named_pipe /tmp/nudup_TS5gYf/named_pipe
+81549 Tue Oct  2 15:28:22 2018 tee /tmp/nudup_mCfSSL/named_pipe
+81551 Tue Oct  2 15:28:22 2018 join -t ? -j 1 /tmp/nudup_0bepB7_sorted.fq /tmp/nudup_oLqbdx_sorted.sam
+81552 Tue Oct  2 15:28:22 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81553 Tue Oct  2 15:28:22 2018 tee /tmp/nudup_TS5gYf/named_pipe
+81557 Tue Oct  2 15:29:26 2018 samtools view -bhS /tmp/nudup_4XK3Zh/named_pipe
+81558 Tue Oct  2 15:29:26 2018 [samtools] <defunct>
+81559 Tue Oct  2 15:29:26 2018 cat /tmp/nudup_DOAdR7/named_pipe /tmp/nudup_3HIJJq/named_pipe
+81560 Tue Oct  2 15:29:26 2018 tee /tmp/nudup_4XK3Zh/named_pipe
+81562 Tue Oct  2 15:29:26 2018 join -t ? -j 1 /tmp/nudup_omygQN_sorted.fq /tmp/nudup_EiI2KI_sorted.sam
+81563 Tue Oct  2 15:29:26 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81564 Tue Oct  2 15:29:26 2018 tee /tmp/nudup_3HIJJq/named_pipe
+81567 Tue Oct  2 15:30:14 2018 samtools view -bhS /tmp/nudup_pOPL7T/named_pipe
+81568 Tue Oct  2 15:30:14 2018 [samtools] <defunct>
+81569 Tue Oct  2 15:30:14 2018 cat /tmp/nudup_q9xM1b/named_pipe /tmp/nudup_wPjXmD/named_pipe
+81570 Tue Oct  2 15:30:15 2018 tee /tmp/nudup_pOPL7T/named_pipe
+81572 Tue Oct  2 15:30:15 2018 join -t ? -j 1 /tmp/nudup_NEOtDs_sorted.fq /tmp/nudup_0NUWUO_sorted.sam
+81573 Tue Oct  2 15:30:15 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81574 Tue Oct  2 15:30:15 2018 tee /tmp/nudup_wPjXmD/named_pipe
+81577 Tue Oct  2 15:31:54 2018 samtools view -bhS /tmp/nudup_ubzAWQ/named_pipe
+81578 Tue Oct  2 15:31:54 2018 [samtools] <defunct>
+81579 Tue Oct  2 15:31:54 2018 cat /tmp/nudup_GUZtmi/named_pipe /tmp/nudup_8isn9f/named_pipe
+81580 Tue Oct  2 15:31:54 2018 tee /tmp/nudup_ubzAWQ/named_pipe
+81582 Tue Oct  2 15:31:54 2018 join -t ? -j 1 /tmp/nudup_Oe9oQ5_sorted.fq /tmp/nudup_octjub_sorted.sam
+81583 Tue Oct  2 15:31:54 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81584 Tue Oct  2 15:31:54 2018 tee /tmp/nudup_8isn9f/named_pipe
+81587 Tue Oct  2 15:32:35 2018 samtools view -bhS /tmp/nudup_GiNaqy/named_pipe
+81588 Tue Oct  2 15:32:35 2018 [samtools] <defunct>
+81589 Tue Oct  2 15:32:35 2018 cat /tmp/nudup_zyjMxa/named_pipe /tmp/nudup_wHx05t/named_pipe
+81590 Tue Oct  2 15:32:35 2018 tee /tmp/nudup_GiNaqy/named_pipe
+81592 Tue Oct  2 15:32:35 2018 join -t ? -j 1 /tmp/nudup_MqGjP__sorted.fq /tmp/nudup_k546jw_sorted.sam
+81593 Tue Oct  2 15:32:35 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81594 Tue Oct  2 15:32:35 2018 tee /tmp/nudup_wHx05t/named_pipe
+81598 Tue Oct  2 15:34:41 2018 samtools view -bhS /tmp/nudup_8jC5mg/named_pipe
+81599 Tue Oct  2 15:34:41 2018 [samtools] <defunct>
+81600 Tue Oct  2 15:34:41 2018 cat /tmp/nudup_hPBgYS/named_pipe /tmp/nudup_5tXy9r/named_pipe
+81601 Tue Oct  2 15:34:41 2018 tee /tmp/nudup_8jC5mg/named_pipe
+81603 Tue Oct  2 15:34:41 2018 join -t ? -j 1 /tmp/nudup_89IMME_sorted.fq /tmp/nudup_4FyjL5_sorted.sam
+81604 Tue Oct  2 15:34:41 2018 sed -e s/^\([^\t]\+\)\t\([^\t]\+\)/\1:\2/
+81605 Tue Oct  2 15:34:41 2018 tee /tmp/nudup_5tXy9r/named_pipe
