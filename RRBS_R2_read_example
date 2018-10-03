@@ -24,7 +24,8 @@ TATGGA
 EEEEEE
 
 #### LEGENDA ####
-###@NB500931:147:HC5VCBGX5:1:11101:18853:1055###-> To jest identyfikator, który również znajduje się w drugim pliku z pary 2:N:0:AGTGAG
-###AAACCC###-> to jest 
+###Poniższe 4 linijki stanowią jeden odczyt, czyli informacje o jednej zbadanej rzeczy (fragmencie DNA).
+###@NB500931:147:HC5VCBGX5:1:11101:18853:1055###-> To jest identyfikator(ID), który również znajduje się w drugim pliku z pary 2:N:0:AGTGAG
+###AAACCC###-> to jest INDEX
 +
 EE6EEE
