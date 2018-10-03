@@ -8,7 +8,7 @@ sendMail
 -resume
 https://groups.google.com/forum/#!topic/nextflow/a1fTBd1bPYw
 
-nextflow run RRBS.nf
+nextflow run RRBS.nf -with-report -with-trace -with-timeline -with-dag -resume
 
 //RP.subscribe { println "RP : $it" }
 
