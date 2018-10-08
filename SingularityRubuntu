@@ -31,37 +31,18 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 	rm -rf /var/lib/apt/lists/*
 
-R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter");biocLite("ggbio");biocLite("impute")'
+R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter");biocLite("ggbio");biocLite("impute");biocLite("sva")'
 
-R -e 'source("https://bioconductor.org/biocLite.R");biocLite("impute")'
+
+
+#R -e 'source("https://bioconductor.org/biocLite.R");biocLite("sva")'
 
 R -e 'install.packages(c("openssl", "httr", "xml2"))'
 
-R -e 'source("https://bioconductor.org/biocLite.R");'
 
-bumphunter
+#R -e 'installed.packages()'
 
-R -e 'installed.packages()'
-
-biocLite("ggbio");biocLite("rtracklayer");biocLite("impute")
-biocLite("sva")
-biocLite("GOstats")
-biocLite("org.Mm.eg.db")
-
-
-
-ERROR: dependency ‘GenomicFeatures’ is not available for package ‘TxDb.Hsapiens.UCSC.hg19.knownGene’
-* removing ‘/usr/local/lib/R/site-library/TxDb.Hsapiens.UCSC.hg19.knownGene’
-ERROR: dependency ‘GenomicFeatures’ is not available for package ‘bumphunter’
-* removing ‘/usr/local/lib/R/site-library/bumphunter’
-ERROR: dependencies ‘httr’, ‘xml2’ are not available for package ‘GEOquery’
-* removing ‘/usr/local/lib/R/site-library/GEOquery’
-ERROR: dependencies ‘GenomicFeatures’, ‘TxDb.Hsapiens.UCSC.hg19.knownGene’ are not available for package ‘FDb.InfiniumMethylation.hg19’
-* removing ‘/usr/local/lib/R/site-library/FDb.InfiniumMethylation.hg19’
-ERROR: dependencies ‘bumphunter’, ‘illuminaio’, ‘genefilter’, ‘GEOquery’ are not available for package ‘minfi’
-* removing ‘/usr/local/lib/R/site-library/minfi’
-ERROR: dependencies ‘FDb.InfiniumMethylation.hg19’, ‘minfi’, ‘annotate’, ‘genefilter’, ‘illuminaio’ are not available for package ‘methylumi’
-* removing ‘/usr/local/lib/R/site-library/methylumi’
-ERROR: dependencies ‘illuminaio’, ‘methylumi’ are not available for package ‘RnBeads’
-* removing ‘/usr/local/lib/R/site-library/RnBeads’
-
+#biocLite("ggbio");biocLite("rtracklayer");biocLite("impute")
+#biocLite("sva")
+#biocLite("GOstats")
+#biocLite("org.Mm.eg.db")
