@@ -20,7 +20,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 ## Now install R and littler, and create a link for littler in /usr/local/bin
 ## Also set a default CRAN repo, and make sure littler knows about it too
-	apt -y install littler r-cran-littler r-cran-stringr r-base r-base-dev r-recommended gdebi libssl-dev
+	apt -y install littler r-cran-littler r-cran-stringr r-base r-base-dev r-recommended gdebi libssl-dev libxml2-dev libmariadbclient-dev
         echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"))' >> /etc/R/Rprofile.site
         echo 'source("/etc/R/Rprofile.site")' >> /etc/littler.r
 	ln -s /usr/lib/R/site-library/littler/examples/install.r /usr/local/bin/install.r
@@ -31,20 +31,24 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 	rm -rf /var/lib/apt/lists/*
 
-R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10")'
-
-
-R -e 'source("https://bioconductor.org/biocLite.R");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter"))'
+R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter");biocLite("ggbio")'
 
 
 
 R -e 'install.packages(c("openssl", "httr", "xml2"))'
 
+R -e 'source("https://bioconductor.org/biocLite.R");'
+
+bumphunter
+
+R -e 'installed.packages()'
 
 biocLite("ggbio");biocLite("rtracklayer");biocLite("impute")
 biocLite("sva")
 biocLite("GOstats")
 biocLite("org.Mm.eg.db")
+
+
 
 ERROR: dependency ‘GenomicFeatures’ is not available for package ‘TxDb.Hsapiens.UCSC.hg19.knownGene’
 * removing ‘/usr/local/lib/R/site-library/TxDb.Hsapiens.UCSC.hg19.knownGene’
