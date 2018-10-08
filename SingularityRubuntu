@@ -31,9 +31,9 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 	rm -rf /var/lib/apt/lists/*
 
-R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter");biocLite("ggbio")'
+R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite("RnBeads.mm10");biocLite("doParallel");biocLite("BSgenome.Mmusculus.UCSC.mm10");biocLite("GenomicFeatures");biocLite("bumphunter");biocLite("illuminaio");biocLite("genefilter");biocLite("ggbio");biocLite("impute")'
 
-
+R -e 'source("https://bioconductor.org/biocLite.R");biocLite("impute")'
 
 R -e 'install.packages(c("openssl", "httr", "xml2"))'
 
