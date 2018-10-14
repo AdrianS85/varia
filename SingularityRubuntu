@@ -5,7 +5,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 #BUILD: sudo singularity build --writable R_Singularity.simg ./SingularityRubuntu
 #SANDBOX: sudo singularity build -s sandbox1.simg ./SingularityRubuntu
-#ENTER: sudo singularity shell --cleanenv --bind ./Bind:/ --workdir /Analysis --writable R_Singularity.simg
+#ENTER: sudo singularity shell --cleanenv --bind ./Bind:/tmp --workdir /tmp/Analysis --writable R_Singularity.simg
 
 %environment
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
@@ -16,7 +16,6 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 %post
 	apt update
 	apt -y install vim wget curl language-pack-en fonts-texgyre
-	mkdir Analysis
 
 ## Now install R and littler, and create a link for littler in /usr/local/bin
 ## Also set a default CRAN repo, and make sure littler knows about it too
