@@ -15,7 +15,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 	
 %post
 	apt update
-	apt -y install vim wget curl language-pack-en fonts-texgyre
+	apt -y install vim wget libcurl4-openssl-dev curl language-pack-en fonts-texgyre
 
 ## Now install R and littler, and create a link for littler in /usr/local/bin
 ## Also set a default CRAN repo, and make sure littler knows about it too
