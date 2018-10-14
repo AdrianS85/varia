@@ -26,7 +26,7 @@ rnb.options(
   #import.bed.test.only = T,
   assembly = "mm10",
   region.aggregation = "coverage.weighted",
-  identifiers.column="sampleID",
+  identifiers.column="sampleID", ###Can behave wierdly. doesnt line "_"? integers?
   #IMPORT
   #import.default.data.type = "bs.bed.dir",
   import.bed.style = "bismarkCov",
