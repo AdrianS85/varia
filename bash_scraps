@@ -1,0 +1,1 @@
+sudo parallel --dry-run "gzip -k -d {} && head -n 100000 {.} | sudo tee ~/L{.} && gzip -k ~/L{}" ::: L_Biopsy*
