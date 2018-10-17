@@ -26,19 +26,19 @@ parallel.isEnabled()
 #SETUP RUN OPTIONS
 rnb.options(
   analysis.name = "Fede_Brain1",
-  #import.bed.test.only = T,
   assembly = "mm10",
   region.aggregation = "coverage.weighted",
-  identifiers.column="sampleID", ###Can behave wierdly. doesnt line "_"? integers?
+  identifiers.column = "sampleID", ###Can behave wierdly. doesnt line "_"? integers?
+  #import.bed.test.only = T,
   #IMPORT
-  import.default.data.type = "bs.bed.dir", #!!!!!!!!!!!!!!!!!!!????????????????????????????? also - import.bed.columns???
   import.bed.style = "bismarkCov",
-  import.gender.prediction = F,
+  #import.default.data.type = "bs.bed.dir", #This only sets default
+  #import.gender.prediction = F,
   #import.bed.frame.shift
   #QC
-  qc.coverage.plots = TRUE,
-  qc.coverage.histograms = TRUE,
-  qc.coverage.violins = FALSE,
+  qc.coverage.plots = T,
+  qc.coverage.histograms = T,
+  qc.coverage.violins = F,
   qc.coverage.threshold.plot = c(1, 2, 3, 5, 10),
   #FILTERING
   filtering.snp = "no",
@@ -48,28 +48,30 @@ rnb.options(
   filtering.high.coverage.outliers = T, 
   filtering.sex.chromosomes.removal = T,
   #filtering.deviation.threshold = 0,
+  #imputation.method = "none"
   #INFERENCE
-  inference = TRUE,
-  inference.targets.sva = c("prep_batch", "seq_batch"),
+  inference = T,
+  inference.targets.sva = c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c"), ## Not 100% if this is ok
+  inference.sva.num.method = "leek",
+  inference.age.prediction = F,
   #inference.reference.methylome.column = 
-  #inference.max.cell.type.markers = 
-  #inference.top.cell.type.markers = 
   #EXPLORATORY
-  #exploratory.columns
+  exploratory.columns = c("treatment", "prep_batch", "seq_batch", "b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c"),
+  exploratory.clustering.top.sites = 200,
   #exploratory.gene.symbols  = 
   #exploratory.deviation.plots = 
   #exploratory.custom.loci.bed = 
-  exploratory.clustering.top.sites = 200,
   #DIFFERENTIAL
-  #min.group.size = 1,
+  differential.comparison.columns = c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c"),
+  differential.enrichment.go = T,
+  differential.enrichment.lola = T,
+  differential.adjustment.sva = T,
+  covariate.adjustment.columns = c("prep_batch", "seq_batch")
+  #min.group.size = 
   #differential.comparison.columns.all.pairwise = 
   #differential.variability = 
   #differential.variability.method = 
   #differential.permutations = 
-  differential.enrichment.go = F,
-  differential.adjustment.sva = T,
-  covariate.adjustment.columns = c("prep_batch", "seq_batch"),
-  differential.comparison.columns = "treatment"
   #OTHER
   #export.to.ewasher
   )
@@ -88,10 +90,3 @@ I_result <- rnb.run.inference(PP_result$rnb.set, report_dir)
 E_result <- rnb.run.exploratory(I_result$rnb.set, report_dir)
 D_result <- rnb.run.differential(I_result$rnb.set, report_dir)
 rnb.run.tnt(RNBset, report_dir)
-
-
-
-
-2018-10-08 12:10:25    12.9   ERROR                                 Could not create file. cannot popen '/usr/bin/which 'gs' 2>/dev/null', probable reason 'Cannot allocate memory'
-Error in logger.error(em) : 
-  Could not create file. cannot popen '/usr/bin/which 'gs' 2>/dev/null', probable reason 'Cannot allocate memory'
