@@ -31,7 +31,7 @@ rnb.options(
   region.aggregation = "coverage.weighted",
   identifiers.column="sampleID", ###Can behave wierdly. doesnt line "_"? integers?
   #IMPORT
-  #import.default.data.type = "bs.bed.dir",
+  import.default.data.type = "bs.bed.dir", #!!!!!!!!!!!!!!!!!!!????????????????????????????? also - import.bed.columns???
   import.bed.style = "bismarkCov",
   import.gender.prediction = F,
   #import.bed.frame.shift
@@ -41,11 +41,11 @@ rnb.options(
   qc.coverage.violins = FALSE,
   qc.coverage.threshold.plot = c(1, 2, 3, 5, 10),
   #FILTERING
-  ###filtering.snp = "no",
-  ###filtering.missing.value.quantile = 0.4,
-  #filtering.coverage.threshold = 5,
-  ###filtering.low.coverage.masking = T,
-  #filtering.high.coverage.outliers = F, 
+  filtering.snp = "no",
+  filtering.missing.value.quantile = 0.4,
+  filtering.coverage.threshold = 5,
+  filtering.low.coverage.masking = T,
+  filtering.high.coverage.outliers = T, 
   #filtering.deviation.threshold = 0,
   #INFERENCE
   inference = TRUE,
