@@ -1,6 +1,9 @@
-#GET THE TOOLS
+#GET THE TOOLS AND ANNOTATIONS
 library(RnBeads)
-#GET THE TOOLS
+REGION_SET <- "tiling500bp"
+ASSEMBLY <- "mm10"
+rnb.load.annotation.from.db(REGION_SET, assembly=ASSEMBLY) ## This loads data from RnBeads site. This annotation should be already included in region.types option if it is set as NULL.
+#GET THE TOOLS AND ANNOTATIONS
 
 
 #SETUP WORKING ENVIROMENT
