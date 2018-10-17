@@ -46,6 +46,7 @@ rnb.options(
   filtering.coverage.threshold = 5,
   filtering.low.coverage.masking = T,
   filtering.high.coverage.outliers = T, 
+  filtering.sex.chromosomes.removal = T,
   #filtering.deviation.threshold = 0,
   #INFERENCE
   inference = TRUE,
