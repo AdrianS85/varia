@@ -5,7 +5,7 @@ MirrorURL: http://us.archive.ubuntu.com/ubuntu/
 
 #BUILD: sudo singularity build --writable R_Singularity.simg ./SingularityRubuntu
 #SANDBOX: sudo singularity build -s sandbox1.simg ./SingularityRubuntu
-#ENTER: sudo singularity shell --cleanenv --bind ./Bind:/tmp --workdir /tmp/Analysis --writable R_Singularity.simg
+#ENTER: sudo singularity shell --cleanenv --bind ./Bind:/tmp --pwd /tmp/Analysis --writable R_Singularity.simg
 
 %environment
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
