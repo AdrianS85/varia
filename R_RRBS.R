@@ -13,7 +13,7 @@ data_dir <- paste0(getwd(), "/data")
 dataset_dir <- data_dir
 sample_annotation <- paste0(data_dir, "/annot.csv")
 analysis_dir <- paste0(getwd(), "/analysis_dir")
-report_dir <- paste0(analysis_dir, "/reports")
+report_dir <- paste0(getwd(), "/reports")
 #SETUP WORKING ENVIROMENT
 
 
