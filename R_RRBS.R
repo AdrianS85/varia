@@ -1,6 +1,6 @@
 #GET THE TOOLS AND ANNOTATIONS
 library(RnBeads)
-REGION_SET <- "tiling500bp"
+REGION_SET <- "tiling200bp"
 ASSEMBLY <- "mm10"
 rnb.load.annotation.from.db(REGION_SET, assembly=ASSEMBLY) ## This loads data from RnBeads site. This annotation should be already included in region.types option if it is set as NULL.
 #GET THE TOOLS AND ANNOTATIONS
@@ -18,7 +18,7 @@ report_dir <- paste0(getwd(), "/reports")
 
 
 #SETUP PARALLELISM
-parallel.setup(4)
+parallel.setup(24)
 parallel.isEnabled()
 #SETUP PARALLELISM
 
@@ -65,6 +65,7 @@ rnb.options(
   differential.comparison.columns = c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c"),
   differential.enrichment.go = T,
   differential.enrichment.lola = T,
+  differential.enrichment.lola.dbs = "/tmp/Analysis/LOLACore", ##This needs intervention
   differential.adjustment.sva = T,
   covariate.adjustment.columns = c("prep_batch", "seq_batch")
   #min.group.size = 
