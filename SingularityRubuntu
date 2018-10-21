@@ -42,4 +42,4 @@ R -e 'source("https://bioconductor.org/biocLite.R");biocLite("RnBeads");biocLite
 #biocLite("sva")
 #biocLite("GOstats")
 #biocLite("org.Mm.eg.db")
-#http://big.databio.org/regiondb/
+#http://big.databio.org/regiondb/ - need to install only one that works which is: wget http://big.databio.org/regiondb/LOLACore_170206.tgz
