@@ -65,7 +65,7 @@ rnb.options(
   differential.comparison.columns = c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c"),
   differential.enrichment.go = F,
   differential.enrichment.lola = T,
-  differential.enrichment.lola.dbs = "/tmp/Analysis/LOLACore17", ##This needs intervention
+  differential.enrichment.lola.dbs = "/tmp/Analysis/LOLACore17", ##This needs intervention - ?? "mm10/" ??
   differential.adjustment.sva = T,
   covariate.adjustment.columns = c("prep_batch", "seq_batch")
   #min.group.size = 
