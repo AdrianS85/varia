@@ -1,0 +1,164 @@
+> traceback()
+23: stop(gettextf("arguments imply differing number of rows: %s",
+        paste(unique(nrows), collapse = ", ")), domain = NA)
+22: data.frame(..., check.names = FALSE)
+21: cbind(deparse.level, ...)
+20: cbind(...)
+19: eval(mc, env)
+18: eval(mc, env)
+17: eval(mc, env)
+16: standardGeneric("cbind")
+15: cbind(id = rownames(reg.info), reg.info, dmt)
+14: FUN(X[[i]], ...)
+13: lapply(X = X, FUN = FUN, ...)
+12: sapply(1:length(reg.types), FUN = function(ir) {
+        rr <- reg.types[ir]
+        reg.info <- reg.type.infos[[rr]]
+        region.info.cols.cur <- intersect(region.info.cols, colnames(reg.info))
+        reg.info <- reg.info[, region.info.cols.cur]
+        annot.vec <- get.diffmeth.tab.annot.cols("regions", includeCovg,
+            hasVariability, skipSites = skipSites)
+        colname.vec <- get.diffmeth.tab.annot.colnames.pretty("regions",
+            grp.labels[ic, 1], grp.labels[ic, 2], includeCovg, hasVariability,
+            covgThres = get.covg.thres(diffmeth), skipSites = skipSites)
+        dmt <- get.table(diffmeth, cc, rr, return.data.frame = TRUE)[,
+            annot.vec]
+        colnames(dmt) <- colname.vec
+        dmt <- cbind(id = rownames(reg.info), reg.info, dmt)
+        ccn <- ifelse(is.valid.fname(cc), cc, paste("cmp", ic, sep = ""))
+        rrn <- ifelse(is.valid.fname(rr), rr, paste("reg", ir, sep = ""))
+        fname <- paste("diffMethTable_region_", ccn, "_", rrn, ".csv",
+            sep = "")
+        fname <- rnb.write.table(dmt, fname, fpath = rnb.get.directory(report,
+            "data", absolute = TRUE), format = "csv", gz = gzTable,
+            row.names = FALSE, quote = FALSE)
+        txt <- paste(c("<a href=\"", rnb.get.directory(report, "data"),
+            "/", fname, "\">", "csv", "</a>"), collapse = "")
+        return(txt)
+    })
+11: sapply(1:length(reg.types), FUN = function(ir) {
+        rr <- reg.types[ir]
+        reg.info <- reg.type.infos[[rr]]
+        region.info.cols.cur <- intersect(region.info.cols, colnames(reg.info))
+        reg.info <- reg.info[, region.info.cols.cur]
+        annot.vec <- get.diffmeth.tab.annot.cols("regions", includeCovg,
+            hasVariability, skipSites = skipSites)
+        colname.vec <- get.diffmeth.tab.annot.colnames.pretty("regions",
+            grp.labels[ic, 1], grp.labels[ic, 2], includeCovg, hasVariability,
+            covgThres = get.covg.thres(diffmeth), skipSites = skipSites)
+        dmt <- get.table(diffmeth, cc, rr, return.data.frame = TRUE)[,
+            annot.vec]
+        colnames(dmt) <- colname.vec
+        dmt <- cbind(id = rownames(reg.info), reg.info, dmt)
+        ccn <- ifelse(is.valid.fname(cc), cc, paste("cmp", ic, sep = ""))
+        rrn <- ifelse(is.valid.fname(rr), rr, paste("reg", ir, sep = ""))
+        fname <- paste("diffMethTable_region_", ccn, "_", rrn, ".csv",
+            sep = "")
+        fname <- rnb.write.table(dmt, fname, fpath = rnb.get.directory(report,
+            "data", absolute = TRUE), format = "csv", gz = gzTable,
+            row.names = FALSE, quote = FALSE)
+        txt <- paste(c("<a href=\"", rnb.get.directory(report, "data"),
+            "/", fname, "\">", "csv", "</a>"), collapse = "")
+        return(txt)
+    })
+10: FUN(X[[i]], ...)
+9: lapply(1:length(comps), FUN = function(ic) {
+       cc <- comps[ic]
+       sapply(1:length(reg.types), FUN = function(ir) {
+           rr <- reg.types[ir]
+           reg.info <- reg.type.infos[[rr]]
+           region.info.cols.cur <- intersect(region.info.cols, colnames(reg.info))
+           reg.info <- reg.info[, region.info.cols.cur]
+           annot.vec <- get.diffmeth.tab.annot.cols("regions", includeCovg,
+               hasVariability, skipSites = skipSites)
+           colname.vec <- get.diffmeth.tab.annot.colnames.pretty("regions",
+               grp.labels[ic, 1], grp.labels[ic, 2], includeCovg,
+               hasVariability, covgThres = get.covg.thres(diffmeth),
+               skipSites = skipSites)
+           dmt <- get.table(diffmeth, cc, rr, return.data.frame = TRUE)[,
+               annot.vec]
+           colnames(dmt) <- colname.vec
+           dmt <- cbind(id = rownames(reg.info), reg.info, dmt)
+           ccn <- ifelse(is.valid.fname(cc), cc, paste("cmp", ic,
+               sep = ""))
+           rrn <- ifelse(is.valid.fname(rr), rr, paste("reg", ir,
+               sep = ""))
+           fname <- paste("diffMethTable_region_", ccn, "_", rrn,
+               ".csv", sep = "")
+           fname <- rnb.write.table(dmt, fname, fpath = rnb.get.directory(report,
+               "data", absolute = TRUE), format = "csv", gz = gzTable,
+               row.names = FALSE, quote = FALSE)
+           txt <- paste(c("<a href=\"", rnb.get.directory(report,
+               "data"), "/", fname, "\">", "csv", "</a>"), collapse = "")
+           return(txt)
+       })
+   })
+8: lapply(1:length(comps), FUN = function(ic) {
+       cc <- comps[ic]
+       sapply(1:length(reg.types), FUN = function(ir) {
+           rr <- reg.types[ir]
+           reg.info <- reg.type.infos[[rr]]
+           region.info.cols.cur <- intersect(region.info.cols, colnames(reg.info))
+           reg.info <- reg.info[, region.info.cols.cur]
+           annot.vec <- get.diffmeth.tab.annot.cols("regions", includeCovg,
+               hasVariability, skipSites = skipSites)
+           colname.vec <- get.diffmeth.tab.annot.colnames.pretty("regions",
+               grp.labels[ic, 1], grp.labels[ic, 2], includeCovg,
+               hasVariability, covgThres = get.covg.thres(diffmeth),
+               skipSites = skipSites)
+           dmt <- get.table(diffmeth, cc, rr, return.data.frame = TRUE)[,
+               annot.vec]
+           colnames(dmt) <- colname.vec
+           dmt <- cbind(id = rownames(reg.info), reg.info, dmt)
+           ccn <- ifelse(is.valid.fname(cc), cc, paste("cmp", ic,
+               sep = ""))
+           rrn <- ifelse(is.valid.fname(rr), rr, paste("reg", ir,
+               sep = ""))
+           fname <- paste("diffMethTable_region_", ccn, "_", rrn,
+               ".csv", sep = "")
+           fname <- rnb.write.table(dmt, fname, fpath = rnb.get.directory(report,
+               "data", absolute = TRUE), format = "csv", gz = gzTable,
+               row.names = FALSE, quote = FALSE)
+           txt <- paste(c("<a href=\"", rnb.get.directory(report,
+               "data"), "/", fname, "\">", "csv", "</a>"), collapse = "")
+           return(txt)
+       })
+   })
+7: do.call("rbind", lapply(1:length(comps), FUN = function(ic) {
+       cc <- comps[ic]
+       sapply(1:length(reg.types), FUN = function(ir) {
+           rr <- reg.types[ir]
+           reg.info <- reg.type.infos[[rr]]
+           region.info.cols.cur <- intersect(region.info.cols, colnames(reg.info))
+           reg.info <- reg.info[, region.info.cols.cur]
+           annot.vec <- get.diffmeth.tab.annot.cols("regions", includeCovg,
+               hasVariability, skipSites = skipSites)
+           colname.vec <- get.diffmeth.tab.annot.colnames.pretty("regions",
+               grp.labels[ic, 1], grp.labels[ic, 2], includeCovg,
+               hasVariability, covgThres = get.covg.thres(diffmeth),
+               skipSites = skipSites)
+           dmt <- get.table(diffmeth, cc, rr, return.data.frame = TRUE)[,
+               annot.vec]
+           colnames(dmt) <- colname.vec
+           dmt <- cbind(id = rownames(reg.info), reg.info, dmt)
+           ccn <- ifelse(is.valid.fname(cc), cc, paste("cmp", ic,
+               sep = ""))
+           rrn <- ifelse(is.valid.fname(rr), rr, paste("reg", ir,
+               sep = ""))
+           fname <- paste("diffMethTable_region_", ccn, "_", rrn,
+               ".csv", sep = "")
+           fname <- rnb.write.table(dmt, fname, fpath = rnb.get.directory(report,
+               "data", absolute = TRUE), format = "csv", gz = gzTable,
+               row.names = FALSE, quote = FALSE)
+           txt <- paste(c("<a href=\"", rnb.get.directory(report,
+               "data"), "/", fname, "\">", "csv", "</a>"), collapse = "")
+           return(txt)
+       })
+   }))
+6: rnb.section.diffMeth.region(rnb.set, diffmeth, report, dm.go.enrich = dm.go.enrich,
+       dm.lola.enrich = dm.lola.enrich, gzTable = gz)
+5: rnb.run.differential(I_result$rnb.set, report_dir) at Liver_R_RRBS.R#92
+4: eval(ei, envir)
+3: eval(ei, envir)
+2: withVisible(eval(ei, envir))
+1: source("Liver_R_RRBS.R")
