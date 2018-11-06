@@ -1,19 +1,7 @@
-############ PREPARATION #####################################
-
-library(tidyverse)
-setwd("/media/adrians/USB DISK1/Projekty/FE - Federica/Sequencing/Liver_data")
-
-### Names of comparisons
-comparisons_ids <- c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c")
-
-############ PREPARATION #####################################
-
-
-
 ############ FUNCTIONS ####################################### 
 
 ###### Function for getting lists of regions with p_val lower than 0.05 ######
-function_short_list <- function(tibble_list, analysis_name, comparison_number = 5, comparison_names = comparisons_ids){
+function_short_list <- function(tibble_list, comparison_number = 5, comparison_names = comparisons_ids){
 ### tibble_list = list of tibbles from RnBeads differential module results
 ### analysis_name = name of region, string
 ### comparison_names = string vector of the same number of elements as comparison_number
@@ -60,21 +48,86 @@ function_write_list <- function(annotated_tibble_list, analysis_name, comparison
 
 
 
-############ GENE REGIONS #################################### 
+############ PREPARATION #####################################
 
-### Analysis name
-this_analysis_name <- "liver_genes"
+library(tidyverse)
+setwd("/media/adrians/USB DISK1/Projekty/FE - Federica/Sequencing/Liver_data")
 
 ### Here I upload comparisons
 gene_tibble_list <- lapply(list.files(pattern = "*genes.csv"), FUN = read_csv, col_names = T, col_types = "ccnnccnnnnnnnnnnnnnn") 
 
+promoter_tibble_list <- lapply(list.files(pattern = "*promoters.csv"), FUN = read_csv, col_names = T, col_types = "ccnnccnnnnnnnnnnnnnn") 
+
+cgi_tibble_list <- lapply(list.files(pattern = "*cpgislands.csv"), FUN = read_csv, col_names = T, col_types = "ccnnnnnnnnnnnnnnnn") 
+
+tiling_tibble_list <- lapply(list.files(pattern = "*tiling.csv"), FUN = read_csv, col_names = T, col_types = "ccnnnnnnnnnnnnnnnn") 
+
+tiling200_tibble_list <- lapply(list.files(pattern = "*tiling200bp.csv"), FUN = read_csv, col_names = T, col_types = "ccnnnnnnnnnnnnnnnn") 
+
+#sites_tibble_list <- lapply(list.files(pattern = "*_site_*csv"), FUN = read_csv, col_names = T, col_types = "ccnnnnnnnnnnnnnnnn")
+
 ### Here I checked is the comparisons are uploaded in order, and it seems that they indeed are
-names <- list.files(pattern = "*genes.csv") 
+list.files(pattern = "*genes.csv") 
 
-### Get p.val loerw than 5 tables
-gene_pval_list <- function_short_list(tibble_list = gene_tibble_list, analysis_name = this_analysis_name)
+### Names of comparisons
+comparisons_ids <- c("b_vs_rest", "b_vs_c", "i_vs_rest", "i_vs_c", "e_vs_c")
 
-### Write the tables
-function_write_list(gene_pval_list, this_analysis_name)
+############ PREPARATION #####################################
 
-############ GENE REGIONS ####################################
+
+
+############ ANALYSIS #################################### 
+
+### Analysis name
+factor1 = "liver" #c("liver", "placenta", "brain")
+factor2 = c("genes", "promoter", "cgi", "tiling", "tiling200", "sites")
+this_analysis_name <- paste(factor1, factor2, sep = "_")
+#xxx <- expand.grid(factor1, factor2)
+#yyy2 <- paste(xxx[,2], xxx[,1], sep = "_")
+
+
+
+### Get p.val less than 5 tables
+gene_pval_list <- function_short_list(tibble_list = gene_tibble_list)
+promoter_pval_list <- function_short_list(tibble_list = promoter_tibble_list)
+cgi_pval_list <- function_short_list(tibble_list = cgi_tibble_list)
+tiling_pval_list <- function_short_list(tibble_list = tiling_tibble_list)
+tiling200_pval_list <- function_short_list(tibble_list = tiling200_tibble_list)
+#sites_pval_list <- function_short_list(tibble_list = sites_tibble_list)
+
+### Write the tables p.value
+function_write_list(gene_pval_list, this_analysis_name[1])
+function_write_list(promoter_pval_list, this_analysis_name[2])
+function_write_list(cgi_pval_list, this_analysis_name[3])
+function_write_list(tiling_pval_list, this_analysis_name[4])
+function_write_list(tiling200_pval_list, this_analysis_name[5])
+#function_write_list(sites_pval_list, this_analysis_name[6])
+
+
+
+############ GET GENES FOR ENRICHMENT ###########
+
+### Remove NA and select only relevant columns from gene and promoter analyses
+gene_enrich <- gene_pval_list %>%
+  map(filter, !is.na(symbol)) %>%
+  map(select, Comparison, symbol)
+  
+promoter_enrich <- promoter_pval_list %>%
+  map(filter, !is.na(symbol)) %>%
+  map(select, Comparison, symbol)
+
+### Merge gene and promoter data
+gene_and_promoters <- list()
+for(n in 1:5){
+  gene_and_promoters[[n]] <- as.tibble(rbind2(gene_enrich[[n]], promoter_enrich[[n]]))
+}
+
+### Keep only unique names after merging
+gene_and_promoters_unique <- lapply(X = gene_and_promoters, FUN = unique)
+
+### Write tables
+function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_name[1]))
+
+############ GET GENES FOR ENRICHMENT ###########
+
+############ ANALYSIS ####################################
