@@ -79,6 +79,42 @@ function_annotate <- function(pval_tibble_list, comparison_number = 5){
 
 
 
+###### FUNCTION FOR GETTING ENRICHMENT OVERVIEW FROM ENTIRE DATA ######
+function_enrich_overview <- function(annotated_tibble_list = list(gene_annotated_tibble_list, promoter_annotated_tibble_list, cgi_annotated_tibble_list, tiling_annotated_tibble_list, tiling200_annotated_tibble_list), comparison_number = 5, comparison_names = comparisons_ids, region_number = 5, region_names = region_ids){
+  
+  ### Initialize list, so I can work on it
+  merged_tibble_list <- list()
+  merged_number <- 1
+  ### Establish appropriate amount of for loops
+  loop_number_comparison <- seq(from = 1, to = comparison_number)
+  ### Establish appropriate amount of for loops
+  loop_number_region <- seq(from = 1, to = region_number)
+  
+  ##################
+  for (c in loop_number_comparison){
+    for (r in loop_number_region){
+      merged_tibble_list[[merged_number]] <- as.tibble(unique(annotated_tibble_list[[r]][[c]]$name)) %>%
+        mutate(Analysis_type = region_names[r], Comparison = comparisons_ids[c])
+      merged_number <- merged_number + 1
+    }
+  }
+  ##################
+  
+  merged_tibble <- rlist::list.rbind(merged_tibble_list)
+  final_list <- list()
+  
+  for (c in loop_number_comparison){
+    final_list[[c]] <- merged_tibble %>%
+      filter(Comparison == comparison_names[c])
+  }
+  
+  #return (unique(rlist::list.cbind(merged_tibble_list)))
+  return (final_list)
+}
+###### FUNCTION FOR GETTING ENRICHMENT OVERVIEW FROM ENTIRE DATA ######
+
+
+
 ###### FUNCTION FOR WRITING TABLES FROM LISTS OF REGIONS ######
 ### tibble_list = list of tibbles from RnBeads differential module results, analyzed as neccecary
 ### analysis_name = name of analysis, tissue, region, string
@@ -176,6 +212,8 @@ tiling_annotated_tibble_list <- function_annotate(tiling_pval_list)
 tiling200_annotated_tibble_list <- function_annotate(tiling200_pval_list)
 #sites_annotated_tibble_list <- function_annotate(sites_pval_list)
 
+
+
 ### Write the tables
 function_write_list(gene_annotated_tibble_list, paste0("named_", this_analysis_name[1]))
 function_write_list(promoter_annotated_tibble_list, paste0("named_", this_analysis_name[2]))
@@ -183,41 +221,20 @@ function_write_list(cgi_annotated_tibble_list, paste0("named_", this_analysis_na
 function_write_list(tiling_annotated_tibble_list, paste0("named_", this_analysis_name[4]))
 function_write_list(tiling200_annotated_tibble_list, paste0("named_", this_analysis_name[5]))
 #function_write_list(sites_annotated_tibble_list, paste0("named_", this_analysis_name[6]))
-
+save(gene_annotated_tibble_list, promoter_annotated_tibble_list, cgi_annotated_tibble_list, tiling_annotated_tibble_list, tiling200_annotated_tibble_list, file = "annotated_tibble_list.Rdata")
 ############ (2) GET GENE NAMES FOR REGIONS ###########
 
 
 
+############ (3) GET GENES FOR ENRICHMENT OVERVIEW FROM ALL REGIONS ###########
+enrich_overview_list <- function_enrich_overview()
+
+function_write_list(enrich_overview_list, "overview_liver_enrich")
+############ (3) GET GENES FOR ENRICHMENT OVERVIEW FROM ALL REGIONS ###########
 
 
 
-  
-  
-#   for (n in loop_number){
-#     gene_temp <- as.tibble(gene_annotated_tibble_list[[n]]$name) %>%
-#       mutate(analysis_type = "gene", comparison = comparisons_ids[n])
-#     promoter_temp <- as.tibble(promoter_annotated_tibble_list[[n]]$name) %>%
-#       mutate(analysis_type = "promoter", comparison = comparisons_ids[n])
-#     cgi_temp <- as.tibble(cgi_annotated_tibble_list[[n]]$name) %>%
-#       mutate(analysis_type = "cgi", comparison = comparisons_ids[n])
-#     tiling_temp <- as.tibble(tiling_annotated_tibble_list[[n]]$name) %>%
-#       mutate(analysis_type = "tiling", comparison = comparisons_ids[n])
-#     tiling200_temp <- as.tibble(tiling200_annotated_tibble_list[[n]]$name) %>%
-#       mutate(analysis_type = "tiling200", comparison = comparisons_ids[n])
-#     #sites_temp <- as.tibble(sites_annotated_tibble_list[[n]]$name) %>%
-#     #  mutate(analysis_type = "sites")
-#   
-#     merged_table <- rbind(merged_tibble_list[n][[m]], merged_tibble_list[n][[m]], merged_tibble_list[n][[m]], merged_tibble_list[n][[m]], merged_tibble_list[n][[m]])
-#     
-#     merged_table_unique <- unique(merged_table)
-#     merged_tibble_list[[n]] <- merged_table
-#     rm(merged_table)
-# 
-# #annotation - tutaj są nowe nazwy genów. Dla pojedynczego porównania trzeba zebrać te annotations, zanotować skąd są i złożyć w jedną listę
-
-
-
-############ (3) GET GENES FOR ENRICHMENT ###########
+############ (4) GET GENES FOR ENRICHMENT ###########
 ### Use (1) as input here
 
 ### Remove NA and select only relevant columns from gene and promoter analyses
@@ -239,9 +256,9 @@ for(n in 1:5){
 gene_and_promoters_unique <- lapply(X = gene_and_promoters, FUN = unique)
 
 ### Write tables
-function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_name[1]))
+function_write_list(gene_and_promoters_unique, "enrich_")
 
-############ (3) GET GENES FOR ENRICHMENT ###########
+############ (4) GET GENES FOR ENRICHMENT ###########
 
 ##########################################################
 ############ ANALYSIS ####################################
