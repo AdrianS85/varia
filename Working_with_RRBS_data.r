@@ -2,9 +2,7 @@
 ############ INSTALLS ###################################
 #########################################################
 
-# install.packages("BiocManager", "Matrix", "nlme", "mgcv", "xml2", "tidyverse", "matrixStats", "Rcpp", "bit", "rlist")
-# install.packages()
-# install.packages()
+# install.packages("BiocManager", "Matrix", "nlme", "mgcv", "xml2", "tidyverse", "matrixStats", "Rcpp", "bit", "rlist", "enrichR")
 # BiocManager::install("GenomeInfoDb", version = "3.8")
 # BiocManager::install("Biostrings", version = "3.8")
 # BiocManager::install("Rsamtools", version = "3.8")
@@ -90,7 +88,7 @@ function_enrich_overview <- function(annotated_tibble_list = list(gene_annotated
   ### Establish appropriate amount of for loops
   loop_number_region <- seq(from = 1, to = region_number)
   
-  ##################
+  ### Double loop
   for (c in loop_number_comparison){
     for (r in loop_number_region){
       merged_tibble_list[[merged_number]] <- as.tibble(unique(annotated_tibble_list[[r]][[c]]$name)) %>%
@@ -98,17 +96,17 @@ function_enrich_overview <- function(annotated_tibble_list = list(gene_annotated
       merged_number <- merged_number + 1
     }
   }
-  ##################
-  
+
+  ### Merge list of tibbles into tibble
   merged_tibble <- rlist::list.rbind(merged_tibble_list)
-  final_list <- list()
   
+  ### Create list of tibbles based on comparison names
+  final_list <- list()
   for (c in loop_number_comparison){
     final_list[[c]] <- merged_tibble %>%
       filter(Comparison == comparison_names[c])
   }
   
-  #return (unique(rlist::list.cbind(merged_tibble_list)))
   return (final_list)
 }
 ###### FUNCTION FOR GETTING ENRICHMENT OVERVIEW FROM ENTIRE DATA ######
@@ -227,6 +225,7 @@ save(gene_annotated_tibble_list, promoter_annotated_tibble_list, cgi_annotated_t
 
 
 ############ (3) GET GENES FOR ENRICHMENT OVERVIEW FROM ALL REGIONS ###########
+### Use (2) as input here
 enrich_overview_list <- function_enrich_overview()
 
 function_write_list(enrich_overview_list, "overview_liver_enrich")
@@ -259,6 +258,87 @@ gene_and_promoters_unique <- lapply(X = gene_and_promoters, FUN = unique)
 function_write_list(gene_and_promoters_unique, "enrich_")
 
 ############ (4) GET GENES FOR ENRICHMENT ###########
+
+############ (5) RUN ENRICHR ###########
+### Use (3) as input here
+
+
+###### FUNCTION FOR GETTING ENRICHMENTS ######
+### tibble_list - tibble list with tibbles for all 5 comparisons, 
+### Currently I work with tibbles with 3 columns, with the first one being gene names and the third one being comparison_id. We should be able to use different ones
+function_enrich_list <- function(tibble_list = enrich_overview_list, gene_names_column = 1, comparison_number = 5, comparison_names = comparisons_ids){
+  ### Create list of interesting databases
+  dbs_Onto_Path <- c("GO_Molecular_Function_2018", "GO_Cellular_Component_2018", "GO_Biological_Process_2018", "MGI_Mammalian_Phenotype_2017", "Human_Phenotype_Ontology", "KEGG_2016", "WikiPathways_2016", "Panther_2016", "Reactome_2016", "BioCarta_2016", "NCI-Nature_2016", "ARCHS4_Kinases_Coexp", "HumanCyc_2016", "BioPlex_2017", "SILAC_Phosphoproteomics")
+  dbs_Regul <- c("Genome_Browser_PWMs", "TRANSFAC_and_JASPAR_PWMs", "Transcription_Factor_PPIs", "ChEA_2016",  "TF-LOF_Expression_from_GEO", "PPI_Hub_Proteins", "ENCODE_TF_ChIP-seq_2015", "ENCODE_Histone_Modifications_2015", "ENCODE_and_ChEA_Consensus_TFs_from_ChIP-X", "CORUM", "Pfam_InterPro_Domains", "Phosphatase_Substrates_from_DEPOD", "TF_Perturbations_Followed_by_Expression", "ARCHS4_TFs_Coexp", "miRTarBase_2017", "TargetScan_microRNA_2017", "Enrichr_Submissions_TF-Gene_Coocurrence", "Epigenomics_Roadmap_HM_ChIP-seq")
+  dbs_Drug_Tissue_Other <- c("ARCHS4_IDG_Coexp", "DrugMatrix", "RNA-Seq_Disease_Gene_and_Drug_Signatures_from_GEO", "OMIM_Disease", "Jensen_DISEASES", "DSigDB", "dbGaP", "Jensen_TISSUES", "Jensen_COMPARTMENTS", "ARCHS4_Tissues", "Tissue_Protein_Expression_from_Human_Proteome_Map", "Tissue_Protein_Expression_from_ProteomicsDB", "Mouse_Gene_Atlas", "ESCAPE", "GeneSigDB", "Chromosome_Location", "MSigDB_Computational", "Genes_Associated_with_NIH_Grants")
+  dbs <- c(dbs_Onto_Path, dbs_Regul, dbs_Drug_Tissue_Other)
+  
+  ### Initialize list, so I can work on it
+  enriched <- list()
+  ### Establish appropriate amount of for loops
+  loop_enr1 <- seq(from = 1, to = comparison_number)
+  
+  for(n in loop_enr1){
+  enriched[[n]] <- enrichR::enrichr(tibble_list[[n]][[gene_names_column]], dbs) %>%
+    map(filter, P.value <= 0.05) %>%
+    map(as.tibble)
+  }
+  
+  ### Initialize list, so I can work on it
+  enriched_names <- list()
+  ### Establish appropriate amount of for loops
+  loop_enr2 <- seq(from = 1, to = length(dbs))
+  
+  ### Add information on databaseses used
+  for(n in loop_enr2){
+    enriched_names[[n]] <- enriched[[n]]%>%
+      mutate(Database = dbs[n])
+  }
+  
+  merged_enriched_names <- rlist::list.rbind(enriched_names)
+}
+
+
+
+
+
+
+  class()
+annotated_tibble_list <- list()
+
+
+for(n in loop_enr1){
+  enriched <- enrichR::enrichr(c("Runx1", "Gfi1", "Gfi1b", "Spi1", "Gata1", "Kdr"), dbs) %>%
+    map(filter, P.value <= 0.05) %>%
+    map(as.tibble)
+
+  
+  
+  
+  ##########################################################
+  ############ work on this now ####################################
+  ##########################################################  
+
+  
+  ### Initialize list, so I can work on it
+  enriched <- list()
+  ### Establish appropriate amount of for loops
+  loop_enr1 <- seq(from = 1, to = 5)
+  
+  for(n in loop_enr1){
+    enriched[[n]] <- enrichR::enrichr(enrich_overview_list[[n]][[1]], dbs) %>%
+      map(filter, P.value <= 0.05) %>%
+      map(as.tibble)
+  }
+  
+enriched[[1]] <- enrichR::enrichr(enrich_overview_list[[1]][[1]], dbs)
+load("annotated_tibble_list.Rdata")
+
+zzz <-  subset(enrich_overview_list[[1]][[3]], !is.na(enrich_overview_list[[1]][[3]]))
+  
+xxx <- enrich_overview_list[[1]][[1]]
+yyy <- c("Runx1", "Gfi1", "Gfi1b", "Spi1", "Gata1", "Kdr")
+############ (5) RUN ENRICHR ###########
 
 ##########################################################
 ############ ANALYSIS ####################################
