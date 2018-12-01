@@ -2,8 +2,8 @@ library(tidyverse)
 
 PRE_ORG_DATA <- readr::read_tsv("test_dataset.txt", col_types = "ccccnnnnncccc", locale = locale(decimal_mark = ","))
 
-ORG_DATA <- test %>%
-  mutate(ID_NUM = row.names(test))
+ORG_DATA <- PRE_ORG_DATA %>%
+  dplyr::mutate(ID_NUM = row.names(PRE_ORG_DATA))
 
 
 
@@ -21,7 +21,7 @@ ORG_DATA__2__NAs <- ORG_DATA %>%
 ORG_DATA__3__sum_of_NONEs_and_NAs <- nrow(ORG_DATA__1__NONEs) + nrow(ORG_DATA__2__NAs)
 
 # Here is number of unidentified rows sliped during filtering out bad values
-ORG_DATA__x__missing_processed_rows <- nrow(ORG_DATA) - (ORG_DATA__3__sum_of_NONEs_and_NAs + nrow(ORG_DATA_NO_UNIDS))
+ORG_DATA__x__missing_processed_rows <- nrow(ORG_DATA) - (ORG_DATA__3__sum_of_NONEs_and_NAs + nrow(NO_UNIDS_ORG_DATA))
 
 if (ORG_DATA__x__missing_processed_rows != 0){ 
   stop("Hey, buddy! You have some wierd values in Your raw data, guy! Better check whats happening, or Your results will smell of farts!")
@@ -34,19 +34,70 @@ return(ORG_DATA__x__missing_processed_rows)
 
 
 ## Subset of table without "NONE" gene ids.
-ORG_DATA_NO_UNIDS <- ORG_DATA %>%
+NO_UNIDS_ORG_DATA <- ORG_DATA %>%
   dplyr::filter(Gene_symbol != "NONE" & !is.na(Gene_symbol))
 
 FUNCTION__1__check_rm_of_unid_val() # Check if it went well
 
 
-after_filter <- as.tibble(c(test_NONE$ID_NUM, test_NONErm$ID_NUM))
-colnames(after_filter) <- "ID_NUM"
+###### WHOLE DATASET ANALYSIS ######
 
-xxx <- anti_join(testmutate, after_filter, by = "ID_NUM")
+# Tutaj liczymy ile razy geny występują w oryginalnym dataset, nie patrząc czy są up czy down
+WHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
+  select(Gene_symbol) %>%
+  group_by(Gene_symbol) %>%
+  summarise(number = n())
 
-test_N <- replace_na(data = test$Gene_symbol, replace = "NONE")
-length(unique(test$Probe_ID))  
-xx <- is.na(test$Gene_symbol)
 
-  dplyr::filter(Gene_symbol == is.na(Gene_symbol)) %>%
+
+# Tutaj liczymy ile razy geny występują w oryginalnym dataset, patrząc czy są up czy down
+UorDWHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
+  select(Gene_symbol, logFC) %>%
+  mutate(Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) %>%
+  mutate(Symbol_direction = paste(Gene_symbol, Symbol_direction, sep = "_")) %>%
+  group_by(Symbol_direction) %>%
+  summarise(number = n()) %>% 
+  mutate(Gene_symbol2 = str_remove(Symbol_direction, "_.*"))
+
+###### WHOLE DATASET ANALYSIS ######
+
+
+
+###### COMPARISONS-CENTERED ANALYSIS ######
+
+# Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, nie patrząc czy są up czy down
+COMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
+  select(GroupID, Gene_symbol) %>%
+  group_by(GroupID, Gene_symbol) %>%
+  summarise(number = n())    
+
+
+
+# Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, patrząc czy są up czy down    
+UorDCOMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
+  select(GroupID, Gene_symbol, logFC) %>%
+  mutate(Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) %>%
+  mutate(Symbol_direction = paste(Gene_symbol, Symbol_direction, sep = "_")) %>%
+  group_by(GroupID, Symbol_direction) %>%
+  summarise(Sym_dir_number = n()) %>%
+  mutate(Gene_symbol2 = str_remove(Symbol_direction, "_.*"))
+
+
+
+#Divide data into genes expressed in single direction in given comparison, vs genes expressed in different direction (bad genes)
+nonUNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UorDCOMP_NO_UNIDS_ORG_DATA %>%
+  group_by(GroupID) %>%
+  filter(duplicated(Gene_symbol2, fromLast = T) | duplicated(Gene_symbol2))
+
+UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UorDCOMP_NO_UNIDS_ORG_DATA %>%
+  group_by(GroupID) %>%
+  filter(!duplicated(Gene_symbol2, fromLast = T) & !duplicated(Gene_symbol2))
+
+# Check if unique/duplicated division went well           
+if (nrow(UorDCOMP_NO_UNIDS_ORG_DATA) - (nrow(nonUNIQ_UorDCOMP_NO_UNIDS_ORG_DATA) + nrow(UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA)) != 0){ 
+  stop("Hey, fwend! You have some wierd values in Your counted data, buddy! Better check whats happening, or Your results will smell of moose scrotum!")
+}
+
+
+
+###### COMPARISONS-CENTERED ANALYSIS ######
