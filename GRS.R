@@ -1,5 +1,7 @@
 library(tidyverse)
 
+COMPARISONS <- readr::read_tsv("comparisons.txt", col_types = "cccccccccccccccc")
+
 PRE_ORG_DATA <- readr::read_tsv("test_dataset.txt", col_types = "ccccnnnnncccc", locale = locale(decimal_mark = ","))
 
 ORG_DATA <- PRE_ORG_DATA %>%
@@ -65,20 +67,27 @@ UorDWHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
 
 ###### COMPARISONS-CENTERED ANALYSIS ######
 
+
+
+### Here we set whether we want to analyze papers or comparisons
+P_or_C = quo(Paper) #" GroupID OR Paper "
+
+
+
 # Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, nie patrząc czy są up czy down
 COMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
-  select(GroupID, Gene_symbol) %>%
-  group_by(GroupID, Gene_symbol) %>%
-  summarise(number = n())    
+  select(!!P_or_C, Gene_symbol) %>%
+  group_by(!!P_or_C, Gene_symbol) %>%
+  summarise(number = n())
 
 
 
 # Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, patrząc czy są up czy down    
 UorDCOMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
-  select(GroupID, Gene_symbol, logFC) %>%
+  select(!!P_or_C, Gene_symbol, logFC) %>%
   mutate(Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) %>%
   mutate(Symbol_direction = paste(Gene_symbol, Symbol_direction, sep = "_")) %>%
-  group_by(GroupID, Symbol_direction) %>%
+  group_by(!!P_or_C, Symbol_direction) %>%
   summarise(Sym_dir_number = n()) %>%
   mutate(Gene_symbol2 = str_remove(Symbol_direction, "_.*"))
 
@@ -86,18 +95,29 @@ UorDCOMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
 
 #Divide data into genes expressed in single direction in given comparison, vs genes expressed in different direction (bad genes)
 nonUNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UorDCOMP_NO_UNIDS_ORG_DATA %>%
-  group_by(GroupID) %>%
+  group_by(!!P_or_C) %>%
   filter(duplicated(Gene_symbol2, fromLast = T) | duplicated(Gene_symbol2))
 
 UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UorDCOMP_NO_UNIDS_ORG_DATA %>%
-  group_by(GroupID) %>%
+  group_by(!!P_or_C) %>%
   filter(!duplicated(Gene_symbol2, fromLast = T) & !duplicated(Gene_symbol2))
+
+
 
 # Check if unique/duplicated division went well           
 if (nrow(UorDCOMP_NO_UNIDS_ORG_DATA) - (nrow(nonUNIQ_UorDCOMP_NO_UNIDS_ORG_DATA) + nrow(UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA)) != 0){ 
   stop("Hey, fwend! You have some wierd values in Your counted data, buddy! Better check whats happening, or Your results will smell of moose scrotum!")
 }
 
+
+
+# Here we make a table only with genes that were replicated in few comparisons
+REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA %>%
+  filter(Sym_dir_number >= 3)
+
+
+#Annotate base on Paper OR GroupID
+ANNO_REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- merge(REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA, COMPARISONS, by = "Paper")
 
 
 ###### COMPARISONS-CENTERED ANALYSIS ######
