@@ -1,11 +1,98 @@
 library(tidyverse)
 
+setwd("E:/Projekty/GRS - GJt Review Stress")
+
+GRS <- read_tsv("GRS.txt", col_types = "ccccnnnnnccccc")
+
+one <- read.table("GPL6887.txt", header = T)
+two <- read.table("GPL6887_MA.txt", header = T)
+
+three <- merge(one, two, all.x = T, by = "ProbeID")
+write.table(three, "xxx6.txt", sep = "\t")
+
+
+
+
+
+library(tidyverse)
+
 COMPARISONS <- readr::read_tsv("comparisons.txt", col_types = "cccccccccccccccc")
 
 PRE_ORG_DATA <- readr::read_tsv("test_dataset.txt", col_types = "ccccnnnnncccc", locale = locale(decimal_mark = ","))
 
 ORG_DATA <- PRE_ORG_DATA %>%
   dplyr::mutate(ID_NUM = row.names(PRE_ORG_DATA))
+
+
+
+###### EXTRACT ANNOTATIONS FROM BIOMART ######
+
+library(biomaRt)
+
+
+
+
+
+listMarts()
+
+usedMartRAT <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl")
+usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl") # 4 
+
+
+
+
+# Here we are trying to choose proper microarrays
+filtersRAT <- listFilters(usedMartRAT)
+filtersMUS <- listFilters(usedMartMUS)
+
+attributesRAT <- listAttributes(usedMartRAT)
+attributesMUS <- listAttributes(usedMartMUS)
+
+PLATFORMS <- read.csv("platforms.txt", header = F)
+PLATFORMS$Biomart <- NA
+PLATFORMS$Biomart[1] <- subset(filtersMUS, filtersMUS$description == "ILLUMINA MouseWG 6 V2 probe ID(s) [e.g. ILMN_1240829]")[[1]]
+PLATFORMS$Biomart[2] <- subset(filtersRAT, filtersRAT$description == "AFFY RaGene 1 0 st v1 probe ID(s) [e.g. 10930560]")[[1]]
+PLATFORMS$Biomart[3] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
+PLATFORMS$Biomart[4] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 2 1 st v1 probe ID(s) [e.g. 17532593]")[[1]]
+PLATFORMS$Biomart[5] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
+PLATFORMS$Biomart[6] <- subset(filtersRAT, filtersRAT$description == "AFFY Rat230 2 probe ID(s) [e.g. 1375651_at]")[[1]]
+PLATFORMS$Biomart[7] <- subset(filtersMUS, filtersMUS$description == "AGILENT WholeGenome 4x44k v1 probe ID(s) [e.g. A_51_P323880]")[[1]]
+PLATFORMS$Biomart[8] <- subset(filtersMUS, filtersMUS$description == "AFFY MG U74Av2 probe ID(s) [e.g. 102126_at]")[[1]]
+PLATFORMS$Biomart[9] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
+PLATFORMS$Biomart[10] <- NA
+PLATFORMS$Biomart[11] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
+PLATFORMS$Biomart[12] <- NA
+
+
+platforms_to_get <- unique(subset(PLATFORMS$Biomart, !is.na(PLATFORMS$Biomart)))
+
+
+#Tutaj trzeba zrobić tak: zrobić .txt files z każdego z eksperymentów. Przefiltrować odpowiednią bazę danych przez nazwy sond z tego eksperymentu.
+#Potem jeszcze trzeba je sprowadzić do jednolitego nazewnictwa (mus or homo?)
+
+featureDat <- getBM(attributes = c("agilent_wholegenome_4x44k_v1", "affy_mg_u74av2", "affy_mogene_1_0_st_v1"), 
+                    mart = usedMartMUS)
+
+featureDat <- getBM(attributes = c("affy_ragene_2_1_st_v1", "external_gene_name"), 
+                    filters = "affy_ragene_2_1_st_v1", 
+                    values = rownames(dataMatrixMW),
+                    uniqueRows = TRUE,
+                    mart = usedMart) #This is from Biomart. Here we download the names
+xxx <- aggregate(external_gene_name~affy_ragene_2_1_st_v1, data = featureDat, c) #Here we collapse names, cause row names have to be unique and many probes correspond to more than 1 gene name in biomart
+
+yyy <- as.data.frame(rownames(dataMatrixMW))#Here we produce full list of features, cause some of them dont have annotations in biomart and they are not returned when annotations
+
+colnames(yyy) <- "affy_ragene_2_1_st_v1" #This is for the merge to work
+xxxx <- merge(yyy, xxx, by = "affy_ragene_2_1_st_v1", all.x = TRUE) #Here we produce annotated full list of features
+rownames(xxxx) <- rownames(dataMatrixMW) #Here we name the features
+xxxx$affy_ragene_2_1_st_v1 <- as.character(xxxx$affy_ragene_2_1_st_v1) #Not sure if thats nececcary
+xxxx$external_gene_name <- as.character(xxxx$external_gene_name) #Not sure if thats nececcary
+
+featureMW <- new("AnnotatedDataFrame", data = xxxx) #Feature data is in Annotated Dataframe format
+dim(featureDat)
+rm(usedMart, featureDat, xxx, xxxx, yyy)
+
+###### EXTRACT ANNOTATIONS FROM BIOMART ######
 
 
 
@@ -44,7 +131,7 @@ FUNCTION__1__check_rm_of_unid_val() # Check if it went well
 
 ###### WHOLE DATASET ANALYSIS ######
 
-# Tutaj liczymy ile razy geny występują w oryginalnym dataset, nie patrząc czy są up czy down
+# Tutaj liczymy ile razy geny wyst?puj? w oryginalnym dataset, nie patrz?c czy s? up czy down
 WHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
   select(Gene_symbol) %>%
   group_by(Gene_symbol) %>%
@@ -52,7 +139,7 @@ WHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
 
 
 
-# Tutaj liczymy ile razy geny występują w oryginalnym dataset, patrząc czy są up czy down
+# Tutaj liczymy ile razy geny wyst?puj? w oryginalnym dataset, patrz?c czy s? up czy down
 UorDWHOLE_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
   select(Gene_symbol, logFC) %>%
   mutate(Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) %>%
@@ -74,7 +161,7 @@ P_or_C = quo(Paper) #" GroupID OR Paper "
 
 
 
-# Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, nie patrząc czy są up czy down
+# Tutaj liczymy ile razy geny wyst?puj? W KA?DYM Z POR?WNA?, nie patrz?c czy s? up czy down
 COMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
   select(!!P_or_C, Gene_symbol) %>%
   group_by(!!P_or_C, Gene_symbol) %>%
@@ -82,7 +169,7 @@ COMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
 
 
 
-# Tutaj liczymy ile razy geny występują W KAŻDYM Z PORÓWNAŃ, patrząc czy są up czy down    
+# Tutaj liczymy ile razy geny wyst?puj? W KA?DYM Z POR?WNA?, patrz?c czy s? up czy down    
 UorDCOMP_NO_UNIDS_ORG_DATA <- NO_UNIDS_ORG_DATA %>%
   select(!!P_or_C, Gene_symbol, logFC) %>%
   mutate(Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) %>%
@@ -118,6 +205,3 @@ REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA %>%
 
 #Annotate base on Paper OR GroupID
 ANNO_REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- merge(REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA, COMPARISONS, by = "Paper")
-
-
-###### COMPARISONS-CENTERED ANALYSIS ######
