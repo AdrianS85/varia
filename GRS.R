@@ -16,39 +16,38 @@ write.table(three, "xxx6.txt", sep = "\t")
 
 library(tidyverse)
 
-COMPARISONS <- readr::read_tsv("comparisons.txt", col_types = "cccccccccccccccc")
+COMPARISONS <- readr::read_tsv("comparisons.txt", col_types = "ncccccccccccccccc")
 
-PRE_ORG_DATA <- readr::read_tsv("test_dataset.txt", col_types = "ccccnnnnncccc", locale = locale(decimal_mark = ","))
+#PRE_ORG_DATA <- readr::read_tsv("test_dataset.txt", col_types = "ccccnnnnncccc", locale = locale(decimal_mark = ","))
+#ORG_DATA <- PRE_ORG_DATA %>%
+#  dplyr::mutate(ID_NUM = row.names(PRE_ORG_DATA))
 
-ORG_DATA <- PRE_ORG_DATA %>%
-  dplyr::mutate(ID_NUM = row.names(PRE_ORG_DATA))
+DATA <- readr::read_tsv("G1.txt", col_types = "nccccccnnnnncccc", locale = locale(decimal_mark = ","))
+
+LIST_DATA <- split(DATA, f = DATA$Paper)
+
+
 
 
 
 ###### EXTRACT ANNOTATIONS FROM BIOMART ######
 
 library(biomaRt)
-
-
-
-
-
-listMarts()
+#listMarts()
 
 usedMartRAT <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl")
-usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl") # 4 
+usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
 
+#attributesRAT <- listAttributes(usedMartRAT)
+#attributesMUS <- listAttributes(usedMartMUS)
 
-
-
-# Here we are trying to choose proper microarrays
+###### Here we are trying to choose proper microarrays ###### 
 filtersRAT <- listFilters(usedMartRAT)
 filtersMUS <- listFilters(usedMartMUS)
 
-attributesRAT <- listAttributes(usedMartRAT)
-attributesMUS <- listAttributes(usedMartMUS)
-
 PLATFORMS <- read.csv("platforms.txt", header = F)
+
+# Name ensembl databases
 PLATFORMS$Biomart <- NA
 PLATFORMS$Biomart[1] <- subset(filtersMUS, filtersMUS$description == "ILLUMINA MouseWG 6 V2 probe ID(s) [e.g. ILMN_1240829]")[[1]]
 PLATFORMS$Biomart[2] <- subset(filtersRAT, filtersRAT$description == "AFFY RaGene 1 0 st v1 probe ID(s) [e.g. 10930560]")[[1]]
@@ -63,8 +62,52 @@ PLATFORMS$Biomart[10] <- NA
 PLATFORMS$Biomart[11] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
 PLATFORMS$Biomart[12] <- NA
 
+# Add species information
+PLATFORMS$Species <- c("m", "r", "m", "m", "m", "r", "m", "m", "m", "m", "m", "m")
 
-platforms_to_get <- unique(subset(PLATFORMS$Biomart, !is.na(PLATFORMS$Biomart)))
+# Make platform information
+PLATFORMS <- PLATFORMS %>%
+  mutate(PL_ID = str_remove(V1, "[/ ].*"), )
+  
+
+###### Here we are trying to choose proper microarrays ###### 
+
+
+
+###### Here we are annotating experiments with biomart platform descriptions ###### 
+
+for_annot_COMPARISONS <- COMPARISONS %>%
+  dplyr::select(Paper, PL_ID) %>%
+  unique()
+
+FOR_ANNOT_PLATFORMS <- merge(for_annot_COMPARISONS, PLATFORMS, by = "PL_ID") %>%
+  arrange(Paper)
+
+###### Here we are annotating experiments with biomart platform descriptions ###### 
+
+# Error in getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"),  :     
+#                  Invalid attribute(s): NA 
+#                Please use the function 'listAttributes' to get valid attribute names
+#                
+#                REMOVE NA PLATFORMS
+
+
+for (n in seq(1,nrow(FOR_ANNOT_PLATFORMS))){
+  featureDat <- getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"), 
+                      filters = FOR_ANNOT_PLATFORMS$Biomart[n], 
+                      values = LIST_DATA[[n]]$Probe_ID,
+                      uniqueRows = F,
+                      mart = 
+                        if(FOR_ANNOT_PLATFORMS$Species[n] == "m"){ usedMartMUS } else if(FOR_ANNOT_PLATFORMS$Species[n] == "r"){ usedMartRAT }
+  )
+  }
+
+for (n in seq(1,nrow(FOR_ANNOT_PLATFORMS))){
+
+}
+
+ifelse(FOR_ANNOT_PLATFORMS$Species[n]), yes, no)
+FOR_ANNOT_PLATFORMS$Species[1]
 
 
 #Tutaj trzeba zrobić tak: zrobić .txt files z każdego z eksperymentów. Przefiltrować odpowiednią bazę danych przez nazwy sond z tego eksperymentu.
@@ -205,3 +248,6 @@ REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA %>%
 
 #Annotate base on Paper OR GroupID
 ANNO_REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- merge(REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA, COMPARISONS, by = "Paper")
+
+
+###### COMPARISONS-CENTERED ANALYSIS ######
