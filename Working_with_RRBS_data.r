@@ -132,11 +132,15 @@ function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_n
 
 ############ CLUSTERING ###########
 ### Get all bedgraph files into single matrix
-wget https://raw.githubusercontent.com/arq5x/bedtools/master/genomes/mouse.mm10.genome
-sed 's/ \+/\t/' mouse.mm10.genome > mouse.mm10.genomeTABS
-bedtools multiinter -header -empty -g mouse.mm10.genomeTABS -filler NA -i *bedGraph.gz > xxx
-ls *bedGraph.gz > LongNames; sed 's/_R1.*//' LongNames >> ShortNames; paste ShortNames LongNames > CompareNames
-
+wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
+tar jxvf bedtools-2.27.1.tar.gz
+cp bedtools2/bin/* /usr/local/bin
+gzip -dk *gz
+ls *bedGraph > AllLongNames; sed 's/_R1.*//' AllLongNames > AllShortNames; paste AllShortNames AllLongNames > AllCompareNames
+parallel --colsep '\t' "sort -k 1,1 -k2,2n {2} > {1}.clust.sort.bedGraph" :::: AllCompareNames
+bedtools multiinter -header -i B*.clust.sort.bedGraph > BrainAllCpgs ##Requires that each interval file is sorted by chrom/start
+bedtools multiinter -header -i L*.clust.sort.bedGraph > LiverAllCpgs
+bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
 ############ CLUSTERING ###########
 
 
