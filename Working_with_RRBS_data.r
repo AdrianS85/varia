@@ -135,6 +135,7 @@ function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_n
 wget https://raw.githubusercontent.com/arq5x/bedtools/master/genomes/mouse.mm10.genome
 sed 's/ \+/\t/' mouse.mm10.genome > mouse.mm10.genomeTABS
 bedtools multiinter -header -empty -g mouse.mm10.genomeTABS -filler NA -i *bedGraph.gz > xxx
+ls *bedGraph.gz > LongNames; sed 's/_R1.*//' LongNames >> ShortNames; paste ShortNames LongNames > CompareNames
 
 ############ CLUSTERING ###########
 
