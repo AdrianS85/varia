@@ -130,4 +130,13 @@ function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_n
 
 ############ GET GENES FOR ENRICHMENT ###########
 
+############ CLUSTERING ###########
+### Get all bedgraph files into single matrix
+wget https://raw.githubusercontent.com/arq5x/bedtools/master/genomes/mouse.mm10.genome
+sed 's/ \+/\t/' mouse.mm10.genome > mouse.mm10.genomeTABS
+bedtools multiinter -header -empty -g mouse.mm10.genomeTABS -filler NA -i *bedGraph.gz > xxx
+
+############ CLUSTERING ###########
+
+
 ############ ANALYSIS ####################################
