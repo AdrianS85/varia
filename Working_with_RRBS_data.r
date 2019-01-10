@@ -130,17 +130,34 @@ function_write_list(gene_and_promoters_unique, paste0("enrich_", this_analysis_n
 
 ############ GET GENES FOR ENRICHMENT ###########
 
+
+
 ############ CLUSTERING ###########
 ### Get all bedgraph files into single matrix
+#In folder with all .bedgraph.gz files
+### Get bedtools
 wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
 tar jxvf bedtools-2.27.1.tar.gz
 cp bedtools2/bin/* /usr/local/bin
+
+### Prepare sorted bedgraph files
 gzip -dk *gz
 ls *bedGraph > AllLongNames; sed 's/_R1.*//' AllLongNames > AllShortNames; paste AllShortNames AllLongNames > AllCompareNames
-parallel --colsep '\t' "sort -k 1,1 -k2,2n {2} > {1}.clust.sort.bedGraph" :::: AllCompareNames
-bedtools multiinter -header -i B*.clust.sort.bedGraph > BrainAllCpgs ##Requires that each interval file is sorted by chrom/start
+parallel --colsep '\t' "sort -k 1,1 -k2,2n {2} > {1}.clust.sort.bedGraph" :::: AllCompareNames ##sort a BED file by chromosome then by start position https://bedtools.readthedocs.io/en/latest/content/tools/sort.html
+
+
+### Prepare list of all captured CpG sites in all bedgraph files in given tissue
+ls B*.clust.sort.bedGraph | sudo tee BrainMultiinterOrder
+sudo bedtools multiinter -header -i B*.clust.sort.bedGraph | sudo tee BrainAllCpgs ##Requires that each interval file is sorted by chrom/start
+ls L*.clust.sort.bedGraph | sudo tee LiverMultiinterOrder
 bedtools multiinter -header -i L*.clust.sort.bedGraph > LiverAllCpgs
+ls L*.clust.sort.bedGraph | sudo tee PlacentaMultiinterOrder
 bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
+
+### INTO R:
+x <- readr::read_tsv(file = "SmallBrainAllCpgs", col_names = c("chrom", "start", "end", "num", "list"), col_types = "cnnnc") ### Read only relevant columns
+x <- x[-1,] ### For some reason first row seem to include column names. These need to be removed
+xx <- x %>% dplyr::mutate(ID = paste(chrom, start, end, sep = "_"))
 ############ CLUSTERING ###########
 
 
