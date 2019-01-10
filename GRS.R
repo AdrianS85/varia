@@ -1,14 +1,14 @@
-library(tidyverse)
-
-setwd("E:/Projekty/GRS - GJt Review Stress")
-
-GRS <- read_tsv("GRS.txt", col_types = "ccccnnnnnccccc")
-
-one <- read.table("GPL6887.txt", header = T)
-two <- read.table("GPL6887_MA.txt", header = T)
-
-three <- merge(one, two, all.x = T, by = "ProbeID")
-write.table(three, "xxx6.txt", sep = "\t")
+# library(tidyverse)
+# 
+# setwd("E:/Projekty/GRS - GJt Review Stress")
+# 
+# GRS <- read_tsv("GRS.txt", col_types = "ccccnnnnnccccc")
+# 
+# one <- read.table("GPL6887.txt", header = T)
+# two <- read.table("GPL6887_MA.txt", header = T)
+# 
+# three <- merge(one, two, all.x = T, by = "ProbeID")
+# write.table(three, "xxx6.txt", sep = "\t")
 
 
 
@@ -85,15 +85,15 @@ FOR_ANNOT_PLATFORMS <- merge(for_annot_COMPARISONS, PLATFORMS, by = "PL_ID") %>%
 
 ###### Here we are annotating experiments with biomart platform descriptions ###### 
 
-# Error in getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"),  :     
-#                  Invalid attribute(s): NA 
-#                Please use the function 'listAttributes' to get valid attribute names
-#                
-#                REMOVE NA PLATFORMS
 
 
-for (n in seq(1,nrow(FOR_ANNOT_PLATFORMS))){
-  featureDat <- getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"), 
+###### Here we need to remove experiments with microarrays not captured in ensembl ######
+WHICH_EXP_TO_ANAL <- seq(1,nrow(FOR_ANNOT_PLATFORMS))[c(-13, -16)]
+
+## Here we are doing probe ensembl annotation
+ANNOT_LIST_DATA <- list()
+for (n in WHICH_EXP_TO_ANAL){
+  ANNOT_LIST_DATA[[n]] <- getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"), 
                       filters = FOR_ANNOT_PLATFORMS$Biomart[n], 
                       values = LIST_DATA[[n]]$Probe_ID,
                       uniqueRows = F,
@@ -102,16 +102,57 @@ for (n in seq(1,nrow(FOR_ANNOT_PLATFORMS))){
   )
   }
 
-for (n in seq(1,nrow(FOR_ANNOT_PLATFORMS))){
+# Here we marge probes annotated with ensembl with probes annotated with other methods
+TEST_ANNOTATION <- list()
+for (n in WHICH_EXP_TO_ANAL){
+  colnames(ANNOT_LIST_DATA[[n]]) <- c("Probe_ID", "ensembl_gene_name")
+  TEST_ANNOTATION[[n]] <- merge(LIST_DATA[[n]], ANNOT_LIST_DATA[[n]], by = "Probe_ID")
+}  
 
-}
+# Here we write output test annotation files
+dir.create("TEST_ANNOTATION")
+for (n in WHICH_EXP_TO_ANAL){
+  write.table(TEST_ANNOTATION[[n]], file = paste0("TEST_ANNOTATION/", n, ".txt"), sep = "\t", dec = ",")
+} 
 
-ifelse(FOR_ANNOT_PLATFORMS$Species[n]), yes, no)
-FOR_ANNOT_PLATFORMS$Species[1]
 
 
-#Tutaj trzeba zrobić tak: zrobić .txt files z każdego z eksperymentów. Przefiltrować odpowiednią bazę danych przez nazwy sond z tego eksperymentu.
-#Potem jeszcze trzeba je sprowadzić do jednolitego nazewnictwa (mus or homo?)
+
+
+### Here we get all the written output tables
+xxx <- lapply(list.files(pattern = "*.txt"), FUN = read.delim, header = T, sep = "\t", dec = ",")
+### Here we merge list of tables into single table
+yyy <- rlist::list.rbind(xxx) #####!!!!!!!!!!!!
+
+zzz <- read.delim(file = "test adnotacji wg ensemble.txt", header = T) ### Here we load GJts probes to be extracted
+
+qqq <- merge(x = zzz, y = yyy, by = "Probe_ID", all.x = T) ### Here we extract the probes...
+uniq_qqq <- unique(qqq) ### ... and remove duplicated rows
+
+write_tsv(x = uniq_qqq, path = "100_genow.txt", na = "NA", append = FALSE)
+
+### HERE WE EXTRACT SPECIFIC PROBES FROM DATASET FOR GRZEGORZ ###
+
+
+###### Here we need to remove experiments with microarrays not captured in ensembl ######
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Tutaj trzeba zrobiÄ‡ tak: zrobiÄ‡ .txt files z kaĹĽdego z eksperymentĂłw. PrzefiltrowaÄ‡ odpowiedniÄ… bazÄ™ danych przez nazwy sond z tego eksperymentu.
+#Potem jeszcze trzeba je sprowadziÄ‡ do jednolitego nazewnictwa (mus or homo?)
 
 featureDat <- getBM(attributes = c("agilent_wholegenome_4x44k_v1", "affy_mg_u74av2", "affy_mogene_1_0_st_v1"), 
                     mart = usedMartMUS)
@@ -251,3 +292,42 @@ ANNO_REPL_UNIQ_UorDCOMP_NO_UNIDS_ORG_DATA <- merge(REPL_UNIQ_UorDCOMP_NO_UNIDS_O
 
 
 ###### COMPARISONS-CENTERED ANALYSIS ######
+
+
+
+             
+      
+    
+    
+    
+
+  
+  
+  
+  
+  
+  
+KAJA:
+
+setwd("E:/Projekty/Kaja Review LDH")
+  
+library(enrichR)
+
+dbs_Onto_Path <- c("GO_Molecular_Function_2018", "GO_Cellular_Component_2018", "GO_Biological_Process_2018", "MGI_Mammalian_Phenotype_2017", "Human_Phenotype_Ontology", "KEGG_2016", "WikiPathways_2016", "Panther_2016", "Reactome_2016", "BioCarta_2016", "NCI-Nature_2016", "ARCHS4_Kinases_Coexp", "HumanCyc_2016", "BioPlex_2017", "SILAC_Phosphoproteomics")
+dbs_Regul <- c("Genome_Browser_PWMs", "TRANSFAC_and_JASPAR_PWMs", "Transcription_Factor_PPIs", "ChEA_2016",  "TF-LOF_Expression_from_GEO", "PPI_Hub_Proteins", "ENCODE_TF_ChIP-seq_2015", "ENCODE_Histone_Modifications_2015", "ENCODE_and_ChEA_Consensus_TFs_from_ChIP-X", "CORUM", "Pfam_InterPro_Domains", "Phosphatase_Substrates_from_DEPOD", "TF_Perturbations_Followed_by_Expression", "ARCHS4_TFs_Coexp", "miRTarBase_2017", "TargetScan_microRNA_2017", "Enrichr_Submissions_TF-Gene_Coocurrence", "Epigenomics_Roadmap_HM_ChIP-seq")
+dbs_Drug_Tissue_Other <- c("Jensen_TISSUES", "ARCHS4_IDG_Coexp", "DrugMatrix", "RNA-Seq_Disease_Gene_and_Drug_Signatures_from_GEO", "OMIM_Disease", "Jensen_DISEASES", "DSigDB",  "Jensen_COMPARTMENTS", "ARCHS4_Tissues", "Tissue_Protein_Expression_from_Human_Proteome_Map", "Tissue_Protein_Expression_from_ProteomicsDB", "Mouse_Gene_Atlas", "ESCAPE", "Chromosome_Location", "MSigDB_Computational", "dbGaP", "Genes_Associated_with_NIH_Grants", "GeneSigDB")
+dbs <- c(dbs_Onto_Path, dbs_Regul, dbs_Drug_Tissue_Other)
+
+genes <- c("ldha", "ldhb")
+
+ALL_ENRICHR <- enrichR::enrichr(genes, dbs)
+ALL_ENRICHR_DATA <- rlist::list.rbind(ALL_ENRICHR)
+write.table(ALL_ENRICHR_DATA, "ALL_ENRICHR_DATA.txt", sep="\t")
+
+getwd()
+
+tp <- read.table("TF_PPI_FROM_ENRICHR.txt", header = T, stringsAsFactors = F)
+
+TP_ENRICHR <- enrichR::enrichr(tp$Enrichr_TFs_PPIs_unique, dbs_Onto_Path)
+ALL_TP_ENRICHR_DATA <- rlist::list.rbind(TP_ENRICHR)
+write.table(ALL_TP_ENRICHR_DATA, "ALL_TP_ENRICHR_DATA.txt", sep="\t")
