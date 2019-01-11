@@ -146,7 +146,7 @@ ls *bedGraph > AllLongNames; sed 's/_R1.*//' AllLongNames > AllShortNames; paste
 parallel --colsep '\t' "sort -k 1,1 -k2,2n {2} > {1}.clust.sort.bedGraph" :::: AllCompareNames ##sort a BED file by chromosome then by start position https://bedtools.readthedocs.io/en/latest/content/tools/sort.html
 
 
-### Prepare list of all captured CpG sites in all bedgraph files in given tissue
+### PREPARE list of all captured CpG sites in all bedgraph files in given tissue
 ls B*.clust.sort.bedGraph | sudo tee BrainMultiinterOrder
 sudo bedtools multiinter -header -i B*.clust.sort.bedGraph | sudo tee BrainAllCpgs ##Requires that each interval file is sorted by chrom/start
 ls L*.clust.sort.bedGraph | sudo tee LiverMultiinterOrder
@@ -156,8 +156,15 @@ bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
 
 ### INTO R:
 x <- readr::read_tsv(file = "BrainAllCpgs", col_types = "cnnnc") ### Read only relevant columns
-x <- x %>% dplyr::mutate(ID = paste(chrom, start, sep = "_"))
-x <- x[, 1:3]
+x <- x %>% dplyr::()
+x2 <- x[, 4:6]
+
+### PREPARE .bedgraph files
+https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
+
+bedgraph_tibble_list <- lapply(list.files(pattern = "*sort.bedGraph"), FUN = read_tsv, col_names = F, col_types = "cnnn") 
+z <- read_tsv(col_types = "cnnn")
+a_bedgraph_tibble_list <- bedgraph_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
 
 ### INTO R
 
