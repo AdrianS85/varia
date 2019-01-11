@@ -155,9 +155,9 @@ ls L*.clust.sort.bedGraph | sudo tee PlacentaMultiinterOrder
 bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
 
 ### INTO R:
-x <- readr::read_tsv(file = "SmallBrainAllCpgs", col_names = c("chrom", "start", "end", "num", "list"), col_types = "cnnnc") ### Read only relevant columns
-x <- x[-1,] ### For some reason first row seem to include column names. These need to be removed
-xx <- x %>% dplyr::mutate(ID = paste(chrom, start, sep = "_"))
+x <- readr::read_tsv(file = "BrainAllCpgs", col_types = "cnnnc") ### Read only relevant columns
+x <- x %>% dplyr::mutate(ID = paste(chrom, start, sep = "_"))
+x <- x[, 1:3]
 
 ### INTO R
 
