@@ -158,6 +158,14 @@ bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
 x <- readr::read_tsv(file = "SmallBrainAllCpgs", col_names = c("chrom", "start", "end", "num", "list"), col_types = "cnnnc") ### Read only relevant columns
 x <- x[-1,] ### For some reason first row seem to include column names. These need to be removed
 xx <- x %>% dplyr::mutate(ID = paste(chrom, start, end, sep = "_"))
+
+### INTO R
+
+### PREPARE DIFFERENTIALLY METHYLATED CPG FILES
+### Move diffmeth cpg files into the working folder. Rename them so that they are recognizable
+rename 's/^diffMethTable/b1_diffMethTable/' diffMethTable*
+
+
 ############ CLUSTERING ###########
 
 
