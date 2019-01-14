@@ -357,6 +357,8 @@ b_bedgraph_tibble_list <- a_bedgraph_tibble_list %>% map(select, X4, ID)
 bedgraph_names <- str_remove(list.files(pattern = "*sort.bedGraph"), "_S(.*)") 
 for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibble_list[[n]]) <- c(bedgraph_names[n], "ID") }
 
+Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), b_bedgraph_tibble_list)
+
 
 ### INTO R
 
