@@ -319,6 +319,50 @@ function_write_list(enrichment, paste0(factor1, "_enrichment"))
 
 ############ (4) GET GENES FOR ENRICHMENT ###########
 
+
+############ CLUSTERING ###########
+### Get all bedgraph files into single matrix
+#In folder with all .bedgraph.gz files
+### Get bedtools
+wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
+tar jxvf bedtools-2.27.1.tar.gz
+cp bedtools2/bin/* /usr/local/bin
+
+### Prepare sorted bedgraph files
+gzip -dk *gz
+ls *bedGraph > AllLongNames; sed 's/_R1.*//' AllLongNames > AllShortNames; paste AllShortNames AllLongNames > AllCompareNames
+parallel --colsep '\t' "sort -k 1,1 -k2,2n {2} > {1}.clust.sort.bedGraph" :::: AllCompareNames ##sort a BED file by chromosome then by start position https://bedtools.readthedocs.io/en/latest/content/tools/sort.html
+
+
+### PREPARE list of all captured CpG sites in all bedgraph files in given tissue
+ls B*.clust.sort.bedGraph | sudo tee BrainMultiinterOrder
+sudo bedtools multiinter -header -i B*.clust.sort.bedGraph | sudo tee BrainAllCpgs ##Requires that each interval file is sorted by chrom/start
+ls L*.clust.sort.bedGraph | sudo tee LiverMultiinterOrder
+bedtools multiinter -header -i L*.clust.sort.bedGraph > LiverAllCpgs
+ls L*.clust.sort.bedGraph | sudo tee PlacentaMultiinterOrder
+bedtools multiinter -header -i P*.clust.sort.bedGraph > PlacentaAllCpgs
+
+### INTO R:
+x <- readr::read_tsv(file = "BrainAllCpgs", col_types = "cnnnc") ### Read only relevant columns
+x <- x %>% dplyr::()
+x2 <- x[, 4:6]
+
+### PREPARE .bedgraph files
+https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
+
+bedgraph_tibble_list <- lapply(list.files(pattern = "*sort.bedGraph"), FUN = read_tsv, col_names = F, col_types = "cnnn") 
+a_bedgraph_tibble_list <- bedgraph_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
+b_bedgraph_tibble_list <- a_bedgraph_tibble_list %>% map(select, X4, ID)
+
+### INTO R
+
+### PREPARE DIFFERENTIALLY METHYLATED CPG FILES
+### Move diffmeth cpg files into the working folder. Rename them so that they are recognizable
+rename 's/^diffMethTable/b1_diffMethTable/' diffMethTable*
+
+
+############ CLUSTERING ###########
+
 ##########################################################
 ############ ANALYSIS ####################################
 ##########################################################
