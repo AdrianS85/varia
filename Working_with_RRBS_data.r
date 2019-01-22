@@ -350,14 +350,14 @@ x2 <- x[, 4:6]
 ### PREPARE .bedgraph files
 https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
 
-bedgraph_tibble_list <- lapply(list.files(pattern = "*sort.bedGraph"), FUN = read_tsv, col_names = F, col_types = "cnnn") 
+bedgraph_tibble_list <- lapply(list.files(pattern = "*sort.bedGraph"), FUN = readr::read_tsv, col_names = F, col_types = "cnnn") 
 a_bedgraph_tibble_list <- bedgraph_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
 b_bedgraph_tibble_list <- a_bedgraph_tibble_list %>% map(select, X4, ID)
 ## Name bedgraph columns with filenames
 bedgraph_names <- str_remove(list.files(pattern = "*sort.bedGraph"), "_S(.*)") 
 for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibble_list[[n]]) <- c(bedgraph_names[n], "ID") }
 
-Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), b_bedgraph_tibble_list)
+c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), b_bedgraph_tibble_list)
 
 
 ### INTO R
