@@ -20,5 +20,4 @@ names(vector_list) <- name_vector
 # Here is the crucial part: We produce list of genes belonging to each intersection of comparisons!
 inters <- attr(gplots::venn(vector_list, show.plot=FALSE),"intersections")
 rlist::list.save(x = inters, file = "intersections_names_list.json")
-write.list(z = inters, file = "intersections_names_list.txt")
 # convert to excel here: https://json-csv.com/
