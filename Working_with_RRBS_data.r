@@ -357,7 +357,7 @@ b_bedgraph_tibble_list <- a_bedgraph_tibble_list %>% map(select, X4, ID)
 bedgraph_names <- str_remove(list.files(pattern = "*sort.bedGraph"), "_S(.*)") 
 for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibble_list[[n]]) <- c(bedgraph_names[n], "ID") }
 
-c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), b_bedgraph_tibble_list)
+c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), b_bedgraph_tibble_list)
 
 write.table(c_bedgraph_tibble_list, file = "brain_all_bedgraphs.tsv", sep = "\t", dec = ".") # brain liver placenta
 
@@ -372,8 +372,16 @@ filtered_rnbead_sites <- rnbead_sites %>%
 for (n in seq(from = 1, to = length(names_sites))){
 filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
 }
+# Here we get singular table with all CpGs along with their diff and pval
 merged_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), filtered_rnbead_sites)
-                                 
+write.table(merged_filtered_rnbead_sites, file = "brain_diff_pval_sites.tsv", sep = "\t", dec = ".") # brain liver placenta
+
+#Now we merge diffsites and raw methylation values
+# Create pvaldiff with only IDs
+clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID, stringsAsFactors = F)
+colnames(clus_merged_filtered_rnbead_sites) <- "ID"
+
+for_clustering <- merge(clus_merged_filtered_rnbead_sites, c_bedgraph_tibble_list, by = "ID", all.x = T)
                                  
                                  
 ### INTO R
