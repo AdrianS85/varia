@@ -366,7 +366,8 @@ rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col
 names_sites <- str_remove(list.files(pattern = "^br_"), "_diff(.*)")  ## Change ^br to "_site_"
 # Filter the list to get only pval < 0.05 and diff higher than 5%. This wierd diffmeth.p.val > 1 is cause RnBeads throws some numbers as "e-9" or smth. And they are not read properly by R.
 filtered_rnbead_sites <- rnbead_sites %>% 
-                                 map(filter, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05)
+                                 map(filter, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05) %>%
+                                 map(mutate, ID = paste(Chromosome, Start, sep = "_"))
 # Add comparison naming column to site file                          
 for (n in seq(from = 1, to = length(names_sites))){
 filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
