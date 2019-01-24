@@ -362,7 +362,7 @@ c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE)
 write.table(c_bedgraph_tibble_list, file = "brain_all_bedgraphs.tsv", sep = "\t", dec = ".") # brain liver placenta
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
-rnbead_sites <- lapply(list.files(pattern = "br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc--n-n") 
+rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc--n-n") 
                                  
                                  
                                  
