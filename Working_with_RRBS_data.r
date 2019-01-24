@@ -371,8 +371,7 @@ filtered_rnbead_sites <- rnbead_sites %>%
 for (n in seq(from = 1, to = length(names_sites))){
 filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
 }
-                                 
-                                 
+merged_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), filtered_rnbead_sites)
                                  
                                  
                                  
