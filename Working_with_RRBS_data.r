@@ -359,7 +359,7 @@ for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibb
 
 c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), b_bedgraph_tibble_list)
 
-write.table(c_bedgraph_tibble_list, file = "all_bedgraphs.tsv", sep = "\t", dec = ".")
+write.table(c_bedgraph_tibble_list, file = "brain_all_bedgraphs.tsv", sep = "\t", dec = ".") # brain liver placenta
 
 ### INTO R
 
