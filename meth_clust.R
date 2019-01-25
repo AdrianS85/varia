@@ -36,8 +36,7 @@ bedgraph_names <- str_remove(list.files(pattern = "*sort.bedGraph"), "_S(.*)")
 for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibble_list[[n]]) <- c(bedgraph_names[n], "ID") }
 
 c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), b_bedgraph_tibble_list)
-
-write.table(c_bedgraph_tibble_list, file = "brain_all_bedgraphs.tsv", sep = "\t", dec = ".") # brain liver placenta
+write_tsv(c_bedgraph_tibble_list, "brain_all_bedgraphs.tsv") # brain liver placenta
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
 rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc--n-n") ## Change ^br to "_site_"
@@ -52,7 +51,7 @@ filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
 }
 # Here we get singular table with all CpGs along with their diff and pval
 merged_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), filtered_rnbead_sites)
-write.table(merged_filtered_rnbead_sites, file = "brain_diff_pval_sites.tsv", sep = "\t", dec = ".") # brain liver placenta
+write_tsv(merged_filtered_rnbead_sites, "brain_diff_pval_sites.tsv") # brain liver placenta
 
 #Now we merge diffsites and raw methylation values
 # Create pvaldiff with only IDs
@@ -60,8 +59,11 @@ clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID,
 colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
 for_clustering <- merge(clus_merged_filtered_rnbead_sites, c_bedgraph_tibble_list, by = "ID", all.x = T)
-write.table(for_clustering, file = "brain_for_clustering.tsv", sep = "\t", dec = ".") # brain liver placenta                               
-                                 
+write_tsv(for_clustering, "brain_for_clustering.tsv") # brain liver placenta                               
+
+ #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
+ # INTO BASH: ../cluster -f brain_for_clustering.tsv -m a -g 7 
+                                       
 ### INTO R
 
 ### PREPARE DIFFERENTIALLY METHYLATED CPG FILES
