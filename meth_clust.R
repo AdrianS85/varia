@@ -26,17 +26,18 @@ x <- x %>% dplyr::()
 x2 <- x[, 4:6]
 
 ### PREPARE .bedgraph files
-https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
+## https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
 
-bedgraph_tibble_list <- lapply(list.files(pattern = "*sort.bedGraph"), FUN = readr::read_tsv, col_names = F, col_types = "cnnn") 
-a_bedgraph_tibble_list <- bedgraph_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
-b_bedgraph_tibble_list <- a_bedgraph_tibble_list %>% map(select, X4, ID)
+cov_tibble_list <- lapply(list.files(pattern = "^B_(.*)bismark.cov$"), FUN = readr::read_tsv, col_names = F, col_types = "cnnn") ## B_ L_ P_
+a_cov_tibble_list <- cov_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
+b_cov_tibble_list <- a_cov_tibble_list %>% map(select, ID, X4)
+rm(a_cov_tibble_list)
 ## Name bedgraph columns with filenames
-bedgraph_names <- str_remove(list.files(pattern = "*sort.bedGraph"), "_S(.*)") 
-for (n in seq(from = 1, to = length(bedgraph_names))) { colnames(b_bedgraph_tibble_list[[n]]) <- c(bedgraph_names[n], "ID") }
+cov_names <- str_remove(list.files(pattern = "^B_(.*)bismark.cov$"), "_S(.*)") ## B_ L_ P_
+for (n in seq(from = 1, to = length(cov_names))) { colnames(b_cov_tibble_list[[n]]) <- c("ID", cov_names[n]) }
 
-c_bedgraph_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), b_bedgraph_tibble_list)
-write_tsv(c_bedgraph_tibble_list, "brain_all_bedgraphs.tsv") # brain liver placenta
+c_cov_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), b_cov_tibble_list)
+write_tsv(c_cov_tibble_list, "brain_all_cov.tsv") # brain liver placenta
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
 rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc--n-n") ## Change ^br to "_site_"
@@ -58,11 +59,11 @@ write_tsv(merged_filtered_rnbead_sites, "brain_diff_pval_sites.tsv") # brain liv
 clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID, stringsAsFactors = F)
 colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
-for_clustering <- merge(clus_merged_filtered_rnbead_sites, c_bedgraph_tibble_list, by = "ID", all.x = T)
-write_tsv(for_clustering, "brain_for_clustering.tsv") # brain liver placenta                               
+for_clustering <- merge(clus_merged_filtered_rnbead_sites, c_cov_tibble_list, by = "ID", all.x = T)
+write_tsv(for_clustering, "brain_for_clustering_cov.tsv") # brain liver placenta                               
 
  #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
- # INTO BASH: ../cluster -f brain_for_clustering.tsv -m a -g 7 
+ # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
                                        
 ### INTO R
 
