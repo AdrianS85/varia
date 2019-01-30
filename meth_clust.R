@@ -40,7 +40,7 @@ c_cov_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), b_co
 write_tsv(c_cov_tibble_list, "brain_all_cov.tsv") # brain liver placenta
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
-rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc--n-n") ## Change ^br to "_site_"
+rnbead_sites <- lapply(list.files(pattern = "^br_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc---n-n") ## Change ^br to "_site_"
 names_sites <- str_remove(list.files(pattern = "^br_"), "_diff(.*)")  ## Change ^br to "_site_"
 # Filter the list to get only pval < 0.05 and diff higher than 5%. This wierd diffmeth.p.val > 1 is cause RnBeads throws some numbers as "e-9" or smth. And they are not read properly by R.
 filtered_rnbead_sites <- rnbead_sites %>% 
