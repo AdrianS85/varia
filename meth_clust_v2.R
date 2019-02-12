@@ -19,7 +19,7 @@ lapply(X = c_cov_tibble_list3, FUN = function(X) {
   X[, (grep(pattern = "V.", x = colnames(X), value = TRUE)) := NULL] # rm old columns
 } )
 
-sys.time(
+system.time(
 parallel::mclapply(X = c_cov_tibble_list3, 
                    mc.cores = 20,
                    FUN = function(X) {
