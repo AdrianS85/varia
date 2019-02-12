@@ -19,6 +19,15 @@ lapply(X = c_cov_tibble_list3, FUN = function(X) {
   X[, (grep(pattern = "V.", x = colnames(X), value = TRUE)) := NULL] # rm old columns
 } )
 
+sys.time(
+parallel::mclapply(X = c_cov_tibble_list3, 
+                   mc.cores = 20,
+                   FUN = function(X) {
+  X[, ':=' (org_coord = paste0(V1, "_", V2), next_coord = paste0(V1, "_", V2 + 1), cov = V5 + V6, meth = V4)] #rename and prepare new columns
+  X[, (grep(pattern = "V.", x = colnames(X), value = TRUE)) := NULL] # rm old columns
+} 
+                  )
+)
 
 
 # Here we prepare the "next coordinate" table. In this one dont need "next coord" column
