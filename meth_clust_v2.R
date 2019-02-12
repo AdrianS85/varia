@@ -36,8 +36,8 @@ merged_cov_tibble_list3  <- mapply(
   x = c_cov_tibble_list3, 
   y = n_cov_tibble_list3,
   SIMPLIFY = F)
-
-
+rm(c_cov_tibble_list3, n_cov_tibble_list3)
+gc()
 
 # Here we establish filenames
 cov_names <- stringr::str_remove(list.files(pattern = "^P_(.*)bismark.cov$"), "_S(.*)")
