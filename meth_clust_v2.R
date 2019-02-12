@@ -14,7 +14,7 @@ c_cov_tibble_list3 <- data.table::copy(cov_tibble_list3)
 
 
 # Here we prepare ID, cov and meth columns
-lapply(X = c_cov_tibble_list3, FUN = function(X) {
+lapply(X = c_cov_tibble_list3, FUN = function(X) { #1032
   X[, ':=' (org_coord = paste0(V1, "_", V2), next_coord = paste0(V1, "_", V2 + 1), cov = V5 + V6, meth = V4)] #rename and prepare new columns
   X[, (grep(pattern = "V.", x = colnames(X), value = TRUE)) := NULL] # rm old columns
 } )
