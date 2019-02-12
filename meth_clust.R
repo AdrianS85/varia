@@ -28,6 +28,71 @@ x2 <- x[, 4:6]
 ### PREPARE .bedgraph files
 ## https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
 
+
+
+
+### NEW ###
+
+#Load .cov files
+cov_tibble_list3 <- lapply(list.files(pattern = "^P_(.*)bismark.cov$"), FUN = data.table::fread, sep = "\t")
+
+
+
+# Here we copy the list, to have the original one for the reference
+library(data.table)
+c_cov_tibble_list3 <- data.table::copy(cov_tibble_list3)
+
+
+
+
+cl = parallel::makeCluster(2, type = "PSOCK")
+parallel::parLapply(cl, X = c_cov_tibble_list3, FUN = function(X) {
+  X[, ':=' (org_coord = paste0(V1, "_", V2), next_coord = paste0(V1, "_", V2 + 1), cov = V5 + V6, meth = V4)] #rename and prepare new columns
+  X[, (grep(pattern = "V.", x = colnames(X), value = TRUE)) := NULL] # rm old columns
+} )
+parallel::stopCluster(cl)
+
+
+
+
+# Here we prepare the "next coordinate" table. In this one dont need "next coord" column
+n_cov_tibble_list3 <- data.table::copy(c_cov_tibble_list3)
+lapply(X = n_cov_tibble_list3, FUN = function(X) {
+  X[, next_coord := NULL]
+} )
+
+
+
+# Here we merge orginal and +1 coordinate for each .cov. This could use parallel, but it would be easy and its fast either way
+merged_cov_tibble_list3  <- mapply(
+  function(x,y)
+    { merge(x, y, by.x = "next_coord", by.y = "org_coord", all.x = T)}, 
+  x = c_cov_tibble_list3, 
+  y = n_cov_tibble_list3,
+  SIMPLIFY = F)
+
+bc_merged_cov_tibble_list3 <- copy(merged_cov_tibble_list3)
+merged_cov_tibble_list3 <- copy(bc_merged_cov_tibble_list3)
+
+#Here we tidy up tables a bit and add weighted mean methylation!
+lapply(X = merged_cov_tibble_list3, FUN = function(x) {
+  as.data.table(x)
+  setcolorder(x, neworder= c("org_coord", "cov.x", "meth.x", "next_coord", "cov.y", "meth.y"))
+  setnames(x = x, old = c("org_coord", "cov.x", "meth.x", "next_coord", "cov.y", "meth.y"), new = c("org_coord", "cov_org", "meth_org", "next_coord", "cov_next", "meth_next"))
+  x[!is.na(meth_next), meth_weight := (((cov_org * meth_org) + (cov_next * meth_next)) / (cov_org + cov_next)) ] # Here we calculate the weighted mean methylation level
+  x[is.na(meth_next), meth_weight := meth_org ]
+} )
+
+### NEW ###
+
+
+
+
+
+
+
+
+
 cov_tibble_list <- lapply(list.files(pattern = "^B_(.*)bismark.cov$"), FUN = readr::read_tsv, col_names = F, col_types = "cnnn") ## B_ L_ P_
 a_cov_tibble_list <- cov_tibble_list %>% map(mutate, ID = paste(X1, X2, sep = "_"))
 b_cov_tibble_list <- a_cov_tibble_list %>% map(select, ID, X4)
