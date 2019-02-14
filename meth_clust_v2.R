@@ -89,7 +89,7 @@ lapply(X = merged_cov_tibble_list3, FUN = function(X) {
 comb_cov_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), merged_cov_tibble_list3)
 
 
-data.table::fwrite(c_cov_tibble_list, "brain_all_cov.tsv") # brain liver placenta
+data.table::fwrite(comb_cov_tibble_list, "placenta_all_cov.tsv") # brain liver placenta
 
 
 
