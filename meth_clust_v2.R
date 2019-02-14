@@ -121,7 +121,7 @@ write_tsv(merged_filtered_rnbead_sites, "brain_diff_pval_sites.tsv") # brain liv
 clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID, stringsAsFactors = F)
 colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
-for_clustering <- merge(clus_merged_filtered_rnbead_sites, c_cov_tibble_list, by = "ID", all.x = T)
+for_clustering <- merge(clus_merged_filtered_rnbead_sites, comb_cov_tibble_list, by = "ID", all.x = T)
 data.table::fwrite(for_clustering, "brain_for_clustering_cov.tsv") # brain liver placenta                               
 
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
