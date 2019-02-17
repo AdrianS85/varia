@@ -89,7 +89,7 @@ lapply(X = merged_cov_tibble_list3, FUN = function(X) {
 comb_cov_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), merged_cov_tibble_list3)
 
 
-data.table::fwrite(comb_cov_tibble_list, "placenta_all_cov.tsv") # brain liver placenta
+data.table::fwrite(comb_cov_tibble_list, "placenta_all_cov.tsv", sep = "\t") # brain liver placenta
 
 
 
@@ -122,7 +122,7 @@ clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID,
 colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
 for_clustering <- merge(clus_merged_filtered_rnbead_sites, comb_cov_tibble_list, by = "ID", all.x = T)
-data.table::fwrite(for_clustering, "brain_for_clustering_cov.tsv") # brain liver placenta                               
+data.table::fwrite(for_clustering, "brain_for_clustering_cov.tsv", sep = "\t") # brain liver placenta                               
 
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
 # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
