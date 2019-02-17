@@ -91,6 +91,11 @@ comb_cov_tibble_list <- Reduce(function(x, y) merge(x, y, by = "ID", all = T), m
 
 data.table::fwrite(comb_cov_tibble_list, "placenta_all_cov.tsv", sep = "\t") # brain liver placenta
 
+######## Here we need to add additional step: "Mój strzał jest taki, że jak nie ma poprzedniej cytozyny a jest tylko druga, to RnBeads i tak podpisuje tą drugą pod pierwszą, a mój algorytm nie ma wpisu na pierwszą, więc nie wpisuje jej w ogóle. Radą na to jest sztuczne dodanie pozycji cytozyny minus 1"
+lapply(X = c, FUN = function(X) {
+  X[, ch := stringr::str_split_fixed(string = X$ID, pattern = "_", n = 2)[1]]
+  X[, nb := as.numeric(stringr::str_split_fixed(string = X$ID, pattern = "_", n = 2)[2])]
+} )
 
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
