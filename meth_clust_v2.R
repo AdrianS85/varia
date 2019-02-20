@@ -104,7 +104,7 @@ ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everyt
 rm(additional_sites)
 more_sites_comb_cov_tibble_list <- rbind(ordered_additional_sites, comb_cov_tibble_list)                                       
                                        
-  
+data.table::fwrite(more_sites_comb_cov_tibble_list, "placenta_more_sites_comb_cov_tibble_list.tsv", sep = "\t")
 
                                
 
