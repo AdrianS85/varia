@@ -127,7 +127,20 @@ clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID,
 colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
 for_clustering <- merge(clus_merged_filtered_rnbead_sites, comb_cov_tibble_list, by = "ID", all.x = T)
-data.table::fwrite(for_clustering, "brain_for_clustering_cov.tsv", sep = "\t") # brain liver placenta                               
+
+
+#Here we need to add the same meth levels with site +1, because sometimes in .cov we have only data on second cytosine, and RnBeads still annotates such data as the first cytosine                                       
+additional_sites <- as.data.table(for_clustering)
+
+# Here we add a column with location minus (plus?) one, so that we can capture sites which had only second cytosine sequenced
+additional_sites[, plus_one := (paste0(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,1], "_", as.numeric(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,2]) + 1) )  ]
+additional_sites$ID <- NULL
+additional_sites[, ":=" (ID = plus_one, plus_one = NULL)]
+ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everything())
+rm(additional_sites)
+more_sites_for_clustering <- rbind(additional_sites, x)                                       
+                                       
+data.table::fwrite(more_sites_for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t") # brain liver placenta                               
 
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
 # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
