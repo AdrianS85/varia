@@ -97,7 +97,7 @@ data.table::fwrite(comb_cov_tibble_list, "placenta_all_cov.tsv", sep = "\t") # b
 additional_sites <- as.data.table(comb_cov_tibble_list)
 
 # Here we add a column with location minus (plus?) one, so that we can capture sites which had only second cytosine sequenced
-additional_sites[, plus_one := (paste0(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,1], "_", as.numeric(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,2]) + 1) )  ]
+additional_sites[, plus_one := (paste0(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,1], "_", as.numeric(stringr::str_split_fixed(string = additional_sites$ID, pattern = "_", n = 2)[,2]) - 1) )  ]
 additional_sites$ID <- NULL
 additional_sites[, ":=" (ID = plus_one, plus_one = NULL)]
 ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everything())
