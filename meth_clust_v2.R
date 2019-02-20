@@ -138,7 +138,7 @@ additional_sites$ID <- NULL
 additional_sites[, ":=" (ID = plus_one, plus_one = NULL)]
 ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everything())
 rm(additional_sites)
-more_sites_for_clustering <- rbind(additional_sites, x)                                       
+more_sites_for_clustering <- rbind(additional_sites, for_clustering)                                       
                                        
 data.table::fwrite(more_sites_for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t") # brain liver placenta                               
 
