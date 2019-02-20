@@ -104,6 +104,9 @@ ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everyt
 rm(additional_sites)
                                
 # Add additional logic to add to ***comb_cov_tibble_list*** only those rows from ***placenta_more_sites_comb_cov_tibble_list.tsv*** which are absent in ***comb_cov_tibble_list***
+#filtered_ordered_additional_sites <- ordered_additional_sites %>% filter
+ordered_additional_sites[ID %in% comb_cov_tibble_list$ID, ID := "NA"]
+                               
                                
 more_sites_comb_cov_tibble_list <- rbind(ordered_additional_sites, comb_cov_tibble_list)                                       
                                        
