@@ -102,6 +102,9 @@ additional_sites$ID <- NULL
 additional_sites[, ":=" (ID = plus_one, plus_one = NULL)]
 ordered_additional_sites <- additional_sites %>% dplyr::select(ID, dplyr::everything())
 rm(additional_sites)
+                               
+# Add additional logic to add to ***comb_cov_tibble_list*** only those rows from ***placenta_more_sites_comb_cov_tibble_list.tsv*** which are absent in ***comb_cov_tibble_list***
+                               
 more_sites_comb_cov_tibble_list <- rbind(ordered_additional_sites, comb_cov_tibble_list)                                       
                                        
 data.table::fwrite(more_sites_comb_cov_tibble_list, "placenta_more_sites_comb_cov_tibble_list.tsv", sep = "\t")
