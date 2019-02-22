@@ -121,16 +121,22 @@ names_sites <- stringr::str_remove(list.files(pattern = "^pl_"), "_diff(.*)")  #
 
 
 # Filter the list to get only pval < 0.05 and diff higher than 5%. This wierd diffmeth.p.val > 1 is cause RnBeads throws some numbers as "e-9" or smth. And they are not read properly by R.
-filtered_rnbead_sites <- rnbead_sites %>% 
-  map(filter, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05 & .[[7]] < 3 & .[[8]] < 3 ) %>%
-  map(mutate, ID = paste(Chromosome, Start, sep = "_"))
+#filtered_rnbead_sites <- rnbead_sites %>% 
+#  map(filter, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05 & .[[7]] < 3 & .[[8]] < 3 ) %>%
+#  map(mutate, ID = paste(Chromosome, Start, sep = "_"))
+filtered_rnbead_sites <- parallel::mclapply(X = rnbead_sites, mc.cores = 12,
+FUN = function(X) {
+subset(X, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05 & X[[7]] < 3 & X[[8]]  < 3 ) } )
+                               
 # Add comparison naming column to site file                          
 for (n in seq(from = 1, to = length(names_sites))){
   filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
 }
+                               
+#####
 
-
-
+######
+                               
 # Here we get singular table with all CpGs along with their diff and pval
 merged_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), filtered_rnbead_sites)
 write_tsv(merged_filtered_rnbead_sites, "brain_diff_pval_sites.tsv") # brain liver placenta
