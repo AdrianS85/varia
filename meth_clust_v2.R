@@ -128,7 +128,7 @@ names_sites <- stringr::str_remove(list.files(pattern = "^pl_"), "_diff(.*)")  #
 #  map(mutate, ID = paste(Chromosome, Start, sep = "_"))
 filtered_rnbead_sites <- parallel::mclapply(X = rnbead_sites, mc.cores = 12,
 FUN = function(X) {
-subset(X, (diffmeth.p.val < 0.05 | diffmeth.p.val > 1) & abs(mean.diff) > 0.05 & X[[7]] < 3 & X[[8]]  < 3 ) 
+subset(X, (diffmeth.p.val < 0.01 | diffmeth.p.val > 1) & abs(mean.diff) > 0.1 & X[[7]] < 3 & X[[8]]  < 3 ) 
 X[, ID := paste(Chromosome, Start, sep = "_")]
 } )
                                
