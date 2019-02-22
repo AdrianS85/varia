@@ -167,7 +167,7 @@ for_clustering <- merge(merged_ID_filtered_rnbead_sites, more_sites_comb_cov_tib
 
 data.table::fwrite(for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t") # brain liver placenta
                              
-h_test <- hclust(d = dist(for_clustering), method = "average")
+h_test <- hclust(d = dist(for_clustering), method = "average") ### Cant do it cause missing data
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
 # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
 
