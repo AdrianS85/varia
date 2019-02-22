@@ -115,7 +115,7 @@ data.table::fwrite(more_sites_comb_cov_tibble_list, "placenta_more_sites_comb_co
                                
 
 # Prepare list of all significant CpG sites from all comparisons? Perhaps from one comparison at a time?
-rnbead_sites <- lapply(list.files(pattern = "^pl_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc---n-n") ## Change ^br to "_site_"
+rnbead_sites <- lapply(list.files(pattern = "^pl_*"), FUN = readr::read_csv, col_names = T, col_types = "-cc---n-n--n--n---nn") ## Change ^br to "_site_"
 names_sites <- stringr::str_remove(list.files(pattern = "^pl_"), "_diff(.*)")  ## Change ^br to "_site_"
 
 
