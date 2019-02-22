@@ -130,36 +130,44 @@ filtered_rnbead_sites <- parallel::mclapply(X = rnbead_sites, mc.cores = 12,
 FUN = function(X) {
 subset(X, (diffmeth.p.val < 0.01 | diffmeth.p.val > 1) & abs(mean.diff) > 0.1 & X[[7]] < 3 & X[[8]]  < 3 ) 
 })
+
+#Add ID column 
 filtered_rnbead_sites <- parallel::mclapply(X = filtered_rnbead_sites , mc.cores = 12,
 FUN = function(X) {
 X[, ID := paste(Chromosome, Start, sep = "_")]
+X[, ':=' (Chromosome = NULL, Start = NULL)]
 } )
                                
-# Add comparison naming column to site file                          
+# Add comparison naming column to site file and save the object                         
 for (n in seq(from = 1, to = length(names_sites))){
   filtered_rnbead_sites[[n]]$comparison <- names_sites[n]
 }
-                               
-#####
+rlist::list.save(x = filtered_rnbead_sites, file = "placenta_filtered_rnbead_sites_list.json") # brain liver placenta
 
-######
+ID_filtered_rnbead_sites <- list()
+for (n in seq(from = 1, to = length(names_sites))){
+  ID_filtered_rnbead_sites[[n]] <- as.data.table(as.character(filtered_rnbead_sites[[n]]$ID) ) }
+
+                               
                                
 # Here we get singular table with all CpGs along with their diff and pval
-merged_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), filtered_rnbead_sites)
-write_tsv(merged_filtered_rnbead_sites, "brain_diff_pval_sites.tsv") # brain liver placenta
+merged_ID_filtered_rnbead_sites <- data.frame(unique(rlist::list.rbind(ID_filtered_rnbead_sites)), stringsAsFactors = F)
+colnames(merged_ID_filtered_rnbead_sites) <- "ID"
+#merged_ID_filtered_rnbead_sites <- Reduce(function(x, y) merge(x, y, by = "ID", all=TRUE), ID_filtered_rnbead_sites)
 
-
+#merged_ID_filtered_rnbead_sites <- unique(rlist::list.merge(ID_filtered_rnbead_sites))
+#merged_ID_filtered_rnbead_sites <- data.frame(unique(rlist::list.rbind(ID_filtered_rnbead_sites)), stringsAsFactors = F)
 
 #Now we merge diffsites and raw methylation values
 # Create pvaldiff with only IDs
-clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID, stringsAsFactors = F)
-colnames(clus_merged_filtered_rnbead_sites) <- "ID"
+#clus_merged_filtered_rnbead_sites <- data.frame(merged_filtered_rnbead_sites$ID, stringsAsFactors = F)
+#colnames(clus_merged_filtered_rnbead_sites) <- "ID"
 
-for_clustering <- merge(clus_merged_filtered_rnbead_sites, more_sites_comb_cov_tibble_list, by = "ID", all.x = T)
+for_clustering <- merge(merged_ID_filtered_rnbead_sites, more_sites_comb_cov_tibble_list, by = "ID", all.x = T)
 
 data.table::fwrite(for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t") # brain liver placenta
                              
-
+h_test <- hclust(d = dist(for_clustering), method = "average")
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
 # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
 
