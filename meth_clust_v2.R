@@ -173,6 +173,10 @@ data.table::fwrite(for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t"
 
 # Try clustering                               
 h_test <- hclust(d = dist(for_clustering), method = "average") ### Cant do it cause missing data
+                               
+#https://www.r-bloggers.com/drawing-heatmaps-in-r/
+#http://genomicsclass.github.io/book/pages/clustering_and_heatmaps.html
+#https://www.rdocumentation.org/packages/RFLPtools/versions/1.6/topics/write.hclust
 #http://bonsai.hgc.jp/~mdehoon/software/cluster/cluster3.pdf                                      
 # INTO BASH: ../cluster -f brain_for_clustering_cov.tsv -m a -g 7 
 
