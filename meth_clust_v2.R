@@ -131,7 +131,7 @@ names_sites <- stringr::str_remove(list.files(pattern = "^pl_"), "_diff(.*)")  #
 # Filter the list to get only pval < 0.05 and diff higher than 5% and more. This wierd diffmeth.p.val > 1 is cause RnBeads throws some numbers as "e-9" or smth. And they are not read properly by R.
 filtered_rnbead_sites <- parallel::mclapply(X = rnbead_sites, mc.cores = 12,
 FUN = function(X) {
-subset(X, (diffmeth.p.val < 0.01 | diffmeth.p.val > 1) & abs(mean.diff) > 0.1 & X[[7]] < 3 & X[[8]]  < 3 ) 
+subset(X, (diffmeth.p.val < 0.001 | diffmeth.p.val > 1) & abs(mean.diff) > 0.1 & X[[7]] < 3 & X[[8]]  < 3 ) 
 })
 
                                
