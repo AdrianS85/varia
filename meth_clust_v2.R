@@ -171,9 +171,61 @@ colnames(merged_ID_filtered_rnbead_sites) <- "ID"
 for_clustering <- merge(merged_ID_filtered_rnbead_sites, more_sites_comb_cov_tibble_list, by = "ID", all.x = T)
 data.table::fwrite(for_clustering, "placenta_for_clustering_cov.tsv", sep = "\t") # brain liver placenta
 
-# Try clustering                               
-h_test <- hclust(d = dist(for_clustering), method = "average") ### Cant do it cause missing data
+
                                
+                               
+                               
+                               
+### CLUSTERING AND HEATMAPING ###
+                               #load("h_test.RData")
+test <- na.omit(data.table::fread("short_placenta_for_clustering_cov.tsv"))
+test2 <- as.data.frame(data.table::copy(test))
+row.names(test2) <- test2$ID # h_clust needs feature names in rownames to get it into labels
+test2$ID <- NULL
+test2 <- as.matrix(test2) # Heatmap functions need numeric matrix
+
+
+                               
+h_test_row <- hclust(d = dist(test2), method = "average") #Cluster rows
+h_test_col <- hclust(d = dist(t(test2)), method = "average") #Cluster columns
+
+                               
+
+# Set data for analysis
+#k_nb <- 10
+tissue <- c("pl", "br", "lv")
+dir.create(paste0(tissue[1], "_plots"))
+dir_name <- paste0(tissue[1], "_plots")
+
+
+#for(n in seq(from = 1, to = k_nb)) {
+#pdf(paste0("./", dir_name, "/", tissue[1], "_", n, "_heatmap.pdf"), width = 10, height = 200)
+#gplots::heatmap.2(test2[cutree(h_test_row, k = k_nb) == n,], 
+#                  Colv=as.dendrogram(h_test_col), 
+#                  trace = "none")
+#dev.off()
+#}
+
+par(mar = rep(6, 4))
+# This will be the full heatmap 
+pdf(paste0("./", dir_name, "/", tissue[1], "_heatmap.pdf"), width = 10, height = 400)
+gplots::heatmap.2(test2, 
+                  Colv=as.dendrogram(h_test_col), 
+                  trace = "none", # This is the silly teal line inside heatmap
+                  key=T, # Provide or remove legend 
+                  lhei=c(1,60), # This is ratio of lower and higher part of heatmap
+                  lwid=c(3,10), # This is ratio of left and right part of heatmap?
+                  margins = c(15, 5), # This sets margins for row/col names to use
+                  cexRow = 0.5,
+                  key.par = list(cex=0.75) # This gives size of text in legend
+                  )
+dev.off()
+
+#rafalib::myplclust
+#dendextend::cutree
+#RFLPtools::write.hclust
+### CLUSTERING AND HEATMAPING ###
+          
 #https://www.r-bloggers.com/drawing-heatmaps-in-r/
 #http://genomicsclass.github.io/book/pages/clustering_and_heatmaps.html
 #https://www.rdocumentation.org/packages/RFLPtools/versions/1.6/topics/write.hclust
