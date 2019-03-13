@@ -189,8 +189,50 @@ head(zzz)
 
 
 
+                                
+                                
+                                
+
+#### TESTING MULTIPLE-PROBE ANNOATION ####
+test <- read.table("test_of_diff_probes _GPL13912_GPL6887.txt", header = F, stringsAsFactors = F)
+test2 <- test
 
 
+final_list <- list()
+##### This needs to be looped for all data files ##### 
+usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl") ## here we need to add info oon which animal do we study here
+filtersMUS <- listFilters(usedMartMUS)
+
+
+
+### Here we are getting all relevant possible databases
+potentalNames <- c(filtersMUS[grep(pattern = "^ensembl(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^refseq(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^affy(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^agilent(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^illumina(.*)", filtersMUS[[1]]) , 1])
+
+
+
+### Here we are extracting annotations from all the relevant databases
+test_list <- list()
+for(n in seq_along(potentalNames)) {
+  test_list[[n]] <- getBM(attributes = c(potentalNames[[n]], "external_gene_name"), 
+                          filters = potentalNames[[n]], 
+                          values = test[[1]],
+                          uniqueRows = T,
+                          mart = usedMartMUS) 
+}
+
+# Here I get vector with length of each relevant database
+for(n in seq_along(test_list)) {
+  tables[n] <- length(test_list[[n]][[1]])
+}
+# Here I find out at which list the highest number of hits and put it into final data extraction
+final_list[[1]] <- test_list[[which(tables == max(tables))]] ##
+##### This needs to be looped for all data files ##### 
+
+
+#### TESTING MULTIPLE-PROBE ANNOATION ####
+                                
+                                
+                                
 
 
 
