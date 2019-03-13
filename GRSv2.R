@@ -194,6 +194,7 @@ head(zzz)
                                 
 
 #### TESTING MULTIPLE-PROBE ANNOATION ####
+                                # Add: make the analysis on 100 randomly selected IDs, make a table annotating which filters were actually used
 test <- read.table("test_of_diff_probes _GPL13912_GPL6887.txt", header = F, stringsAsFactors = F)
 test2 <- test
 
