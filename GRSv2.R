@@ -190,21 +190,52 @@ head(zzz)
 
 
                                 
+                        
+                                
                                 
                                 
 
 #### TESTING MULTIPLE-PROBE ANNOATION ####
-                                # Add: make the analysis on 100 randomly selected IDs, make a table annotating which filters were actually used
-test <- read.table("test_of_diff_probes _GPL13912_GPL6887.txt", header = F, stringsAsFactors = F)
-test2 <- test
+# Add: make the analysis on 100 randomly selected IDs, make a table annotating which filters were actually used
+
+
+exp_species <- c("m", "r", "m")
+#exp_species <- c("m", "r", "m", "m", "m", "r", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m")
+#SHORT_LIST_DATA
+
+SHORT_LIST_DATA <- SHORT_LIST_DATA[1:3]
 
 
 final_list <- list()
+ANNOT_SHORT_LIST_DATA <- list(list(), list(), list())
 ##### This needs to be looped for all data files ##### 
-usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl") ## here we need to add info oon which animal do we study here
-filtersMUS <- listFilters(usedMartMUS)
+for(n in seq_along(SHORT_LIST_DATA)){
+  
+  # Here we establish which mart(species) we are using in this given dataset
+  usedMart <- switch(exp_species[n], 
+                     "m" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
+                     "r" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
+  filters <- listFilters(usedMart)
+  
+  # Here we extract all the potential gene identifiers
+  potental_identifiers <- c(filters[grep(pattern = "^ensembl(.*)", filters[[1]]) , 1], 
+                             filters[grep(pattern = "^refseq(.*)", filters[[1]]) , 1], 
+                             filters[grep(pattern = "^affy(.*)", filters[[1]]) , 1], 
+                             filters[grep(pattern = "^agilent(.*)", filters[[1]]) , 1], 
+                             filters[grep(pattern = "^illumina(.*)", filters[[1]]) , 1])
+  
+  # Here we are annotating given datasets with data from all the relevant databases
+  for (m in seq_along(potental_identifiers)){
+    ANNOT_SHORT_LIST_DATA[[n]][[m]] <- getBM(attributes = c(potental_identifiers[[m]], "external_gene_name"), 
+                                  filters = potental_identifiers[[m]], 
+                                  values = SHORT_LIST_DATA[[n]]$Probe_ID,
+                                  uniqueRows = F,
+                                  mart = usedMart
+    )
+  }
+}
 
-
+ANNOT_SHORT_LIST_DATA <- list()
 
 ### Here we are getting all relevant possible databases
 potentalNames <- c(filtersMUS[grep(pattern = "^ensembl(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^refseq(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^affy(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^agilent(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^illumina(.*)", filtersMUS[[1]]) , 1])
@@ -239,6 +270,8 @@ final_list[[1]] <- test_list[[which(tables == max(tables))]] ##
 
 
 
+                                
+                                
 
 
 
