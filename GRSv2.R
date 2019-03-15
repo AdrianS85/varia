@@ -206,12 +206,14 @@ exp_species <- c("m", "r", "m")
 SHORT_LIST_DATA <- SHORT_LIST_DATA[1:3]
 
 
-final_list <- list()
-ANNOT_SHORT_LIST_DATA <- list(list(), list(), list())
-##### This needs to be looped for all data files ##### 
+
+### Here we make list with number of lists equal to number of experiments
+ANNOT_SHORT_LIST_DATA <- rep(list(list()), times = length(SHORT_LIST_DATA)) ###!!!
+all_ID_annotations <- rep(list(list()), times = length(SHORT_LIST_DATA))
+##### This needs to be looped for all data files. Here we get the highest-number-returning ID type ##### 
 for(n in seq_along(SHORT_LIST_DATA)){
   
-  # Here we establish which mart(species) we are using in this given dataset
+  # Here we establish which mart(species) we are using in this given dataset based on "exp_species" vector
   usedMart <- switch(exp_species[n], 
                      "m" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
                      "r" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
@@ -233,31 +235,27 @@ for(n in seq_along(SHORT_LIST_DATA)){
                                   mart = usedMart
     )
   }
+  # Here we save number of annotations from each ID
+  for(k in seq_along(ANNOT_SHORT_LIST_DATA[[n]])) {
+    all_ID_annotations[[n]][[k]] <- length(ANNOT_SHORT_LIST_DATA[[n]][[k]][[1]])
+  }
+
+  # final_list[[n]] <- ANNOT_SHORT_LIST_DATA[[n]][[which(all_ID_annotations[[n]] == max(all_ID_annotations[[n]]))]]
+  
 }
 
-ANNOT_SHORT_LIST_DATA <- list()
+# Here we will be returing results of appropriate microarray search
+final_list <- rep(list(list()), times = length(SHORT_LIST_DATA))
+# Lists inside main list are changed into dfs (vectors) as 'which' function demands it
+df_all_ID_annotations <- lapply(all_ID_annotations, FUN = unlist)
+# Here we are getting all of the highest yielding IDs
 
-### Here we are getting all relevant possible databases
-potentalNames <- c(filtersMUS[grep(pattern = "^ensembl(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^refseq(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^affy(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^agilent(.*)", filtersMUS[[1]]) , 1], filtersMUS[grep(pattern = "^illumina(.*)", filtersMUS[[1]]) , 1])
-
-
-
-### Here we are extracting annotations from all the relevant databases
-test_list <- list()
-for(n in seq_along(potentalNames)) {
-  test_list[[n]] <- getBM(attributes = c(potentalNames[[n]], "external_gene_name"), 
-                          filters = potentalNames[[n]], 
-                          values = test[[1]],
-                          uniqueRows = T,
-                          mart = usedMartMUS) 
+for(n in seq_along(SHORT_LIST_DATA)){
+  for(m in seq_along(which(df_all_ID_annotations[[n]] == max(df_all_ID_annotations[[n]])))){
+    final_list[[n]][[m]] <- ANNOT_SHORT_LIST_DATA[[n]][[(which(df_all_ID_annotations[[n]] == max(df_all_ID_annotations[[n]]))[m])]]
+}
 }
 
-# Here I get vector with length of each relevant database
-for(n in seq_along(test_list)) {
-  tables[n] <- length(test_list[[n]][[1]])
-}
-# Here I find out at which list the highest number of hits and put it into final data extraction
-final_list[[1]] <- test_list[[which(tables == max(tables))]] ##
 ##### This needs to be looped for all data files ##### 
 
 
