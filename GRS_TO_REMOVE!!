@@ -1,126 +1,98 @@
-# library(tidyverse)
+# ###### EXTRACT ANNOTATIONS FROM BIOMART ######
 # 
-# setwd("E:/Projekty/GRS - GJt Review Stress")
+# library(biomaRt)
+# #listMarts()
 # 
-# GRS <- read_tsv("GRS.txt", col_types = "ccccnnnnnccccc")
+# usedMartRAT <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl")
+# usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
 # 
-# one <- read.table("GPL6887.txt", header = T)
-# two <- read.table("GPL6887_MA.txt", header = T)
+# #attributesRAT <- listAttributes(usedMartRAT)
+# #attributesMUS <- listAttributes(usedMartMUS)
 # 
-# three <- merge(one, two, all.x = T, by = "ProbeID")
-# write.table(three, "xxx6.txt", sep = "\t")
+# ###### Here we are trying to choose proper microarrays ###### OBSOLETE!!!
+# 
+# filtersRAT <- listFilters(usedMartRAT)
+# filtersMUS <- listFilters(usedMartMUS)
+# 
+# PLATFORMS <- read.csv("platforms.txt", header = F)
+# 
+# # Name ensembl databases
+# PLATFORMS$Biomart <- NA
+# PLATFORMS$Biomart[1] <- subset(filtersMUS, filtersMUS$description == "ILLUMINA MouseWG 6 V2 probe ID(s) [e.g. ILMN_1240829]")[[1]] #ok
+# PLATFORMS$Biomart[2] <- subset(filtersRAT, filtersRAT$description == "AFFY RaGene 1 0 st v1 probe ID(s) [e.g. 10930560]")[[1]]
+# PLATFORMS$Biomart[3] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
+# PLATFORMS$Biomart[4] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 2 1 st v1 probe ID(s) [e.g. 17532593]")[[1]]
+# PLATFORMS$Biomart[5] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
+# PLATFORMS$Biomart[6] <- subset(filtersRAT, filtersRAT$description == "AFFY Rat230 2 probe ID(s) [e.g. 1375651_at]")[[1]]
+# PLATFORMS$Biomart[7] <- subset(filtersMUS, filtersMUS$description == "AGILENT WholeGenome 4x44k v1 probe ID(s) [e.g. A_51_P323880]")[[1]]
+# PLATFORMS$Biomart[8] <- subset(filtersMUS, filtersMUS$description == "AFFY MG U74Av2 probe ID(s) [e.g. 96290_f_at]")[[1]] 
+# PLATFORMS$Biomart[9] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
+# PLATFORMS$Biomart[10] <- NA
+# PLATFORMS$Biomart[11] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
+# PLATFORMS$Biomart[12] <- NA
+# 
+# # Add species information
+# PLATFORMS$Species <- c("m", "r", "m", "m", "m", "r", "m", "m", "m", "m", "m", "m")
+# 
+# # Make platform information
+# PLATFORMS <- PLATFORMS %>%
+#   mutate(PL_ID = str_remove(V1, "[/ ].*"), )
+#   
+# ###### Here we are trying to choose proper microarrays ###### OBSOLETE!!!
 
 
 
-
-
-library(tidyverse)
-
-COMPARISONS <- readr::read_tsv("comparisons.txt", col_types = "ncccccccccccccccc")
-
-DATA <- readr::read_tsv("G1.txt", col_types = "nccccccnnnnncccc", locale = locale(decimal_mark = ","))
-
-LIST_DATA <- split(DATA, f = DATA$Paper)
-
-SHORT_LIST_DATA <- lapply(X = LIST_DATA, FUN = function(x){ x[1:500,] })
-
-
-
-###### EXTRACT ANNOTATIONS FROM BIOMART ######
-
-library(biomaRt)
-#listMarts()
-
-usedMartRAT <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl")
-usedMartMUS <- useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
-
-#attributesRAT <- listAttributes(usedMartRAT)
-#attributesMUS <- listAttributes(usedMartMUS)
-
-###### Here we are trying to choose proper microarrays ###### OBSOLETE!!!
-
-filtersRAT <- listFilters(usedMartRAT)
-filtersMUS <- listFilters(usedMartMUS)
-
-PLATFORMS <- read.csv("platforms.txt", header = F)
-
-# Name ensembl databases
-PLATFORMS$Biomart <- NA
-PLATFORMS$Biomart[1] <- subset(filtersMUS, filtersMUS$description == "ILLUMINA MouseWG 6 V2 probe ID(s) [e.g. ILMN_1240829]")[[1]] #ok
-PLATFORMS$Biomart[2] <- subset(filtersRAT, filtersRAT$description == "AFFY RaGene 1 0 st v1 probe ID(s) [e.g. 10930560]")[[1]]
-PLATFORMS$Biomart[3] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
-PLATFORMS$Biomart[4] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 2 1 st v1 probe ID(s) [e.g. 17532593]")[[1]]
-PLATFORMS$Biomart[5] <- subset(filtersMUS, filtersMUS$description == "AGILENT SurePrint G3 GE 8x60k probe ID(s) [e.g. A_65_P05358]")[[1]]
-PLATFORMS$Biomart[6] <- subset(filtersRAT, filtersRAT$description == "AFFY Rat230 2 probe ID(s) [e.g. 1375651_at]")[[1]]
-PLATFORMS$Biomart[7] <- subset(filtersMUS, filtersMUS$description == "AGILENT WholeGenome 4x44k v1 probe ID(s) [e.g. A_51_P323880]")[[1]]
-PLATFORMS$Biomart[8] <- subset(filtersMUS, filtersMUS$description == "AFFY MG U74Av2 probe ID(s) [e.g. 96290_f_at]")[[1]] 
-PLATFORMS$Biomart[9] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
-PLATFORMS$Biomart[10] <- NA
-PLATFORMS$Biomart[11] <- subset(filtersMUS, filtersMUS$description == "AFFY MoGene 1 0 st v1 probe ID(s) [e.g. 10598025]")[[1]]
-PLATFORMS$Biomart[12] <- NA
-
-# Add species information
-PLATFORMS$Species <- c("m", "r", "m", "m", "m", "r", "m", "m", "m", "m", "m", "m")
-
-# Make platform information
-PLATFORMS <- PLATFORMS %>%
-  mutate(PL_ID = str_remove(V1, "[/ ].*"), )
-  
-###### Here we are trying to choose proper microarrays ###### OBSOLETE!!!
+# ###### Here we are annotating experiments with biomart platform descriptions ###### 
+# 
+# for_annot_COMPARISONS <- COMPARISONS %>%
+#   dplyr::select(Paper, PL_ID) %>%
+#   unique()
+# 
+# FOR_ANNOT_PLATFORMS <- merge(for_annot_COMPARISONS, PLATFORMS, by = "PL_ID") %>%
+#   arrange(Paper)
+# 
+# ###### Here we are annotating experiments with biomart platform descriptions ###### 
 
 
 
-###### Here we are annotating experiments with biomart platform descriptions ###### 
+# ###### Here we need to remove experiments with microarrays not captured in ensembl ######
+# WHICH_EXP_TO_ANAL <- seq(1,nrow(FOR_ANNOT_PLATFORMS))[c(-13, -16)]
+# 
+# ## Here we are doing probe ensembl annotation
+# ANNOT_LIST_DATA <- list()
+# 
+# for (n in WHICH_EXP_TO_ANAL){
+#   ANNOT_LIST_DATA[[n]] <- getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"), 
+#                       filters = FOR_ANNOT_PLATFORMS$Biomart[n], 
+#                       values = LIST_DATA[[n]]$Probe_ID,
+#                       uniqueRows = F,
+#                       mart = 
+#                         if(FOR_ANNOT_PLATFORMS$Species[n] == "m"){ usedMartMUS } else if(FOR_ANNOT_PLATFORMS$Species[n] == "r"){ usedMartRAT }
+#   )
+#   }
 
-for_annot_COMPARISONS <- COMPARISONS %>%
-  dplyr::select(Paper, PL_ID) %>%
-  unique()
+# ## HERE WE WILL COLLAPSE duplicated probe-genename pairs WITHIN ANNOTATED GENE LIST (and also change column names to standarized ones)
+# UNIQ_ANNOT_LIST_DATA <- list()
+# 
+# for (n in WHICH_EXP_TO_ANAL){
+#   UNIQ_ANNOT_LIST_DATA[[n]] <- unique(ANNOT_LIST_DATA[[n]])
+#   colnames(UNIQ_ANNOT_LIST_DATA[[n]]) <- c("Probe_ID", "ensembl_gene_name")
+# }
 
-FOR_ANNOT_PLATFORMS <- merge(for_annot_COMPARISONS, PLATFORMS, by = "PL_ID") %>%
-  arrange(Paper)
-
-###### Here we are annotating experiments with biomart platform descriptions ###### 
-
-
-
-###### Here we need to remove experiments with microarrays not captured in ensembl ######
-WHICH_EXP_TO_ANAL <- seq(1,nrow(FOR_ANNOT_PLATFORMS))[c(-13, -16)]
-
-## Here we are doing probe ensembl annotation
-ANNOT_LIST_DATA <- list()
-
-for (n in WHICH_EXP_TO_ANAL){
-  ANNOT_LIST_DATA[[n]] <- getBM(attributes = c(FOR_ANNOT_PLATFORMS$Biomart[n], "external_gene_name"), 
-                      filters = FOR_ANNOT_PLATFORMS$Biomart[n], 
-                      values = LIST_DATA[[n]]$Probe_ID,
-                      uniqueRows = F,
-                      mart = 
-                        if(FOR_ANNOT_PLATFORMS$Species[n] == "m"){ usedMartMUS } else if(FOR_ANNOT_PLATFORMS$Species[n] == "r"){ usedMartRAT }
-  )
-  }
-
-## HERE WE WILL COLLAPSE duplicated probe-genename pairs WITHIN ANNOTATED GENE LIST (and also change column names to standarized ones)
-UNIQ_ANNOT_LIST_DATA <- list()
-
-for (n in WHICH_EXP_TO_ANAL){
-  UNIQ_ANNOT_LIST_DATA[[n]] <- unique(ANNOT_LIST_DATA[[n]])
-  colnames(UNIQ_ANNOT_LIST_DATA[[n]]) <- c("Probe_ID", "ensembl_gene_name")
-}
-
-## Here we will collapse all gene names for given probe
-for (n in WHICH_EXP_TO_ANAL){
-  UNIQ_ANNOT_LIST_DATA[[n]] <- aggregate(ensembl_gene_name~Probe_ID, data = UNIQ_ANNOT_LIST_DATA[[n]], FUN = str_c) ## Here we aggregate the genenames into single row
-  UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- lapply(X = UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name, FUN = paste, collapse = "; ") ##
-  UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- as.character(UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name) ## Here we make sure that collapsed genename column is not a list (need for writing function)
-}
+# ## Here we will collapse all gene names for given probe
+# for (n in WHICH_EXP_TO_ANAL){
+#   UNIQ_ANNOT_LIST_DATA[[n]] <- aggregate(ensembl_gene_name~Probe_ID, data = UNIQ_ANNOT_LIST_DATA[[n]], FUN = str_c) ## Here we aggregate the genenames into single row
+#   UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- lapply(X = UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name, FUN = paste, collapse = "; ") ##
+#   UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- as.character(UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name) ## Here we make sure that collapsed genename column is not a list (need for writing function)
+# }
 
 # Je?eli w ensemble nie ma przypisanego genu (oznaczenie NA w przys?anym pliku "100_genow") to program pokazuje we wszystkich rubrykach oznaczenie NA chocia? te kom?rki zawiera?y wcze?niej dane (plik AAAreview11). W pe?nych danych kt?re przys?a?e? mi przed ?wi?tami (plik 1 znajduj?cy si? w skopresowanych danych "TEST_ANNOTATION") tych sond w og?le nie ma. Wygl?da na to, ?e to co przys?a?e? wczoraj odnosi si? chyba do wcze?niejszego pliku w kt?rym dane dla sond nie maj?cych przypisanego genu w ensemble zosta?y ca?kowicie usuni?te a to nie jest dobre :( - AMS W LIST_DATA S? TE DANE, ALE W TEST_ANNOTATION JUZ NIE
 
-## Here we marge probes annotated with ensembl with probes annotated with other methods
-TEST_ANNOTATION <- list()
-for (n in WHICH_EXP_TO_ANAL){
-  TEST_ANNOTATION[[n]] <- merge(LIST_DATA[[n]], UNIQ_ANNOT_LIST_DATA[[n]], by = "Probe_ID", all.x = T)
-}  
+# ## Here we marge probes annotated with ensembl with probes annotated with other methods
+# TEST_ANNOTATION <- list()
+# for (n in WHICH_EXP_TO_ANAL){
+#   TEST_ANNOTATION[[n]] <- merge(LIST_DATA[[n]], UNIQ_ANNOT_LIST_DATA[[n]], by = "Probe_ID", all.x = T)
+# }  
 
 # Here we write output test annotation files
 dir.create("TEST_ANNOTATION")
@@ -187,47 +159,88 @@ head(zzz)
 
 
 
+##############################################################
+##############################################################
+##############################################################
 
 
 
 
 #### TESTING MULTIPLE-PROBE ANNOATION ####
 # Add: make the analysis on 100 randomly selected IDs, make a table annotating which filters were actually used
+
+
+
+
+
+##############################################
+##### LOAD INPUT. BEWARE OF FILE FORMAT. ##### 
+##############################################
+
+### Sadly, "numeric" columns may contain both . and , as decimary separator. Hence we need to load them as char, replace all , with . change into numeric and only then we have nice input
+PRE_DATA <- readr::read_tsv("G1.txt", col_types = "nccccccccccccccc", locale = locale(decimal_mark = ","))
+
+PRE_DATA[8:12] <- lapply(X = PRE_DATA[8:12], FUN = function(x) { stringr::str_replace(string = x, pattern = ",", replacement = ".")}) ### !!! THIS IS VERY COOL CONSTRUCT THAT I NEED TO NOTE!!
+
+PRE_DATA[8:12] <- lapply(PRE_DATA[8:12], as.numeric)
+
+##############################################
+##### LOAD INPUT. BEWARE OF FILE FORMAT. ##### 
+##############################################
+
+
+
+#################################################
+##### ANNOTATE PROBE_IDs WITH ENSEMBL NAMES #####
+#################################################
+
+##### PREPARING LISTS TO BE USED ##### 
+
+### !!! THIS NEEDS TO BE MANUALLY ESTABLISHED! - List of species names 
 exp_species <- c("m", "r", "m", "m", "m", "r", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m")
 
-SHORT_LIST_DATA <- lapply(X = LIST_DATA, FUN = function(x){ x[1:1000,] })
+# The list object is needed for annotation of probes with ensembl names
+LIST_DATA <- split(PRE_DATA, f = PRE_DATA$Paper) ###!!! <---
 
-
-
-### This part really needs to be perfomred on small subset of data first. It does take a long time to complete even with only 14 expression sets
-
-
+### We need to first check appropriate probe ids on smaller dataset and only then do actual annotation, because its too slow otherwise. Hence this shortened list
+SHORT_LIST_DATA <- lapply(X = LIST_DATA, FUN = function(x){ x[1:500,] })
 
 ### Here we make list with number of lists equal to number of experiments
-ANNOT_SHORT_LIST_DATA <- rep(list(list()), times = length(SHORT_LIST_DATA)) ###!!!
+ANNOT_SHORT_LIST_DATA <- rep(list(list()), times = length(SHORT_LIST_DATA)) ###!!! <---
 
+### This is just a help-list, it should probably be lower, when it is actually used
 all_ID_annotations <- rep(list(list()), times = length(SHORT_LIST_DATA))
 
+##### PREPARING LISTS TO BE USED ##### 
 
 
-##### This needs to be looped for all data files. Here we get the highest-number-returning ID type ##### 
+
+##### Here we get the highest-number-returning ID type #####
+
 for(n in seq_along(SHORT_LIST_DATA)){
   
   # Here we establish which mart(species) we are using in this given dataset based on "exp_species" vector
   usedMart <- switch(exp_species[n], 
-                     "m" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
-                     "r" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
+                     "m" = biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
+                     "r" = biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
 
   # Here we extract all the potential gene identifiers
-  potental_identifiers <- c(filters[grep(pattern = "^ensembl(.*)", filters[[1]]) , 1], 
-                             filters[grep(pattern = "^refseq(.*)", filters[[1]]) , 1], 
-                             filters[grep(pattern = "^affy(.*)", filters[[1]]) , 1], 
-                             filters[grep(pattern = "^agilent(.*)", filters[[1]]) , 1], 
-                             filters[grep(pattern = "^illumina(.*)", filters[[1]]) , 1])
+  potental_identifiers <- c(usedMart@filters[grep(pattern = "^ensembl(.*)", usedMart@filters[[1]]) , 1], 
+                             usedMart@filters[grep(pattern = "^refseq(.*)", usedMart@filters[[1]]) , 1], 
+                             usedMart@filters[grep(pattern = "^affy(.*)", usedMart@filters[[1]]) , 1], 
+                             usedMart@filters[grep(pattern = "^agilent(.*)", usedMart@filters[[1]]) , 1], 
+                             usedMart@filters[grep(pattern = "^illumina(.*)", usedMart@filters[[1]]) , 1])
+  
+  # # Here we extract all the potential gene identifiers
+  # potental_identifiers <- c(filters[grep(pattern = "^ensembl(.*)", filters[[1]]) , 1], 
+  #                           filters[grep(pattern = "^refseq(.*)", filters[[1]]) , 1], 
+  #                           filters[grep(pattern = "^affy(.*)", filters[[1]]) , 1], 
+  #                           filters[grep(pattern = "^agilent(.*)", filters[[1]]) , 1], 
+  #                           filters[grep(pattern = "^illumina(.*)", filters[[1]]) , 1])
   
   # Here we are annotating given datasets with data from all the relevant databases
   for (m in seq_along(potental_identifiers)){
-    ANNOT_SHORT_LIST_DATA[[n]][[m]] <- getBM(attributes = c(potental_identifiers[[m]], "external_gene_name"), 
+    ANNOT_SHORT_LIST_DATA[[n]][[m]] <- biomaRt::getBM(attributes = c(potental_identifiers[[m]], "external_gene_name"), 
                                   filters = potental_identifiers[[m]], 
                                   values = SHORT_LIST_DATA[[n]]$Probe_ID,
                                   uniqueRows = T,
@@ -254,7 +267,9 @@ for(n in seq_along(LIST_DATA)){
   for(m in seq_along(which(df_all_ID_annotations[[n]] == max(df_all_ID_annotations[[n]])))){
     HIGHEST_HIT_LIST[[n]][[m]] <- ANNOT_SHORT_LIST_DATA[[n]][[(which(df_all_ID_annotations[[n]] == max(df_all_ID_annotations[[n]]))[m])]]
 } }
+##### Here we get the highest-number-returning ID type ##### 
 
+rm(df_all_ID_annotations)
 
 
 # This is list allowing us to check how many hits did we get for highest-yielding feature for given experiment
@@ -264,7 +279,7 @@ check_annotation_percentage <- lapply(HIGHEST_HIT_LIST, FUN = function(x) {  len
 
 ### Here we produce table with final names of annotation features to be used in actual annotation ###
 # Here we simply copy names of features, that were highest by themselves
-NAMES_HIGHEST_HIT_LIST <- lapply(X = test_final_list, FUN = function(x) { 
+NAMES_HIGHEST_HIT_LIST <- lapply(X = HIGHEST_HIT_LIST, FUN = function(x) { 
   if(length(x) == 1){
     x <- names(x[[1]][1])
   } } )
@@ -279,25 +294,30 @@ NAMES_HIGHEST_HIT_LIST[[7]] <- names(test_final_list[[7]][[2]][1])
 NAMES_HIGHEST_HIT_LIST[[8]] <- names(test_final_list[[8]][[2]][1])
 NAMES_HIGHEST_HIT_LIST[[13]] <- NA
 NAMES_HIGHEST_HIT_LIST[[16]] <- NA
+### Here we produce table with final names of annotation features to be used in actual annotation ###
 
 
 
 ###### Here we need to remove experiments with microarrays not captured in ensembl ######
 WHICH_EXP_TO_ANAL <- seq(1,nrow(FOR_ANNOT_PLATFORMS))[which(!is.na(NAMES_HIGHEST_HIT_LIST))]
-## Here we are doing probe ensembl annotation
+###### Here we are doing probe ensembl annotation ###### 
 ANNOT_LIST_DATA <- list()
 for (n in WHICH_EXP_TO_ANAL){
-  ANNOT_LIST_DATA[[n]] <- getBM(attributes = c(NAMES_HIGHEST_HIT_LIST[[n]], "external_gene_name"), 
+  ANNOT_LIST_DATA[[n]] <- biomaRt::getBM(attributes = c(NAMES_HIGHEST_HIT_LIST[[n]], "external_gene_name"), 
                                 filters = NAMES_HIGHEST_HIT_LIST[[n]], 
                                 values = LIST_DATA[[n]]$Probe_ID,
                                 uniqueRows = F,
                                 mart = switch(exp_species[n], 
-                                         "m" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
-                                         "r" = useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
+                                         "m" = biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl"), 
+                                         "r" = biomaRt::useMart("ENSEMBL_MART_ENSEMBL", dataset = "rnorvegicus_gene_ensembl"))
   )
 }
 
-############################### Tu gdzieś jeszcze trzeba będzie ustandaryzować nazwy genów pomiędzy gatunkami ############################### 
+
+
+############################### Tu gdzieĹ› jeszcze trzeba bÄ™dzie ustandaryzowaÄ‡ nazwy genĂłw pomiÄ™dzy gatunkami ############################### 
+
+
 
 ## HERE WE WILL COLLAPSE duplicated probe-genename pairs WITHIN ANNOTATED GENE LIST (and also change column names to standarized ones)
 UNIQ_ANNOT_LIST_DATA <- list()
@@ -374,13 +394,13 @@ TEST_ANNOTATION[[13]] <-NULL
 
 
 
-
+# Here we bind all list elements into single data table
 SINGLE_TEST_ANNOTATION <- data.table::data.table(rlist::list.rbind(TEST_ANNOTATION), stringsAsFactors = F)
 
 
 library(tidyverse)
 
-### This will be our input data for further analysis: 
+### This will be our input data for further analysis. It contains only significant columns of "Paper", "GroupID", "ensembl_gene_name", "logFC": 
 SHORT_SINGLE_TEST_ANNOTATION <- SINGLE_TEST_ANNOTATION %>%
   select("Paper", "GroupID", "ensembl_gene_name", "logFC") %>%
   group_by(Paper, GroupID, ensembl_gene_name) %>%
@@ -392,58 +412,65 @@ SHORT_SINGLE_TEST_ANNOTATION <- SINGLE_TEST_ANNOTATION %>%
 
 
 
+MUT_SHORT_SINGLE_TEST_ANNOTATION <- SHORT_SINGLE_TEST_ANNOTATION 
+# I dont know why purrr::map didnt work for this. Either way, we just lapply this. Here we write UP or DOWN for every logFC for given genename in given experiment (not paper)
+SHORT_SINGLE_TEST_ANNOTATION$directionality <- lapply(X = SHORT_SINGLE_TEST_ANNOTATION$data, FUN = function(x) { mutate(x, Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) } ) 
 
-# I dont know why purrr::map didnt work for this
-MUT_SHORT_SINGLE_TEST_ANNOTATION$test <- lapply(X = MUT_SHORT_SINGLE_TEST_ANNOTATION$data, FUN = function(x) { mutate(x, Symbol_direction = ifelse(logFC > 0, "UP", "DOWN")) } ) 
-MUT_SHORT_SINGLE_TEST_ANNOTATION$test <- lapply(MUT_SHORT_SINGLE_TEST_ANNOTATION$test, function(x) { select(x, "Symbol_direction") } ) 
-MUT_SHORT_SINGLE_TEST_ANNOTATION$UP <- lapply(X = MUT_SHORT_SINGLE_TEST_ANNOTATION$test, FUN = table) 
-MUT_SHORT_SINGLE_TEST_ANNOTATION$ass <- lapply(X = MUT_SHORT_SINGLE_TEST_ANNOTATION$UP, 
+# Here we count how many UPs and DOWNs are in every given genename in given experiment (not paper)
+SHORT_SINGLE_TEST_ANNOTATION$directionality <- lapply(X = SHORT_SINGLE_TEST_ANNOTATION$directionality, FUN = function (x) {table(select(x, "Symbol_direction"))} ) 
+
+# Here we establish actuall status of gene in given experiment
+SHORT_SINGLE_TEST_ANNOTATION$sum_directionality <- as.character(lapply(X = SHORT_SINGLE_TEST_ANNOTATION$directionality, 
                                                FUN = function(x) {
                                                  if (length(x) == 1 && grepl(pattern = "UP", names(x))) { "UP" }
                                                  else if (length(x) == 1 && grepl(pattern = "DOWN", names(x))) { "DOWN" }
                                                  else if (length(x) == 2 && grepl(pattern = "DOWN", names(x)) && grepl(pattern = "DOWN", names(x))) { "MIXED" }
                                                  else { "ERROR" }
-                                               })
-                                                 
-                                                 
-                                                 # if (grepl(pattern = "UP", x = names(x))) { "UP" } 
-                                                 #  else if (grepl(pattern = "DOWN", x = names(x)) { "DOWN" } 
-                                                 #          else {"ERROR"}
-                                                 # 
-                                                 # 
-                                                 # switch(
-                                                 #   as.character(length(x)),
-                                                 #   "1" = ,
-                                                 #   "2" = "MIXED"
-                                                 #            ) 
-                                                 #              } )
+                                               }))
+
+
+
+# Here we remove MIXED expression and multiple genenames
+FILT_SHORT_SINGLE_TEST_ANNOTATION <- SHORT_SINGLE_TEST_ANNOTATION %>%
+  filter(!grepl(pattern = "(.*);(.*)", SHORT_SINGLE_TEST_ANNOTATION$ensembl_gene_name)) %>%
+  filter(!sum_directionality == "MIXED") %>%
+  filter(!sum_directionality == "ERROR") %>%
+  filter(!is.na(ensembl_gene_name))
+
+
+### !!! Beware!!! Some numeric values use peroid and some comma! Need to fix this at the level of data upload to R
+# Here we add mean to each 
+STDINPUT_FILT_SHORT_SIN_T_ANNO <- FILT_SHORT_SINGLE_TEST_ANNOTATION %>%
+  mutate(mean = as.numeric(map(data, function(x) { as.numeric(mean(x[[1]]))} ))) %>% ## This way we give actuall vector to function, not a data table(tibble)
+  select("Paper", "GroupID", "ensembl_gene_name", "sum_directionality", "mean") 
+
+
+CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO <- STDINPUT_FILT_SHORT_SIN_T_ANNO %>%
+  select("GroupID", "ensembl_gene_name", "mean") %>% 
+  spread(key = GroupID, value = mean)  %>%
+  as.data.frame()
+
+
+
+rownames(CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO) <- CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO$ensembl_gene_name
+CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO$ensembl_gene_name <- NULL
+
+MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO <- as.matrix(CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO)
   
-MUT_SHORT_SINGLE_TEST_ANNOTATION$UP[[1]]
-grepl(pattern = "UP", x = names(MUT_SHORT_SINGLE_TEST_ANNOTATION$UP[[1]]))
-grepl(pattern = "DOWN", x = names(MUT_SHORT_SINGLE_TEST_ANNOTATION$UP[[1]]))
+ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO <- MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO
+ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO[is.na(ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO)] <- 0 ###!!!
 
+BiocManager::install(c("runibic", "biclust", "gplots"))
+library(runibic)
 
+runibicRES2 <- biclust::biclust(ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO, method = BCUnibic())
 
-MUT_SHORT_SINGLE_TEST_ANNOTATION$ass <- switch(
-  as.character(length(MUT_SHORT_SINGLE_TEST_ANNOTATION$UP)),
-                     "1" = "UP",
-                     "2" = "MIXED"
-)
+dir.create("ClusterSummaryRunibic")
 
-
-
-
-
-# MUT_SHORT_SINGLE_TEST_ANNOTATION$test2 <- as.character(as.vector(MUT_SHORT_SINGLE_TEST_ANNOTATION$test))
-# MUT_SHORT_SINGLE_TEST_ANNOTATION$test2 <- NULL
-# class(MUT_SHORT_SINGLE_TEST_ANNOTATION$test2[[12]][1])
-# MUT_SHORT_SINGLE_TEST_ANNOTATION$test2[[12]][[1]]
-# 
-# ## Here we aggregate the genenames into single row
-# UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- lapply(X = UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name, FUN = paste, collapse = "; ") ##
-# UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name <- as.character(UNIQ_ANNOT_LIST_DATA[[n]]$ensembl_gene_name)
-# 
-# UNIQ_ANNOT_LIST_DATA[[n]] <- aggregate(ensembl_gene_name~Probe_ID, data = UNIQ_ANNOT_LIST_DATA[[n]], FUN = str_c) 
+png(filename = paste0("ClusterSummaryRunibic/", names(ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO), "_Cluster_Summary.png"), width = 1920, height = 1080, units = "px")
+par(cex.axis = 1, oma=c(0,4,0,8))
+biclustmember(runibicRES2, ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO, main = names(ZEROED_MATRIX_CLU_STDINPUT_FILT_SHORT_SIN_T_ANNO))
+dev.off()
 
 
 
@@ -451,24 +478,6 @@ MUT_SHORT_SINGLE_TEST_ANNOTATION$ass <- switch(
 
 
 
-
-
-Symbol_direction
-MUT_SHORT_SINGLE_TEST_ANNOTATION <- 
-
-
-  
-#    <-  map(MUT_SHORT_SINGLE_TEST_ANNOTATION$asshole, as.numeric)
-# 
-# c_MUT_SHORT_SINGLE_TEST_ANNOTATION <- map(MUT_SHORT_SINGLE_TEST_ANNOTATION$, 
-#                                           
-#   
-# MUT_SHORT_SINGLE_TEST_ANNOTATION$asshole2 <- unlist(MUT_SHORT_SINGLE_TEST_ANNOTATION$asshole)
-# 
-# NEED TO REMOVE 
-# 
-# NO_UNIDS_ORG_DATA <- ORG_DATA %>%
-#   dplyr::filter(Gene_symbol != "NONE" & !is.na(Gene_symbol))
 
 
 
@@ -492,6 +501,9 @@ TOTAL_GENE_COUNT_PER_PUBLICATION <- as.tibble(SINGLE_TEST_ANNOTATION) %>%
 
 
 
+##############################################################
+##############################################################
+##############################################################
 
 
 
@@ -499,9 +511,8 @@ TOTAL_GENE_COUNT_PER_PUBLICATION <- as.tibble(SINGLE_TEST_ANNOTATION) %>%
 
 
 
-
-#Tutaj trzeba zrobić tak: zrobić .txt files z każdego z eksperymentów. Przefiltrować odpowiednią bazę danych przez nazwy sond z tego eksperymentu.
-#Potem jeszcze trzeba je sprowadzić do jednolitego nazewnictwa (mus or homo?)
+#Tutaj trzeba zrobiÄ‡ tak: zrobiÄ‡ .txt files z kaĹĽdego z eksperymentĂłw. PrzefiltrowaÄ‡ odpowiedniÄ… bazÄ™ danych przez nazwy sond z tego eksperymentu.
+#Potem jeszcze trzeba je sprowadziÄ‡ do jednolitego nazewnictwa (mus or homo?)
 
 
 # featureDat <- getBM(attributes = c("agilent_wholegenome_4x44k_v1", "affy_mg_u74av2", "affy_mogene_1_0_st_v1"), 
@@ -725,3 +736,6 @@ final_list[[1]] <- test_list[[which(tables == max(tables))]] ##
 
 
 #### TESTING MULTIPLE-PROBE ANNOATION ####
+
+
+
