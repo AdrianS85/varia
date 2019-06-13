@@ -5,3 +5,7 @@ ls *.csv > p1; sed s/.csv/.ass/g p1 >p2; paste p1 p2 >pairs;
 
 parallel --colsep '\t' "sed -e '1 s/[\.]/_/g' -e '1 s/End/End_/g' {1} >{2}" :::: pairs
 parallel --colsep  '\t'  "mv {2} {1}" :::: pairs
+
+#Upload files into database. Please note that arguments provided are examplary only
+parallel --colsep '\t' "pgfutter --dbname 'test' --port '5432' --username 'adrians' --pass '1234' --schema 'public' csv -d ',' {1}" :::: pairs
+
