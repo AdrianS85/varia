@@ -1,11 +1,92 @@
-#Appearently postgres doesnt work well with dots in header? Also "end" seem to fuck it up. So, lets change all the dots in headers into underscores using this:
+##BASH##
+#Prepare tables - Change End to End_, because End is sql keyword, add location_key column for primary key
+ls diffMethTable* > p1; cp p1 p2; cp p1 p3; sed -i s/.csv/.ass/g p2; sed -i s/.csv/.ass2/g p3; paste p1 p2 p3 > pairs;
+parallel --colsep '\t' "sed -i -e '1 s/[\.]/_/g' -e '1 s/End/End_/g' {1}" :::: p1;
+parallel --colsep '\t' "cut --delimiter=, -f 2-4  {1} > {2}" :::: pairs;
+parallel --colsep '\t' "sed -i -e 's/,/_/g'  -e 's/Chromosome_Start_End_/location_key/' {2}" :::: pairs;
+parallel --colsep '\t' "paste -d, {1} {2} > {3}" :::: pairs;
+parallel --colsep '\t' "cp {3} {1}; rm {2} {3}" :::: pairs;
 
-# Prepare blueprint file for parallel, e.g. like this, doesnt matter
-ls *.csv > p1; sed s/.csv/.ass/g p1 >p2; paste p1 p2 >pairs;
+#And lets try to load this fucker into database
+parallel --colsep '\t' "pgfutter_linux_amd64 --dbname 'test' --port '5432' --username 'adrians' --pass '1234' --schema 'public' csv -d ',' {1}" :::: pairs
+##BASH##
 
-parallel --colsep '\t' "sed -e '1 s/[\.]/_/g' -e '1 s/End/End_/g' {1} >{2}" :::: pairs
-parallel --colsep  '\t'  "mv {2} {1}" :::: pairs
 
-#Upload files into database. Please note that arguments provided are examplary only
-parallel --colsep '\t' "pgfutter --dbname 'test' --port '5432' --username 'adrians' --pass '1234' --schema 'public' csv -d ',' {1}" :::: pairs
 
+
+
+
+
+##PGSQL##
+-- THIS ALMOST WORKS!!!
+
+CREATE OR REPLACE FUNCTION test_function1() RETURNS VOID AS $$
+
+  DECLARE
+  current_table TEXT;
+  current_column TEXT;
+  current_column2 TEXT;
+  current_column3 TEXT;
+
+  BEGIN
+
+  FOR current_table IN EXECUTE FORMAT('
+  SELECT table_name
+  FROM information_schema.tables
+  WHERE table_name LIKE ''diffmethtable%%''
+  ')
+  LOOP
+
+
+    -- This part changes wierd symbols, that fuck up format changes into nulls and changes data to numeric
+    FOR current_column IN EXECUTE FORMAT('
+    SELECT DISTINCT COLUMN_NAME
+    FROM information_schema.columns
+    WHERE TABLE_NAME = ''%s''
+    AND COLUMN_NAME IN (''mean%%'', ''comb_p_val'', ''comb_p_adj_fdr'')
+    AND data_type = ''text''
+    ', current_table)
+    LOOP
+      EXECUTE FORMAT(' UPDATE %1$s SET %2$s = null WHERE %2$s = ''NA'' ', current_table, current_column);
+      EXECUTE FORMAT('ALTER TABLE %1$s ALTER COLUMN %2$s TYPE numeric USING (%2$s::numeric)', current_table, current_column);
+    END LOOP;
+
+    -- This part changes wierd symbols, that fuck up format changes into nulls and changes data to integer
+    FOR current_column2 IN EXECUTE FORMAT('
+    SELECT DISTINCT COLUMN_NAME
+    FROM information_schema.columns
+    WHERE TABLE_NAME = ''%s''
+    AND COLUMN_NAME IN (''start'', ''end_'', ''id'', ''combinedrank'', ''num_sites'')
+    AND data_type = ''text''
+    ', current_table)
+    LOOP
+
+      EXECUTE FORMAT(' UPDATE %1$s SET %2$s = null WHERE %2$s = ''NA'' ', current_table, current_column2);
+      EXECUTE FORMAT('ALTER TABLE %1$s ALTER COLUMN %2$s TYPE integer USING (%2$s::integer)', current_table, current_column2);
+    END LOOP;
+
+    EXECUTE FORMAT(' ALTER TABLE %s DROP COLUMN location_key', current_table);
+    EXECUTE FORMAT(' ALTER TABLE %s ADD COLUMN IF NOT EXISTS location_key text DEFAULT chromosome ', current_table);
+    /* EXECUTE FORMAT(' ALTER TABLE %s ADD COLUMN IF NOT EXISTS location_key text', current_table); */
+
+    /* FOR current_column3 IN EXECUTE FORMAT('
+    SELECT DISTINCT COLUMN_NAME
+    FROM information_schema.columns
+    WHERE TABLE_NAME = ''%s''
+    AND COLUMN_NAME IN (''comb_p_val'', ''comb_p_adj_fdr'')
+    AND data_type = ''text''
+    ', current_table)
+    LOOP
+
+      EXECUTE FORMAT(' UPDATE %1$s SET %2$s = null WHERE %2$s = ''NA'' ', current_table, current_column3);
+
+    END LOOP; */
+
+
+  END LOOP;
+
+  END
+
+  $$ LANGUAGE plpgsql;
+
+SELECT test_function1();
