@@ -15,6 +15,78 @@ tidy_qpcrResults %>%
 
 
 
+### Lets make Mann-Whitney-Wilcoxon
+#wilcox.test(formula, data, subset) - needs 2 levels of factor for comparison
+
+MWW_test <- wilcox.test(Actn2 ~ Group, data = qpcrResults, subset = Group == c("C", "S_1"))
+
+
+MWW_test <- qpcrResults
+
+
+MWW_test$C_vs_S_1 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("C", "S_1")) })
+
+MWW_test$C_vs_S_3 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("C", "S_3")) })
+
+MWW_test$C_vs_V_1 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("C", "V_1")) })
+
+MWW_test$C_vs_V_3 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("C", "V_3")) })
+
+MWW_test$S_1_vs_S_3 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("S_1", "S_3")) })
+
+MWW_test$S_1_vs_V_1 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("S_1", "V_1")) })
+
+MWW_test$S_3_vs_V_3 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("S_3", "V_3")) })
+
+MWW_test$V_1_vs_V_3 <-   lapply(X = qpcrResults[3:9], FUN = function(X) { wilcox.test(X ~ qpcrResults$Group, subset = qpcrResults$Group == c("V_1", "V_3")) })
+
+# Write-out resulting analysis
+write_lines(x = rjson::toJSON(MWW_test), path = "MWW_test.json")
+### Lets make Mann-Whitney-Wilcoxon
+
+
+
+### Lets make a nice list o pvalues from Mann-Whitney-Wilcoxon
+MWW_pval <- list()
+nb <- 1
+for(n_comp in seq_along(MWW_test))
+  {
+
+  for(n_gene in seq_along(MWW_test[[n_comp]]))
+    {
+    MWW_pval$Comparison[[nb]] <- names(MWW_test[n_comp])
+    MWW_pval$Gene[[nb]] <- names(MWW_test[[n_comp]][n_gene])
+    MWW_pval$pval[[nb]] <- MWW_test[[n_comp]][[n_gene]]$p.value
+    nb = nb + 1
+    }
+  
+  }
+
+df_MWW_pval <- as_tibble(MWW_pval)
+### Lets make a nice list o pvalues from Mann-Whitney-Wilcoxon
+
+
+
+### Lets statistically adjust Mann-Whitney-Wilcoxon tests
+geneList_df_MWW_pval <- df_MWW_pval %>%
+  group_by(Gene) %>%
+  nest()
+
+geneList_df_MWW_pval$data <- map(.x = geneList_df_MWW_pval$data, .f = 
+    ~ mutate(.data = .x, MWW_adjusted = p.adjust(as.numeric(.x$pval), method = "BH")
+    )
+)
+
+geneList_df_MWW_pval <- geneList_df_MWW_pval %>%
+  unnest()
+### Lets statistically adjust Mann-Whitney-Wilcoxon tests
+
+
+
+
+
+
+
 
 
 ### Lets look at means and SDs
@@ -75,6 +147,60 @@ nested_ranked_tidy_qpcrResults <- ranked_tidy_qpcrResults %>%
 ANOVA_ <- map(.x = nested_ranked_tidy_qpcrResults$data, 
               ~ broom::tidy(aov(ranked_Cq ~ Group, data = .x)) )
 
+
+ANOVA_ <- map(.x = nested_ranked_tidy_qpcrResults$data, 
+              ~ broom::tidy(aov(ranked_Cq ~ Group, data = .x)) )
+
+
+
+
+### Try contrasts - https://stats.stackexchange.com/questions/89021/how-to-get-only-desirable-comparisons-from-post-hoc
+factored_ranked_tidy_qpcrResults <- ranked_tidy_qpcrResults
+factored_ranked_tidy_qpcrResults$Group <- as.factor(factored_ranked_tidy_qpcrResults$Group)
+
+levels(factored_ranked_tidy_qpcrResults$Group)
+
+factors_ <- as.matrix(read.delim(file = "factors.txt", header = F, sep = "\t"))
+
+contrasts(factored_ranked_tidy_qpcrResults$Group) <- factors_
+
+factored_ranked_tidy_qpcrResults <- factored_ranked_tidy_qpcrResults %>%
+  group_by(Gene) %>%
+  nest()
+
+
+
+
+for(n in seq_along(factored_nested_ranked_tidy_qpcrResults$data)){
+  factored_nested_ranked_tidy_qpcrResults$data[[n]][[1]] <- as.factor(factored_nested_ranked_tidy_qpcrResults$data[[n]][[1]])
+}
+
+
+for(n in seq_along(factored_nested_ranked_tidy_qpcrResults$data)){
+  contrasts(factored_nested_ranked_tidy_qpcrResults$data[[n]]$Group) <- factors_
+}
+
+p.adjust
+
+
+contrasts(factored_nested_ranked_tidy_qpcrResults$data[[1]]$Group)
+class(factored_nested_ranked_tidy_qpcrResults$data[[1]]$Group)
+levels(factored_nested_ranked_tidy_qpcrResults$data[[1]]$Group)
+
+LM_ <- map(.x = factored_nested_ranked_tidy_qpcrResults$data, 
+           ~ summary( lm(ranked_Cq ~ Group, data = .x) ) )
+
+ANOVA_ <- map(.x = factored_ranked_tidy_qpcrResults$data, 
+              ~ broom::tidy(aov(ranked_Cq ~ Group, data = .x)) )
+
+TUKEY_ <- map(.x = factored_nested_ranked_tidy_qpcrResults$data, 
+              ~ broom::tidy(TukeyHSD(aov(ranked_Cq ~ Group, data = .x))) )
+
+### Try contrasts - https://stats.stackexchange.com/questions/89021/how-to-get-only-desirable-comparisons-from-post-hoc
+
+
+
+
 TUKEY_ <- map(.x = nested_ranked_tidy_qpcrResults$data, 
               ~ broom::tidy(TukeyHSD(aov(ranked_Cq ~ Group, data = .x))) )
 
@@ -82,14 +208,14 @@ ANOVAd_nested_ranked_tidy_qpcrResults <- nested_ranked_tidy_qpcrResults %>%
   mutate(ANOVA = ANOVA_)
 
 ###### Should I perform post-hoc test?
-#Sprawdza czy pvalue w ANOVIE jest większe od 0.05 albo nie istnieje i daje FALSE to tych elementów
+#Sprawdza czy pvalue w ANOVIE jest wiÄ™ksze od 0.05 albo nie istnieje i daje FALSE to tych elementĂłw
 ShouldIDunnet <- ANOVA_ %>% map_lgl(~ if (is.null(.x)) { F } else if(.x[[1,6]] < 0.05) { T } else { F })
 ShouldIDunnet_ANOVAd_nested_ranked_tidy_qpcrResults <- ANOVAd_nested_ranked_tidy_qpcrResults %>% 
   mutate(Dunnet = ShouldIDunnet)
 
 
 
-ANOVA_ <-  map(.x = Dawid4_filtered, ~ tidy(TukeyHSD(aov(Stosunek ~ Stadium, data = .x))) )
+ANOVA_ <-  map(.x = ShouldIDunnet_ANOVAd_nested_ranked_tidy_qpcrResults$data, ~ broom::tidy(TukeyHSD(aov(ranked_Cq ~ Group, data = .x))) )
 Dawid4_filtered_A_D$xxx <- Dawid4_filtered_A_D$ANOVA %>% map(tidy)
 
 
@@ -107,7 +233,6 @@ kruskal_tidy_qpcrResults <- tidy_qpcrResults %>%
 
 
 
-rm(xxx)
 
 
 
@@ -135,6 +260,59 @@ mergin_tidy_meanedRab1_maResults <- tidy_meanedRab1_maResults %>%
 merged_qpcr_ma <- merge(mergin_tidy_qpcrResults, mergin_tidy_meanedRab1_maResults, by = "ID") %>%
   select(-ID)
 
+#############################################################################
+testingActn2 <- merged_qpcr_ma %>%
+  filter(Group %in% c("C", "S_1", "V_1", "V_3") ) %>%
+  filter(Gene == "Actn2")
+
+cor_testingActn2 <- corrr::correlate( testingActn2[,4:5], method = "spearman")
+
+
+testingCxcl14 <- merged_qpcr_ma %>%
+  filter(Group %in% c("S_3", "V_1", "V_3") ) %>%
+  filter(Gene == "Cxcl14")
+
+cor_testingCxcl14 <- corrr::correlate( testingCxcl14[,4:5], method = "spearman")
+
+
+testingGabrg1 <- merged_qpcr_ma %>%
+  filter(Group %in% c("C", "S_1", "V_1") ) %>%
+  filter(Gene == "Gabrg1")
+
+cor_testingGabrg1 <- corrr::correlate( testingGabrg1[,4:5], method = "spearman")
+
+
+testingGria1 <- merged_qpcr_ma %>%
+  filter(Group %in% c("C", "V_3", "S_1", "V_1") ) %>%
+  filter(Gene == "Gria1")
+
+cor_testingGria1 <- corrr::correlate( testingGria1[,4:5], method = "spearman")
+
+
+testingRab1b <- merged_qpcr_ma %>%
+  filter(Group %in% c("V_3", "S_3", "V_3", "C") ) %>%
+  filter(Gene == "Rab1b")
+
+cor_testingRab1b <- corrr::correlate( testingRab1b[,4:5], method = "spearman")
+
+
+testingOxt <- merged_qpcr_ma %>%
+  filter(Group %in% c("C", "V_3", "S_1", "V_1") ) %>%
+  filter(Gene == "Oxt")
+
+cor_testingOxt <- corrr::correlate( testingOxt[,4:5], method = "spearman")
+
+
+testingVim <- merged_qpcr_ma %>%
+  filter(Group %in% c("V_3", "S_3", "V_3", "C") ) %>%
+  filter(Gene == "Vim")
+
+cor_testingVim <- corrr::correlate( testingVim[,4:5], method = "spearman")
+#############################################################################
+
+
+
+
 
 forCorrelations_merged_qpcr_ma <- merged_qpcr_ma %>%
   select(Gene, Cq, Exp_value) %>%
@@ -142,7 +320,7 @@ forCorrelations_merged_qpcr_ma <- merged_qpcr_ma %>%
   nest()
   
 
-Correlations <- map(forCorrelations_merged_qpcr_ma$data, ~ corrr::correlate( .x[,1:2]) )  
+Correlations <- map(forCorrelations_merged_qpcr_ma$data, ~ corrr::correlate( .x[,1:2], method = "spearman") )
 
 
 bleble_forCorrelations_merged_qpcr_ma <- forCorrelations_merged_qpcr_ma %>%
@@ -157,3 +335,5 @@ merged_qpcr_ma %>%
   geom_point()+
   theme_light()+
   facet_wrap(~Gene)
+
+
