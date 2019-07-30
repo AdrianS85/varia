@@ -1,4 +1,5 @@
-setwd("E:/Projekty/SV - Silvio Vocalization")
+#setwd("E:/Projekty/SV - Silvio Vocalization")
+setwd("/media/adrians/USB DISK1/Projekty/SV - Silvio Vocalization")
 
 library(Hmisc)
 library(readxl)
@@ -6,7 +7,8 @@ library(tidyverse)
 library(rlist)
 
 
-path = "USVs BTBR-C57 - SONATA.xlsx"
+#path = "USVs BTBR-C57 - SONATA.xlsx"
+path = "rep2_USV-DATA_male_intruder.xls"
 
 xl_list <- lapply(readxl::excel_sheets(path), readxl::read_excel, path = path)
 
@@ -62,9 +64,31 @@ coded_fcNotZero_grouped_named_xl_df %>%
   geom_boxplot()+
   theme_light()
 
-facet_wrap()+
 
-  
-  
-  
-readr::write_tsv(grouped_named_xl_df, path = "grouped_named_xl_df_USVs_BTB_C57_SONATA.tsv")
+readr::write_tsv(grouped_named_xl_df, path = paste0("grouped_named_xl_df_", path, ".tsv") )
+
+
+
+
+
+## Here, we compare our call names with manually established call names
+compare_coded_fcNotZero_grouped_named_xl_df <- coded_fcNotZero_grouped_named_xl_df
+
+#to merge the same names inputed differently
+compare_coded_fcNotZero_grouped_named_xl_df$`class of call` <- tolower(compare_coded_fcNotZero_grouped_named_xl_df$`class of call`)
+
+
+counting_coded_compare_coded_fcNotZero_grouped_named_xl_df <- compare_coded_fcNotZero_grouped_named_xl_df %>%
+  group_by(`class of call`, code) %>%
+  dplyr::count()
+
+
+counting_coded_compare_coded_fcNotZero_grouped_named_xl_df %>%
+  #mutate(code = factor(code, levels = c("downward", "upward", "chevron", "reversed_chevron", "flat", "other"))) %>% 
+  #group_by(group, mouse, code) %>%
+  ggplot(aes(x = code, y = n, fill = `class of call`))+
+  geom_col()+
+  facet_wrap(~`class of call`)+
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+## Here, we compare our call names with manually established call names
