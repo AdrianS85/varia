@@ -2,7 +2,11 @@
 
 import sys
 import shutil
+import csv
+import re
 # python3 sciNotRem.py3 $(ls) <- this is how to turn ls to arguments
+
+
 
 ### This part shows user which files are up for sciNotRem
 print("##############################################################\nYou have uploaded these files for removing scientific notation:\n##############################################################\n")
@@ -21,6 +25,8 @@ sys.stderr.write("\n############################################################
 sys.stderr.flush()
 ### This part shows user which files are up for sciNotRem
 
+
+
 ### This parts makes user be sure, that files are correct
 while True:
         s = input('Do You wish to proceed? (y/n)\n')
@@ -28,7 +34,7 @@ while True:
             print("OK. Exiting now.")
             sys.exit()
         elif s == "y":
-            print("Good.")
+            print("Good.\n")
             break
         else:
             print('Sorry, I only understand "y" and "n" answers. Try again.')
@@ -36,19 +42,20 @@ while True:
 
 ### This parts makes user be sure, that files are correct
 
-copied_files_to_do = []
-for a in files_to_do:
-    shutil.copyfile(a, a.replace(".", "_SciNotRepl."))
-    copied_files_to_do.append(a.replace(".", "_SciNotRepl."))
-
-for c in copied_files_to_do:
-    print("New file copied: " + c)
-    file_object = open(c, "r")
-
-    file_object.close()
 
 
-#
+for c in files_to_do:
+    print("File is being updated: " + c)
+    with open(c) as csvfile:
+        # Create output file for writting updated data
+        new_name_for_updated_file = c.replace(".", "_SciNotRepl.")
+        pre_writeit = open(new_name_for_updated_file, "w")
+        writeit = csv.writer(pre_writeit, delimiter=',')
 
-
-# DO NOT CHANGE THE FILES IN PLACE!! What if You give some other files as an input - it will kill them
+        # Update data
+        readit = csv.reader(csvfile, delimiter=',')
+        for row in readit:
+            updated_row = [w.replace( 'Start', str(float(10)) ) for w in row]
+            writeit.writerow(updated_row)
+        pre_writeit.close()
+        print("Updated file written: " + new_name_for_updated_file + "\n")
