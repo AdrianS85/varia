@@ -47,6 +47,8 @@ for c in files_to_do:
     print("File is being updated: " + c)
     new_name_for_updated_file = c.replace(".", "_SciNotRepl.")
     test = pandas.read_csv(c)
+    test = test.apply(lambda x: x.astype(dtype = pandas.Int64Dtype(), errors = "ignore"), axis = 0) # downcast integers as integers, and not numerics
+    # test2.fillna(value = "NA", inplace = True) # Fill NA values
     test.to_csv(new_name_for_updated_file)
     print("Updated file written: " + new_name_for_updated_file + "\n")
 ### pandas module removes scientific notation just by loading it
@@ -77,4 +79,3 @@ for c in files_to_do:
     #         pre_writeit.close()
     #         print("Updated file written: " + new_name_for_updated_file + "\n")
 ### Some testing bullshit
-
