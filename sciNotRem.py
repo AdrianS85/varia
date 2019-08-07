@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import shutil
-import csv
-import re
+import pandas
 # python3 sciNotRem.py3 $(ls) <- this is how to turn ls to arguments
 
 
@@ -44,18 +42,39 @@ while True:
 
 
 
+### pandas module removes scientific notation just by loading it
 for c in files_to_do:
     print("File is being updated: " + c)
-    with open(c) as csvfile:
-        # Create output file for writting updated data
-        new_name_for_updated_file = c.replace(".", "_SciNotRepl.")
-        pre_writeit = open(new_name_for_updated_file, "w")
-        writeit = csv.writer(pre_writeit, delimiter=',')
+    new_name_for_updated_file = c.replace(".", "_SciNotRepl.")
+    test = pandas.read_csv(c)
+    test.to_csv(new_name_for_updated_file)
+    print("Updated file written: " + new_name_for_updated_file + "\n")
+### pandas module removes scientific notation just by loading it
 
-        # Update data
-        readit = csv.reader(csvfile, delimiter=',')
-        for row in readit:
-            updated_row = [w.replace( 'Start', str(float(10)) ) for w in row]
-            writeit.writerow(updated_row)
-        pre_writeit.close()
-        print("Updated file written: " + new_name_for_updated_file + "\n")
+
+
+### Some testing bullshit
+    # for c in files_to_do:
+    #     print("File is being updated: " + c)
+    #     with open(c) as csvfile:
+    #         # Create output file for writting updated data
+    #         new_name_for_updated_file = c.replace(".", "_SciNotRepl.")
+    #         pre_writeit = open(new_name_for_updated_file, "w")
+    #         writeit = csv.writer(pre_writeit, delimiter=',')
+    #
+    #         # Update data
+    #         readit = csv.reader(csvfile, delimiter=',')
+    #         for row in readit:
+    #             for w in row:
+    #                 if re.search('(.)+[E|e]\+0(.)+', w) != None:
+    #                     #re.sub('(.)+[E|e]\+0(.)+', "fuck_off", w
+    #                     print(w + " changes to: " + str(float(w)))
+    #                 else:
+    #             #pdb.set_trace()
+    #             try:
+    #             updated_row = [re.sub('(.)+[E|e]\+0(.)+', "fuck_off", w) for w in row] #This cunt first checks if it can substitute value for new value, and then checks if the value is actually to be substituted
+    #             writeit.writerow(updated_row)
+    #         pre_writeit.close()
+    #         print("Updated file written: " + new_name_for_updated_file + "\n")
+### Some testing bullshit
+
