@@ -13,9 +13,6 @@ parallel --colsep '\t' "pgfutter_linux_amd64 --dbname 'test' --port '5432' --use
 
 
 
-CREATE EXTENSION plpythonu
-
-
 ##PGSQL##
 CREATE OR REPLACE FUNCTION uploadRnBeadsDiffmethtable() RETURNS VOID AS $$
 
