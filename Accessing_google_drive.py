@@ -53,8 +53,8 @@ def Compare_Times(Id: str, Mod_time_old: str, Mod_time_new: str, name: str, mime
 
 
 scopes = 'https://www.googleapis.com/auth/drive'
-client_id = '547846840425-8q0f3rtfbjfiv52gpoirbgdpugea2tr3.apps.googleusercontent.com'
-client_secret = 'quhVf3ql7JibRwisSYu4URZy'
+client_id = 'xxxx'
+client_secret = 'xxxx'
 
 creds = google_auth_oauthlib.get_user_credentials(scopes, client_id, client_secret)
 
